@@ -4,7 +4,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 	// Qt + Visual Studio: https://stackoverflow.com/questions/28813526/qt-5-4-with-visual-studio-2013-qtcored-dll-missing
-	const auto Kishiwa = nullptr;
 	//--- A. servant class labels
 	set_servant_class_label();
 	set_servant_class_connection();
