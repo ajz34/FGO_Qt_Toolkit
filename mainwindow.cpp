@@ -78,6 +78,28 @@ void MainWindow::action_database_slot()
 	delete database_confirm_dialog;
 }
 
+void MainWindow::ini_setting_read()
+{
+	ini_setting_data = QVector<QString>{};
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
+	{
+		ini_setting_data.push_back(settings.value(INI_SETTING_FILE_INDEX[i], "").toString());
+	}
+}
+
+void MainWindow::ini_setting_write()
+{
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
+	{
+		qDebug() << "Working" << ini_setting_data[i];
+		settings.setValue(INI_SETTING_FILE_INDEX[i], ini_setting_data[i]);
+	}
+}
+
 void MainWindow::action_database_transin(QVector<QString> path_pack)
 {
 	ini_setting_data = path_pack;
@@ -115,28 +137,4 @@ void MainWindow::initialize_wiki_database()
 void MainWindow::update_wiki_database()
 {
 
-}
-
-//
-void MainWindow::ini_setting_read()
-{
-	ini_setting_data = QVector<QString>(INI_SETTING_FILE_NUMBER, "");
-	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
-		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
-	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
-	{
-		ini_setting_data[i] = settings.value(INI_SETTING_FILE_INDEX[i], "").toString();
-	}
-}
-
-//
-void MainWindow::ini_setting_write()
-{
-	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
-		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
-	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
-	{
-		qDebug() << "Working" << ini_setting_data[i];
-		settings.setValue(INI_SETTING_FILE_INDEX[i], ini_setting_data[i]);
-	}
 }

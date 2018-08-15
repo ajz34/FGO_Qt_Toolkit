@@ -3,7 +3,7 @@
 database_dialog::database_dialog(QWidget *parent)
 	: QDialog(parent)
 {
-	ini_setting_data = QVector<QString>(INI_SETTING_FILE_NUMBER, "");
+	ini_setting_data = QVector<QString>{};
 
 	wiki_xml_database_label = new QLabel;
 	wiki_xml_database_label->setText(tr("fate.wiki XML Database:"));

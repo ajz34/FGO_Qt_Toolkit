@@ -7,8 +7,6 @@ class database_dialog : public QDialog
 {
 	Q_OBJECT;
 
-	const int INI_SETTING_FILE_NUMBER = 1;
-
 	QVector<QString> ini_setting_data;
 
 	QLabel *wiki_xml_database_label;

@@ -17,7 +17,6 @@ class MainWindow : public QMainWindow
 	const QVector<QString> INI_SETTING_FILE_INDEX{
 		"wiki_xml_path",
 	};
-	const int INI_SETTING_FILE_NUMBER = 1;
 
 	//--- A. tab widgets
 	QTabWidget *main_tabwidget;
