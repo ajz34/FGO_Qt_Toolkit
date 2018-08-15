@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qclickablefigurelabel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mainwindow_connection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tab_widget_servant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="qclickablefigurelabel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="tab_widget_servant.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\servant_class\all_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\all_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\alterego_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\alterego_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\archer_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\archer_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\assassin_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\assassin_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\avenger_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\avenger_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\berserker_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\berserker_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\caster_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\caster_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\foreigner_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\foreigner_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\lancer_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\lancer_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\mooncancer_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\mooncancer_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\rider_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\rider_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\ruler_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\ruler_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\saber_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\saber_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\shielder_off.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\servant_class\shielder_on.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <QtRcc Include="widget_images.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+</Project>

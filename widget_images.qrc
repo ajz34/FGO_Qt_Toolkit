@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/servant_class">
+        <file>images/servant_class/all_off.png</file>
+        <file>images/servant_class/all_on.png</file>
+        <file>images/servant_class/alterego_off.png</file>
+        <file>images/servant_class/alterego_on.png</file>
+        <file>images/servant_class/archer_off.png</file>
+        <file>images/servant_class/archer_on.png</file>
+        <file>images/servant_class/assassin_off.png</file>
+        <file>images/servant_class/assassin_on.png</file>
+        <file>images/servant_class/avenger_off.png</file>
+        <file>images/servant_class/avenger_on.png</file>
+        <file>images/servant_class/berserker_off.png</file>
+        <file>images/servant_class/berserker_on.png</file>
+        <file>images/servant_class/caster_off.png</file>
+        <file>images/servant_class/caster_on.png</file>
+        <file>images/servant_class/foreigner_off.png</file>
+        <file>images/servant_class/foreigner_on.png</file>
+        <file>images/servant_class/lancer_off.png</file>
+        <file>images/servant_class/lancer_on.png</file>
+        <file>images/servant_class/mooncancer_off.png</file>
+        <file>images/servant_class/mooncancer_on.png</file>
+        <file>images/servant_class/rider_off.png</file>
+        <file>images/servant_class/rider_on.png</file>
+        <file>images/servant_class/ruler_off.png</file>
+        <file>images/servant_class/ruler_on.png</file>
+        <file>images/servant_class/saber_off.png</file>
+        <file>images/servant_class/saber_on.png</file>
+        <file>images/servant_class/shielder_off.png</file>
+        <file>images/servant_class/shielder_on.png</file>
+    </qresource>
+</RCC>
