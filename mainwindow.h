@@ -6,6 +6,7 @@
 
 #include "qclickablefigurelabel.h"
 #include "tab_widget_servant.h"
+#include "database_dialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -13,6 +14,10 @@ class MainWindow : public QMainWindow
 
 	//--- HAND MADE PARAMETERS
 	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
+	const QVector<QString> INI_SETTING_FILE_INDEX{
+		"wiki_xml_path",
+	};
+	const int INI_SETTING_FILE_NUMBER = 1;
 
 	//--- A. tab widgets
 	QTabWidget *main_tabwidget;
@@ -21,6 +26,9 @@ class MainWindow : public QMainWindow
     //--- B. menu
     QAction *action_open;
 	QAction *action_database;
+	QVector<QString> ini_setting_data;
+	void ini_setting_read();
+	void ini_setting_write();
     QAction *action_exit;
     QAction *action_about;
     QAction *action_bibliography;
@@ -39,9 +47,7 @@ class MainWindow : public QMainWindow
 
 	//--- O. actions on data
 	// setting
-	QString wiki_xml_path;
-	void ini_setting_read();
-	void ini_setting_write();
+	database_dialog *database_confirm_dialog;
 	// wiki xml data
 	void initialize_wiki_database();
 	void update_wiki_database();
@@ -51,6 +57,17 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+signals:
+	//--- B. menu
+	// database
+	inline void action_database_transout(QVector<QString> path_pack);
+
+private slots:
+	//--- B. menu
+	// database
+	void action_database_slot();
+	void action_database_transin(QVector<QString> path_pack);
 
 };
 

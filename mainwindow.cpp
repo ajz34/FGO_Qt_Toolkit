@@ -4,7 +4,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 	// Qt + Visual Studio: https://stackoverflow.com/questions/28813526/qt-5-4-with-visual-studio-2013-qtcored-dll-missing
-	
+
 	//--- B. menu
 	menu_create_action();
 	set_menu();
@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ini_setting_read();
 	update_wiki_database();
 
+	qDebug() << "Initialize finish";
 }
 
 MainWindow::~MainWindow()
@@ -49,6 +50,7 @@ void MainWindow::menu_create_action()
 	// specify database
 	action_database = new QAction(tr("&Database"), this);
 	action_database->setStatusTip(tr("Specify master insensitive servant databases"));
+	connect(action_database, &QAction::triggered, this, &MainWindow::action_database_slot);
 
     // exit
     action_exit = new QAction(tr("&Exit"), this);
@@ -62,6 +64,24 @@ void MainWindow::menu_create_action()
     // bibliography
     action_bibliography = new QAction(tr("&Bibliography"), this);
 	action_bibliography->setStatusTip(tr("Bibliography, reference and acknowledge"));
+}
+
+void MainWindow::action_database_slot()
+{
+	database_confirm_dialog = new database_dialog(this);
+	// https://stackoverflow.com/questions/20491864/how-close-and-delete-a-modeless-qt-dialog
+	// database_confirm_dialog->setAttribute(Qt::WA_DeleteOnClose);
+	connect(this, &MainWindow::action_database_transout, database_confirm_dialog, &database_dialog::database_transin);
+	connect(database_confirm_dialog, &database_dialog::database_transout, this, &MainWindow::action_database_transin);
+	emit action_database_transout(ini_setting_data);
+	database_confirm_dialog->exec();
+	delete database_confirm_dialog;
+}
+
+void MainWindow::action_database_transin(QVector<QString> path_pack)
+{
+	ini_setting_data = path_pack;
+	ini_setting_write();
 }
 
 //--- N. layout
@@ -100,14 +120,23 @@ void MainWindow::update_wiki_database()
 //
 void MainWindow::ini_setting_read()
 {
-	QSettings settings(INI_SETTING_FILE_PATH, QSettings::NativeFormat);
-	wiki_xml_path = settings.value("wiki_xml_path", "").toString();
+	ini_setting_data = QVector<QString>(INI_SETTING_FILE_NUMBER, "");
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
+	{
+		ini_setting_data[i] = settings.value(INI_SETTING_FILE_INDEX[i], "").toString();
+	}
 }
 
 //
 void MainWindow::ini_setting_write()
 {
-	QSettings settings(INI_SETTING_FILE_PATH, QSettings::NativeFormat);
-	settings.setValue("wiki_xml_path", wiki_xml_path);
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
+	{
+		qDebug() << "Working" << ini_setting_data[i];
+		settings.setValue(INI_SETTING_FILE_INDEX[i], ini_setting_data[i]);
+	}
 }
-

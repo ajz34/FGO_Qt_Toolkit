@@ -52,6 +52,9 @@
     <ClCompile Include="tab_widget_servant_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="database_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="mainwindow.h">
@@ -61,6 +64,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="tab_widget_servant.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="database_dialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
