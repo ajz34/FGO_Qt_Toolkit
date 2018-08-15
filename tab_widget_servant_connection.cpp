@@ -1,14 +1,14 @@
-#include "mainwindow.h"
+#include "tab_widget_servant.h"
 
 //--- A. servant class labels
 
-void MainWindow::set_servant_class_connection()
+void tab_widget_servant::set_servant_class_connection()
 {
-	connect(class_all_on, &QClickableFigureLabel::clicked, this, &MainWindow::class_all_on_clicked_labelbehave);
-	connect(class_all_off, &QClickableFigureLabel::clicked, this, &MainWindow::class_all_off_clicked_labelbehave);
+	connect(class_all_on, &QClickableFigureLabel::clicked, this, &tab_widget_servant::class_all_on_clicked_labelbehave);
+	connect(class_all_off, &QClickableFigureLabel::clicked, this, &tab_widget_servant::class_all_off_clicked_labelbehave);
 }
 
-void MainWindow::class_all_on_clicked_labelbehave()
+void tab_widget_servant::class_all_on_clicked_labelbehave()
 {
 	QVector<QClickableFigureLabel*> classes{
 		class_saber, class_archer, class_lancer, class_rider, class_caster, class_assassin,
@@ -22,7 +22,7 @@ void MainWindow::class_all_on_clicked_labelbehave()
 	}
 }
 
-void MainWindow::class_all_off_clicked_labelbehave()
+void tab_widget_servant::class_all_off_clicked_labelbehave()
 {
 	QVector<QClickableFigureLabel*> classes{
 		class_saber, class_archer, class_lancer, class_rider, class_caster, class_assassin,
@@ -38,7 +38,7 @@ void MainWindow::class_all_off_clicked_labelbehave()
 
 //--- C. filter
 
-void MainWindow::set_filter_connection()
+void tab_widget_servant::set_filter_connection()
 {
 	QVector<QAction*> filter_rarities{
 		filter_rarity_5, filter_rarity_4, filter_rarity_3,
@@ -47,13 +47,13 @@ void MainWindow::set_filter_connection()
 
 	for (auto i : filter_rarities)
 	{
-		connect(i, &QAction::triggered, this, &MainWindow::filter_rarity_subitem_clicked_actionbehave);
+		connect(i, &QAction::triggered, this, &tab_widget_servant::filter_rarity_subitem_clicked_actionbehave);
 	}
 
-	connect(filter_rarity_all, &QAction::triggered, this, &MainWindow::filter_rarity_all_clicked_actionbehave);
+	connect(filter_rarity_all, &QAction::triggered, this, &tab_widget_servant::filter_rarity_all_clicked_actionbehave);
 }
 
-void MainWindow::filter_rarity_subitem_clicked_actionbehave(bool checked)
+void tab_widget_servant::filter_rarity_subitem_clicked_actionbehave(bool checked)
 {
 	if (checked)
 	{
@@ -62,7 +62,7 @@ void MainWindow::filter_rarity_subitem_clicked_actionbehave(bool checked)
 	}
 }
 
-void MainWindow::filter_rarity_all_clicked_actionbehave(bool checked)
+void tab_widget_servant::filter_rarity_all_clicked_actionbehave(bool checked)
 {
 	QVector<QAction*> filter_rarities{
 		filter_rarity_5, filter_rarity_4, filter_rarity_3,

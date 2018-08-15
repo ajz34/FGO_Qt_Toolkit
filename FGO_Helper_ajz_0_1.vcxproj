@@ -189,7 +189,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
-    <ClCompile Include="mainwindow_connection.cpp" />
+    <ClCompile Include="tab_widget_servant_connection.cpp" />
     <ClCompile Include="qclickablefigurelabel.cpp" />
     <ClCompile Include="tab_widget_servant.cpp" />
   </ItemGroup>

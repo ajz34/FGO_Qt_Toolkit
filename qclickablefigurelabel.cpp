@@ -19,7 +19,6 @@ void QClickableFigureLabel::mousePressEvent(QMouseEvent* event) {
 
 void QClickableFigureLabel::toggle()
 {
-	qDebug() << click_status;
 	click_status = !click_status;
 	(click_status) ? setPixmap(pixmap_1) : setPixmap(pixmap_2);
 }

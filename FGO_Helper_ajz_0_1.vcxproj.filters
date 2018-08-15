@@ -46,10 +46,10 @@
     <ClCompile Include="qclickablefigurelabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mainwindow_connection.cpp">
+    <ClCompile Include="tab_widget_servant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tab_widget_servant.cpp">
+    <ClCompile Include="tab_widget_servant_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
