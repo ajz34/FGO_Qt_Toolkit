@@ -14,6 +14,8 @@ tab_widget_servant::tab_widget_servant(QWidget *parent)
 	set_filter_button();
 	set_filter_connection();
 	set_filter_layout();
+	//--- D. servant table
+	set_table_widget();
 	//--- N. layout
 	set_main_widget_layout();
 }
@@ -275,13 +277,39 @@ void tab_widget_servant::set_filter_layout()
 	filter_layout->addWidget(filter_layout_frame);
 }
 
+//--- D. servant table
+
+void tab_widget_servant::set_table_widget()
+{
+	table_widget = new QTableView;
+	table_widget_model = new QStandardItemModel();
+	QStringList table_widget_model_header;
+	table_widget_model_header << tr("Servant") << tr("Name") << tr("Rarity");
+	table_widget_model->setHorizontalHeaderLabels(table_widget_model_header);
+	QStandardItem *i = new QStandardItem(QString(tr("Hello, ")));
+	QStandardItem *j = new QStandardItem(QString(tr("Hello, ")));
+	table_widget_model->setItem(1, 0, i);
+	table_widget_model->setItem(1, 1, j);
+	table_widget->setModel(table_widget_model);
+}
+
 //--- N. layout
 
 void tab_widget_servant::set_main_widget_layout()
 {
 	main_widget_layout = new QGridLayout;
-	main_widget_layout->addLayout(servant_class_layout, 0, 0);
-	main_widget_layout->addLayout(sort_button_layout, 1, 0);
-	main_widget_layout->addLayout(filter_layout, 0, 1, 2, 1);
+	QGridLayout *upper_left_layout = new QGridLayout;
+	QWidget *upper_left_widget = new QWidget;
+	upper_left_layout->addLayout(servant_class_layout, 0, 0);
+	upper_left_layout->addLayout(sort_button_layout, 1, 0);
+	upper_left_layout->addLayout(filter_layout, 0, 1, 2, 1);
+	upper_left_widget->setLayout(upper_left_layout);
+	upper_left_widget->setFixedHeight(upper_left_layout->sizeHint().height());
+	
+	QVBoxLayout *left_layout = new QVBoxLayout;
+	left_layout->addWidget(upper_left_widget);
+	left_layout->addWidget(table_widget);
+
+	main_widget_layout->addLayout(left_layout, 0, 0);
 	setLayout(main_widget_layout);
 }

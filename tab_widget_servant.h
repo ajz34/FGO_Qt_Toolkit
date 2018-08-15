@@ -67,6 +67,11 @@ class tab_widget_servant : public QWidget
 	void set_filter_layout();
 	void set_filter_connection();
 
+	//--- D. servant table
+	QTableView *table_widget;
+	QStandardItemModel *table_widget_model;
+	void set_table_widget();
+
 	//--- N. layouot
 	void set_main_widget_layout();
 	QGridLayout *main_widget_layout;

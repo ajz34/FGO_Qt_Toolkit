@@ -5,25 +5,32 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	// Qt + Visual Studio: https://stackoverflow.com/questions/28813526/qt-5-4-with-visual-studio-2013-qtcored-dll-missing
 	
-	//--- M. menu
+	//--- B. menu
 	menu_create_action();
 	set_menu();
+
 	//--- N. layout
 	set_main_layout();
+
+	//--- O. actions on data
+	ini_setting_read();
+	update_wiki_database();
 
 }
 
 MainWindow::~MainWindow()
 {
-
+	ini_setting_write();
 }
 
-//--- M. menu
+//--- B. menu
 
 void MainWindow::set_menu()
 {
     menu_file = menuBar()->addMenu(tr("&File"));
     menu_file->addAction(action_open);
+	menu_file->addAction(action_database);
+	menu_file->addSeparator();
     menu_file->addAction(action_exit);
 
     menu_about = menuBar()->addMenu(tr("&About"));
@@ -38,6 +45,10 @@ void MainWindow::menu_create_action()
     // open file
     action_open = new QAction(tr("&Open"), this);
     action_open->setStatusTip(tr("Open servant skill level document"));
+
+	// specify database
+	action_database = new QAction(tr("&Database"), this);
+	action_database->setStatusTip(tr("Specify master insensitive servant databases"));
 
     // exit
     action_exit = new QAction(tr("&Exit"), this);
@@ -71,3 +82,32 @@ void MainWindow::set_main_layout()
 	central->setLayout(main_layout);
 	setCentralWidget(central);
 }
+
+//--- O. actions on data
+
+//
+void MainWindow::initialize_wiki_database()
+{
+
+}
+
+//
+void MainWindow::update_wiki_database()
+{
+
+}
+
+//
+void MainWindow::ini_setting_read()
+{
+	QSettings settings(INI_SETTING_FILE_PATH, QSettings::NativeFormat);
+	wiki_xml_path = settings.value("wiki_xml_path", "").toString();
+}
+
+//
+void MainWindow::ini_setting_write()
+{
+	QSettings settings(INI_SETTING_FILE_PATH, QSettings::NativeFormat);
+	settings.setValue("wiki_xml_path", wiki_xml_path);
+}
+
