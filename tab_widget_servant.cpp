@@ -308,8 +308,8 @@ void tab_widget_servant::set_main_widget_layout()
 	QGridLayout *upper_left_layout = new QGridLayout;
 	QWidget *upper_left_widget = new QWidget;
 	upper_left_layout->addLayout(servant_class_layout, 0, 0);
-	upper_left_layout->addLayout(sort_button_layout, 1, 0);
-	upper_left_layout->addLayout(filter_layout, 0, 1, 2, 1);
+	// upper_left_layout->addLayout(sort_button_layout, 1, 0);
+	upper_left_layout->addLayout(filter_layout, 0, 1);
 	upper_left_widget->setLayout(upper_left_layout);
 	upper_left_widget->setFixedHeight(upper_left_layout->sizeHint().height());
 	

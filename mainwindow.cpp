@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 	//--- O. actions on data
 	ini_setting_read();
-	update_wiki_database();
 
 	qDebug() << "Initialize finish";
 }
@@ -80,6 +79,7 @@ void MainWindow::action_database_slot()
 
 void MainWindow::ini_setting_read()
 {
+	// read setting
 	ini_setting_data = QVector<QString>{};
 	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
 		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
@@ -87,6 +87,8 @@ void MainWindow::ini_setting_read()
 	{
 		ini_setting_data.push_back(settings.value(INI_SETTING_FILE_INDEX[i], "").toString());
 	}
+	// apply setting
+	initialize_wiki_database();
 }
 
 void MainWindow::ini_setting_write()
@@ -104,6 +106,7 @@ void MainWindow::action_database_transin(QVector<QString> path_pack)
 {
 	ini_setting_data = path_pack;
 	ini_setting_write();
+	initialize_wiki_database();
 }
 
 //--- N. layout
@@ -130,11 +133,31 @@ void MainWindow::set_main_layout()
 //
 void MainWindow::initialize_wiki_database()
 {
-
-}
-
-//
-void MainWindow::update_wiki_database()
-{
-
+	// clear
+	for (auto i : wiki_database)
+	{
+		if (i) delete i;
+	}
+	wiki_database.clear();
+	QDir wiki_xml_folder_dir(ini_setting_data[0]);
+	QStringList headers{};
+	headers << tr("Name") << tr("Type") << tr("Value");
+	QStringList file_list{};
+	foreach(QFileInfo file_info, wiki_xml_folder_dir.entryInfoList(QDir::Files))
+	{
+		if (file_info.suffix() == "xml") file_list << file_info.filePath();
+	}
+	foreach(QString xml_file, file_list)
+	{
+		qDebug() << xml_file;
+		QFile file(xml_file);
+		if (!file.open(QFile::ReadOnly | QFile::Text)) continue;
+		QXmlStreamReader xml;
+		xml.setDevice(&file);
+		TreeModel *model = new TreeModel(headers, xml);
+		file.close();
+		wiki_database.push_back(model);
+	}
+	connect(this, &MainWindow::action_database_to_tableview, tab_servant, &tab_widget_servant::receive_wiki_xml_database);
+	emit action_database_to_tableview(ini_setting_data, wiki_database);
 }

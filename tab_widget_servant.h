@@ -4,6 +4,7 @@
 
 #include "qclickablefigurelabel.h"
 #include "xml_editable_mainwindow.h"
+#include "treemodel.h"
 
 class tab_widget_servant : public QWidget
 {
@@ -13,35 +14,35 @@ class tab_widget_servant : public QWidget
 	const int SCALE_SIZE = 40;  // servant class label width and height (px)
 
 	//--- A. servant class labels
-	QClickableFigureLabel *class_saber;
-	QClickableFigureLabel *class_archer;
-	QClickableFigureLabel *class_lancer;
-	QClickableFigureLabel *class_rider;
-	QClickableFigureLabel *class_caster;
-	QClickableFigureLabel *class_assassin;
-	QClickableFigureLabel *class_berserker;
-	QClickableFigureLabel *class_shielder;
-	QClickableFigureLabel *class_ruler;
-	QClickableFigureLabel *class_avenger;
-	QClickableFigureLabel *class_alterego;
-	QClickableFigureLabel *class_mooncancer;
-	QClickableFigureLabel *class_foreigner;
-	QClickableFigureLabel *class_all_on;
-	QClickableFigureLabel *class_all_off;
-	QHBoxLayout *servant_class_layout;
+	QClickableFigureLabel *class_saber = nullptr;
+	QClickableFigureLabel *class_archer = nullptr;
+	QClickableFigureLabel *class_lancer = nullptr;
+	QClickableFigureLabel *class_rider = nullptr;
+	QClickableFigureLabel *class_caster = nullptr;
+	QClickableFigureLabel *class_assassin = nullptr;
+	QClickableFigureLabel *class_berserker = nullptr;
+	QClickableFigureLabel *class_shielder = nullptr;
+	QClickableFigureLabel *class_ruler = nullptr;
+	QClickableFigureLabel *class_avenger = nullptr;
+	QClickableFigureLabel *class_alterego = nullptr;
+	QClickableFigureLabel *class_mooncancer = nullptr;
+	QClickableFigureLabel *class_foreigner = nullptr;
+	QClickableFigureLabel *class_all_on = nullptr;
+	QClickableFigureLabel *class_all_off = nullptr;
+	QHBoxLayout *servant_class_layout = nullptr;
 	void set_servant_class_label();
 	void set_servant_class_layout();
 	void set_servant_class_connection();
 
 	//--- B. sort
-	QRadioButton *sort_button_id_ascending;
-	QRadioButton *sort_button_id_descending;
-	QRadioButton *sort_button_atk_ascending;
-	QRadioButton *sort_button_atk_descending;
-	QRadioButton *sort_button_hp_ascending;
-	QRadioButton *sort_button_hp_descending;
-	QButtonGroup *sort_button_group;
-	QHBoxLayout *sort_button_layout;
+	QRadioButton *sort_button_id_ascending = nullptr;
+	QRadioButton *sort_button_id_descending = nullptr;
+	QRadioButton *sort_button_atk_ascending = nullptr;
+	QRadioButton *sort_button_atk_descending = nullptr;
+	QRadioButton *sort_button_hp_ascending = nullptr;
+	QRadioButton *sort_button_hp_descending = nullptr;
+	QButtonGroup *sort_button_group = nullptr;
+	QHBoxLayout *sort_button_layout = nullptr;
 	void set_sort_button();
 	void set_sort_layout();
 
@@ -53,30 +54,32 @@ class tab_widget_servant : public QWidget
 	// QComboBox *filter_gender;
 	// QComboBox *filter_attribute;
 	// rarity
-	QPushButton *filter_rarity;
-	QAction *filter_rarity_all;
-	QAction *filter_rarity_5;
-	QAction *filter_rarity_4;
-	QAction *filter_rarity_3;
-	QAction *filter_rarity_2;
-	QAction *filter_rarity_1;
-	QAction *filter_rarity_0;
+	QPushButton *filter_rarity = nullptr;
+	QAction *filter_rarity_all = nullptr;
+	QAction *filter_rarity_5 = nullptr;
+	QAction *filter_rarity_4 = nullptr;
+	QAction *filter_rarity_3 = nullptr;
+	QAction *filter_rarity_2 = nullptr;
+	QAction *filter_rarity_1 = nullptr;
+	QAction *filter_rarity_0 = nullptr;
 	void set_filter_rarity();
 	// other
-	QVBoxLayout *filter_layout;
+	QVBoxLayout *filter_layout = nullptr;
 	void set_filter_button();
 	void set_filter_layout();
 	void set_filter_connection();
 
 	//--- D. servant table
-	QTableView *table_widget;
-	QStandardItemModel *table_widget_model;
-	QStandardItemModel *table_widget_model_origin;
+	QTableView *table_widget = nullptr;
+	QStandardItemModel *table_widget_model = nullptr;
+	QStandardItemModel *table_widget_model_origin = nullptr;
+	QVector<QString> ini_setting_data;
+	QVector<TreeModel*> wiki_database{};
 	void set_table_widget();
 
 	//--- N. layouot
 	void set_main_widget_layout();
-	QGridLayout *main_widget_layout;
+	QGridLayout *main_widget_layout = nullptr;
 
 public:
 	tab_widget_servant(QWidget *parent);
@@ -89,4 +92,8 @@ private slots:
 	//--- C. filter
 	void filter_rarity_subitem_clicked_actionbehave(bool checked);
 	void filter_rarity_all_clicked_actionbehave(bool checked);
+	void table_widget_refresh();
+
+public slots:
+	void receive_wiki_xml_database(QVector<QString> path_pack, QVector<TreeModel*> tree_model);
 };

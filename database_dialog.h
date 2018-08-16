@@ -11,6 +11,9 @@ class database_dialog : public QDialog
 
 	QLabel *wiki_xml_database_label;
 	QLineEdit *wiki_xml_database_textedit;
+	QLabel *servant_icon_present_label;
+	QLineEdit *servant_icon_present_textedit;
+
 	void database_textedit_update();
 
 public:

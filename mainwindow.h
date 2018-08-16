@@ -7,6 +7,7 @@
 #include "qclickablefigurelabel.h"
 #include "tab_widget_servant.h"
 #include "database_dialog.h"
+#include "treemodel.h"
 
 class MainWindow : public QMainWindow
 {
@@ -15,7 +16,7 @@ class MainWindow : public QMainWindow
 	//--- HAND MADE PARAMETERS
 	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
 	const QVector<QString> INI_SETTING_FILE_INDEX{
-		"wiki_xml_path",
+		"wiki_xml_path", "servant_icon_present",
 	};
 
 	//--- A. tab widgets
@@ -37,7 +38,7 @@ class MainWindow : public QMainWindow
     void set_menu();
 
 	//--- C. wiki database
-	QAbstractItemModel *wiki_database;
+	QVector<TreeModel*> wiki_database{};
 
     //--- N. layout
 	QGridLayout *main_layout;
@@ -49,7 +50,6 @@ class MainWindow : public QMainWindow
 	database_dialog *database_confirm_dialog;
 	// wiki xml data
 	void initialize_wiki_database();
-	void update_wiki_database();
 
     // not classified
 
@@ -60,7 +60,8 @@ public:
 signals:
 	//--- B. menu
 	// database
-	inline void action_database_transout(QVector<QString> path_pack);
+	void action_database_transout(QVector<QString> path_pack);
+	void action_database_to_tableview(QVector<QString> path_pack, QVector<TreeModel*> tree_model);
 
 private slots:
 	//--- B. menu
