@@ -3,6 +3,7 @@
 #include <QtWidgets>
 
 #include "qclickablefigurelabel.h"
+#include "xml_editable_mainwindow.h"
 
 class tab_widget_servant : public QWidget
 {
@@ -70,6 +71,7 @@ class tab_widget_servant : public QWidget
 	//--- D. servant table
 	QTableView *table_widget;
 	QStandardItemModel *table_widget_model;
+	QStandardItemModel *table_widget_model_origin;
 	void set_table_widget();
 
 	//--- N. layouot
