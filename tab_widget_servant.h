@@ -12,6 +12,9 @@ class tab_widget_servant : public QWidget
 
 	//--- HAND MADE PARAMETERS
 	const int SCALE_SIZE = 40;  // servant class label width and height (px)
+	const int SERVANT_ICON_NUMBER = 500;
+	const int SERVANT_ICON_WIDTH = 69;
+	const int SERVANT_ICON_HEIGHT = 75;
 
 	//--- A. servant class labels
 	QClickableFigureLabel *class_saber = nullptr;
@@ -70,11 +73,15 @@ class tab_widget_servant : public QWidget
 	void set_filter_connection();
 
 	//--- D. servant table
+	// though it is possible to use proxy model, 
+	// here I just didn't apply that model,
+	// and control filter action manually, using copy but not hide filtered items
 	QTableView *table_widget = nullptr;
 	QStandardItemModel *table_widget_model = nullptr;
 	QStandardItemModel *table_widget_model_origin = nullptr;
 	QVector<QString> ini_setting_data;
 	QVector<TreeModel*> wiki_database{};
+	QVector<QPushButton*> servant_icon_button = QVector<QPushButton*>(SERVANT_ICON_NUMBER, nullptr);
 	void set_table_widget();
 
 	//--- N. layouot

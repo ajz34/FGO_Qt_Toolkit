@@ -25,18 +25,30 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    qclickablefigurelabel.cpp
+    qclickablefigurelabel.cpp \
+    tab_widget_servant.cpp \
+    tab_widget_servant_connection.cpp \
+    treeitem.cpp \
+    treemodel.cpp \
+    xml_editable_mainwindow.cpp \
+    database_dialog.cpp
 
 HEADERS += \
         mainwindow.h \
-    qclickablefigurelabel.h
+    qclickablefigurelabel.h \
+    tab_widget_servant.h \
+    treeitem.h \
+    treemodel.h \
+    xml_editable_mainwindow.h \
+    database_dialog.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-FORMS +=
+FORMS += \
+    xml_editable_mainwindow.ui
 
 RESOURCES += \
     widget_images.qrc

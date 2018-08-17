@@ -49,6 +49,7 @@ class MainWindow : public QMainWindow
 	// setting
 	database_dialog *database_confirm_dialog;
 	// wiki xml data
+	void set_connection_tab_widgets();
 	void initialize_wiki_database();
 
     // not classified

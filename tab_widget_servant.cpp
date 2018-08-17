@@ -282,22 +282,8 @@ void tab_widget_servant::set_filter_layout()
 void tab_widget_servant::set_table_widget()
 {
 	table_widget = new QTableView;
-	table_widget_model = new QStandardItemModel();
-	QStringList table_widget_model_header;
-	table_widget_model_header << tr("Servant") << tr("Name") << tr("Rarity");
-	table_widget_model->setHorizontalHeaderLabels(table_widget_model_header);
-	QStandardItem *i = new QStandardItem(QString(tr("Hello_1")));
-	QStandardItem *j = new QStandardItem(QString(tr("Hello_2")));
-	QStandardItem *k = new QStandardItem(QString(tr("1")));
-	QStandardItem *l = new QStandardItem(QString(tr("2")));
-	i->setEditable(false);
-	table_widget_model->setItem(1, 0, i);
-	table_widget_model->setItem(1, 1, j);
-	table_widget_model->setItem(0, 0, k);
-	table_widget_model->setItem(0, 1, l);
-	table_widget->setModel(table_widget_model);
-	table_widget->setSortingEnabled(true);
-	table_widget->setIndexWidget(table_widget->model()->index(1, 1), new QPushButton);
+	table_widget_model = new QStandardItemModel;
+	table_widget_model_origin = new QStandardItemModel;
 }
 
 //--- N. layout

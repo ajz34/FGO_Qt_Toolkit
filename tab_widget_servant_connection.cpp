@@ -89,7 +89,7 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 {
 	ini_setting_data = path_pack;
 	wiki_database = tree_model;
-	if (table_widget_model_origin) delete table_widget_model_origin;
+	delete table_widget_model_origin;
 	table_widget_model_origin = new QStandardItemModel;
 	QStringList table_widget_model_header;
 	table_widget_model_header
@@ -121,10 +121,10 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				if (!item.isEmpty())
 				{
 					int val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toInt();
-					QStandardItem *std_item = new QStandardItem;
-					std_item->setData(val, Qt::DisplayRole);
-					std_item->setEditable(false);
-					table_widget_model_origin->setItem(i, 1, std_item);
+					QStandardItem *item = new QStandardItem;
+					item->setData(val, Qt::DisplayRole);
+					item->setEditable(false);
+					table_widget_model_origin->setItem(i, 1, item);
 				}
 			}
 
@@ -138,10 +138,10 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				if (!item.isEmpty())
 				{
 					QString val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toString();
-					QStandardItem *std_item = new QStandardItem;
-					std_item->setData(val, Qt::DisplayRole);
-					std_item->setEditable(false);
-					table_widget_model_origin->setItem(i, 2, std_item);
+					QStandardItem *item = new QStandardItem;
+					item->setData(val, Qt::DisplayRole);
+					item->setEditable(false);
+					table_widget_model_origin->setItem(i, 2, item);
 				}
 			}
 				
@@ -155,10 +155,10 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				if (!item.isEmpty())
 				{
 					int val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toInt();
-					QStandardItem *std_item = new QStandardItem;
-					std_item->setData(val, Qt::DisplayRole);
-					std_item->setEditable(false);
-					table_widget_model_origin->setItem(i, 3, std_item);
+					QStandardItem *item = new QStandardItem;
+					item->setData(val, Qt::DisplayRole);
+					item->setEditable(false);
+					table_widget_model_origin->setItem(i, 3, item);
 				}
 			}
 
@@ -172,31 +172,75 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				if (!item.isEmpty())
 				{
 					QString val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toString();
-					QStandardItem *std_item = new QStandardItem;
-					std_item->setData(val, Qt::DisplayRole);
-					std_item->setEditable(false);
-					table_widget_model_origin->setItem(i, 3, std_item);
+					QStandardItem *item = new QStandardItem;
+					item->setData(val, Qt::DisplayRole);
+					item->setEditable(false);
+					table_widget_model_origin->setItem(i, 3, item);
 				}
 			}
 		}
 	}
-	
-	table_widget->setModel(table_widget_model_origin);
-	QPushButton *button = new QPushButton;
-	table_widget->setIndexWidget(table_widget_model_origin->index(0, 0), button);
-	QPixmap pixmap(ini_setting_data[1] + QString("/002") + QString(".png"));
-	if (!pixmap.isNull())
+	// set buttons
+	// this process is slow, set process bar here
+	QProgressDialog progress(tr("Setup table icon"), "", 0, table_widget_model_origin->rowCount());
+	progress.setCancelButton(0);
+	progress.setWindowModality(Qt::WindowModal);
+	progress.show();
+	for (QPushButton *i : servant_icon_button)
 	{
-		button->setIcon(pixmap);
-		button->setIconSize(QSize(69, 75));
-		button->setMinimumSize(69, 75);
+		if (i) delete i;
 	}
-	table_widget->resizeColumnsToContents();
-	table_widget->resizeRowsToContents();
-	
+	for (int row = 0; row < table_widget_model_origin->rowCount(); ++row)
+	{
+		progress.setValue(row + 1);
+		QApplication::processEvents();
+		if (progress.wasCanceled())
+			break;
+		QPushButton *button = new QPushButton;
+		char num_full[4];
+		sprintf(num_full, "%03d", table_widget_model_origin->data(table_widget_model_origin->index(row, 1)).toInt());
+		QPixmap pixmap(ini_setting_data[1] + QString("/") + QString(num_full) + QString(".png"));
+		if (!pixmap.isNull())
+		{
+			button->setIcon(pixmap);
+			button->setIconSize(QSize(69, 75));
+			button->setMinimumSize(69, 75);
+		}
+		servant_icon_button[table_widget_model_origin->data(table_widget_model_origin->index(row, 1)).toInt()] = button;
+	}
+	progress.setValue(table_widget_model_origin->rowCount());
+	table_widget_refresh();
 }
 
 void tab_widget_servant::table_widget_refresh()
 {
-
+	qDebug() << table_widget_model;
+	delete table_widget_model;
+	table_widget_model = new QStandardItemModel;
+	int row_count = 0;
+	for (int row = 0; row < table_widget_model_origin->rowCount(); ++row)
+	{
+		// set vertical header
+		QStandardItem *item = new QStandardItem;
+		item->setData(QString(""), Qt::DisplayRole);
+		table_widget_model->setVerticalHeaderItem(row, item);
+		for (int col = 0; col < table_widget_model_origin->columnCount(); ++col)
+		{
+			QStandardItem *item = new QStandardItem;
+			item->setData(table_widget_model_origin->data(table_widget_model_origin->index(row, col)), Qt::DisplayRole);
+			item->setEditable(false);
+			table_widget_model->setItem(row_count, col, item);
+		}
+		++row_count;
+	}
+	table_widget->setModel(table_widget_model);
+	// set buttons
+	for (int row = 0; row < table_widget_model->rowCount(); ++row)
+	{
+		table_widget->setIndexWidget(table_widget_model->index(row, 0),
+			servant_icon_button[table_widget_model->data(table_widget_model->index(row, 1)).toInt()]);
+	}
+	// finalize layout
+	table_widget->resizeColumnsToContents();
+	table_widget->resizeRowsToContents();
 }

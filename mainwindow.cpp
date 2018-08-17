@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 	set_main_layout();
 
 	//--- O. actions on data
+	set_connection_tab_widgets();
 	ini_setting_read();
 
 	qDebug() << "Initialize finish";
@@ -49,7 +50,10 @@ void MainWindow::menu_create_action()
 	// specify database
 	action_database = new QAction(tr("&Database"), this);
 	action_database->setStatusTip(tr("Specify master insensitive servant databases"));
+	database_confirm_dialog = new database_dialog(this);
 	connect(action_database, &QAction::triggered, this, &MainWindow::action_database_slot);
+    connect(this, &MainWindow::action_database_transout, database_confirm_dialog, &database_dialog::database_transin);
+    connect(database_confirm_dialog, &database_dialog::database_transout, this, &MainWindow::action_database_transin);
 
     // exit
     action_exit = new QAction(tr("&Exit"), this);
@@ -67,14 +71,10 @@ void MainWindow::menu_create_action()
 
 void MainWindow::action_database_slot()
 {
-	database_confirm_dialog = new database_dialog(this);
 	// https://stackoverflow.com/questions/20491864/how-close-and-delete-a-modeless-qt-dialog
-	// database_confirm_dialog->setAttribute(Qt::WA_DeleteOnClose);
-	connect(this, &MainWindow::action_database_transout, database_confirm_dialog, &database_dialog::database_transin);
-	connect(database_confirm_dialog, &database_dialog::database_transout, this, &MainWindow::action_database_transin);
+    // database_confirm_dialog->setAttribute(Qt::WA_DeleteOnClose);
 	emit action_database_transout(ini_setting_data);
-	database_confirm_dialog->exec();
-	delete database_confirm_dialog;
+	database_confirm_dialog->show();
 }
 
 void MainWindow::ini_setting_read()
@@ -130,7 +130,12 @@ void MainWindow::set_main_layout()
 
 //--- O. actions on data
 
-//
+void MainWindow::set_connection_tab_widgets()
+{
+	// connection of database update
+	connect(this, &MainWindow::action_database_to_tableview, tab_servant, &tab_widget_servant::receive_wiki_xml_database);
+}
+
 void MainWindow::initialize_wiki_database()
 {
 	// clear
@@ -158,6 +163,5 @@ void MainWindow::initialize_wiki_database()
 		file.close();
 		wiki_database.push_back(model);
 	}
-	connect(this, &MainWindow::action_database_to_tableview, tab_servant, &tab_widget_servant::receive_wiki_xml_database);
 	emit action_database_to_tableview(ini_setting_data, wiki_database);
 }
