@@ -4,6 +4,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 	// Qt + Visual Studio: https://stackoverflow.com/questions/28813526/qt-5-4-with-visual-studio-2013-qtcored-dll-missing
+	// set path: %QTDIR%\bin;%PATH%; 
 
 	//--- B. menu
 	menu_create_action();
