@@ -81,7 +81,7 @@ class tab_widget_servant : public QWidget
 	QStandardItemModel *table_widget_model_origin = nullptr;
 	QVector<QString> ini_setting_data;
 	QVector<TreeModel*> wiki_database{};
-	QVector<QPushButton*> servant_icon_button = QVector<QPushButton*>(SERVANT_ICON_NUMBER, nullptr);
+	QVector<QPixmap> servant_icon_button_image = QVector<QPixmap>(SERVANT_ICON_NUMBER);
 	void set_table_widget();
 
 	//--- N. layouot
@@ -96,6 +96,7 @@ private slots:
 	//--- A. servant class labels
 	void class_all_on_clicked_labelbehave();
 	void class_all_off_clicked_labelbehave();
+	void class_trival_clicked_labelbehave();
 	//--- C. filter
 	void filter_rarity_subitem_clicked_actionbehave(bool checked);
 	void filter_rarity_all_clicked_actionbehave(bool checked);

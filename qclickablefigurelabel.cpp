@@ -3,7 +3,7 @@
 QClickableFigureLabel::QClickableFigureLabel(QPixmap pixmap_a, QPixmap pixmap_b, QWidget* parent)
 	: QLabel(parent) {
 	
-	click_status = true;
+	click_status = false;
 	pixmap_1 = pixmap_a;
 	pixmap_2 = pixmap_b;
 	toggle();
