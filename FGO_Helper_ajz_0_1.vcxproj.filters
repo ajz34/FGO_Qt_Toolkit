@@ -69,6 +69,9 @@
     <ClCompile Include="xml_editable_mainwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qdoubleclickpushbutton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="mainwindow.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="xml_editable_mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="qdoubleclickpushbutton.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

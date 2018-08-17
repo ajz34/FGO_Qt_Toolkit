@@ -56,7 +56,7 @@
 
 #include <QFile>
 
-xml_editable_mainwindow::xml_editable_mainwindow(QWidget *parent)
+xml_editable_mainwindow::xml_editable_mainwindow(QString file_path_transin, QWidget *parent)
 	: QMainWindow(parent)
 {
 	setupUi(this);
@@ -64,7 +64,8 @@ xml_editable_mainwindow::xml_editable_mainwindow(QWidget *parent)
 	QStringList headers;
 	headers << tr("Name") << tr("Type") << tr("Value");
 
-	QFile file("E:/Documents-Miscel/2018-07-10-FGO_Skill/2018-08-12-XML_Database/Python_Version/database/003.xml");
+	file_path = file_path_transin;
+	QFile file(file_path);
 	file.open(QFile::ReadOnly | QFile::Text);
 	QXmlStreamReader xml;
 	xml.setDevice(&file);
@@ -174,7 +175,7 @@ void xml_editable_mainwindow::removeRow()
 
 void xml_editable_mainwindow::saveFile()
 {
-	QFile file("E:/Documents-Miscel/2018-07-10-FGO_Skill/2018-08-12-XML_Database/Python_Version/database/003-mod.xml");
+	QFile file(file_path);
 	file.open(QIODevice::WriteOnly | QFile::Text);
 	QXmlStreamWriter xml;
 	xml.setDevice(&file);

@@ -68,9 +68,10 @@ class xml_editable_mainwindow : public QMainWindow, private Ui::xml_editable_mai
 	Q_OBJECT
 
 		TreeModel *model;
+	QString file_path;
 
 public:
-	xml_editable_mainwindow(QWidget *parent = 0);
+	xml_editable_mainwindow(QString file_path_transin, QWidget *parent = 0);
 
 public slots:
 	void updateActions();

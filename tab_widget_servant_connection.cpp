@@ -105,8 +105,9 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 {
 	ini_setting_data = path_pack;
 	wiki_database = tree_model;
-	delete table_widget_model_origin;
-	table_widget_model_origin = new QStandardItemModel;
+	// delete table_widget_model_origin;
+	// table_widget_model_origin = new QStandardItemModel;
+	table_widget_model_origin->clear();
 	QStringList table_widget_model_header;
 	table_widget_model_header
 		<< tr("Servant")		// 0
@@ -273,15 +274,29 @@ void tab_widget_servant::table_widget_refresh()
 	// set buttons
 	for (int row = 0; row < table_widget_model->rowCount(); ++row)
 	{
-		QPushButton *button = new QPushButton;
+		QDoubleClickPushButton *button = new QDoubleClickPushButton(this);
+		button->text_save = table_widget_model->data(table_widget_model->index(row, 1)).toString();
 		button->setIcon(servant_icon_button_image[table_widget_model->data(table_widget_model->index(row, 1)).toInt()]);
 		button->setIconSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		button->setFixedSize(button->minimumSizeHint());
 		button->setFixedSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		table_widget->setIndexWidget(table_widget_model->index(row, 0), button);
+		connect(button, &QDoubleClickPushButton::doubleClicked, this, &tab_widget_servant::table_pushbutton_double_click);
 	}
 	// finalize layout
 	table_widget->resizeColumnsToContents();
 	table_widget->resizeRowsToContents();
 	table_widget->setSortingEnabled(true);
+}
+
+void tab_widget_servant::table_pushbutton_double_click()
+{
+	// WARNING!!! USING sender()!!!
+	QDoubleClickPushButton *button = qobject_cast<QDoubleClickPushButton*>(sender());
+	int id_number = button->text_save.toInt();
+	char id_full[4];
+	sprintf(id_full, "%03d", id_number);
+	xml_editable_mainwindow *edit_xml = new xml_editable_mainwindow(ini_setting_data[0] + "/" + id_full + ".xml", this);
+	edit_xml->setAttribute(Qt::WA_DeleteOnClose);
+	edit_xml->show();
 }

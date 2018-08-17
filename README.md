@@ -27,6 +27,9 @@ However, it has not reached author's minimum requirement yet.
 				* xml_editable_mainwindow.ui (modified)
 		* Clickable QLabel (https://wiki.qt.io/Clickable_QLabel)
 				* qclickablefigurelabel.h, qclickablefigurelabel.cpp (modified)
+		* Double Clickable PushButton (http://www.qtcentre.org/threads/44659-Using-double-click-in-QPushButton)
+				* idea from https://stackoverflow.com/questions/15658464/qt-rightclick-qpushbutton
+				* qdoubleclickpushbutton.cpp, qdoubleclickpushbutton.h
 
 * StackOverflow (Licensed by CC BY-SA 4.0)
 		* If stackoverflow source exists, these code may have citation
