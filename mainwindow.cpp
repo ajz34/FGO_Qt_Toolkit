@@ -51,10 +51,7 @@ void MainWindow::menu_create_action()
 	// specify database
 	action_database = new QAction(tr("&Database"), this);
 	action_database->setStatusTip(tr("Specify master insensitive servant databases"));
-	database_confirm_dialog = new database_dialog(this);
 	connect(action_database, &QAction::triggered, this, &MainWindow::action_database_slot);
-    connect(this, &MainWindow::action_database_transout, database_confirm_dialog, &database_dialog::database_transin);
-    connect(database_confirm_dialog, &database_dialog::database_transout, this, &MainWindow::action_database_transin);
 
     // exit
     action_exit = new QAction(tr("&Exit"), this);
@@ -74,6 +71,11 @@ void MainWindow::action_database_slot()
 {
 	// https://stackoverflow.com/questions/20491864/how-close-and-delete-a-modeless-qt-dialog
     // database_confirm_dialog->setAttribute(Qt::WA_DeleteOnClose);
+	if (database_confirm_dialog) delete database_confirm_dialog;
+	database_confirm_dialog = new database_dialog(this);
+	connect(this, &MainWindow::action_database_transout, database_confirm_dialog, &database_dialog::database_transin);
+	connect(database_confirm_dialog, &database_dialog::database_transout, this, &MainWindow::action_database_transin);
+	connect(database_confirm_dialog, &database_dialog::close, this, &MainWindow::action_database_close);
 	emit action_database_transout(ini_setting_data);
 	database_confirm_dialog->show();
 }
@@ -108,6 +110,12 @@ void MainWindow::action_database_transin(QVector<QString> path_pack)
 	ini_setting_data = path_pack;
 	ini_setting_write();
 	initialize_wiki_database();
+}
+
+void MainWindow::action_database_close()
+{
+	if (database_confirm_dialog) delete database_confirm_dialog;
+	database_confirm_dialog = nullptr;
 }
 
 //--- N. layout

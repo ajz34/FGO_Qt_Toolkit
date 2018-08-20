@@ -20,20 +20,20 @@ class MainWindow : public QMainWindow
 	};
 
 	//--- A. tab widgets
-	QTabWidget *main_tabwidget;
-	tab_widget_servant *tab_servant;
+	QTabWidget *main_tabwidget = nullptr;
+	tab_widget_servant *tab_servant = nullptr;
 
     //--- B. menu
-    QAction *action_open;
-	QAction *action_database;
-	QVector<QString> ini_setting_data;
+    QAction *action_open = nullptr;
+	QAction *action_database = nullptr;
+	QVector<QString> ini_setting_data{};
 	void ini_setting_read();
 	void ini_setting_write();
-    QAction *action_exit;
-    QAction *action_about;
-    QAction *action_bibliography;
-	QMenu *menu_file;
-	QMenu *menu_about;
+    QAction *action_exit = nullptr;
+    QAction *action_about = nullptr;
+    QAction *action_bibliography = nullptr;
+	QMenu *menu_file = nullptr;
+	QMenu *menu_about = nullptr;
     void menu_create_action();
     void set_menu();
 
@@ -41,13 +41,13 @@ class MainWindow : public QMainWindow
 	QVector<TreeModel*> wiki_database{};
 
     //--- N. layout
-	QGridLayout *main_layout;
-	QLabel *status_bar;
+	QGridLayout *main_layout = nullptr;
+	QLabel *status_bar = nullptr;
 	void set_main_layout();
 
 	//--- O. actions on data
 	// setting
-	database_dialog *database_confirm_dialog;
+	database_dialog *database_confirm_dialog = nullptr;
 	// wiki xml data
 	void set_connection_tab_widgets();
 	void initialize_wiki_database();
@@ -68,6 +68,7 @@ private slots:
 	//--- B. menu
 	// database
 	void action_database_slot();
+	void action_database_close();
 	void action_database_transin(QVector<QString> path_pack);
 
 };
