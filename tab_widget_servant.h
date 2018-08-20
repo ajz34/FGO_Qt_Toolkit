@@ -94,6 +94,13 @@ public:
 	tab_widget_servant(QWidget *parent);
 	~tab_widget_servant();
 
+signals:
+	void table_pushbutton_transout(
+		QVector<QString> ini_setting,
+		QVector<TreeModel*> *wiki,
+		QVector<QPixmap> *servant_icon,
+		int id);
+
 private slots:
 	//--- A. servant class labels
 	void class_all_on_clicked_labelbehave();

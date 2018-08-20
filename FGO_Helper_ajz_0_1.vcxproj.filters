@@ -74,10 +74,13 @@
     <ClCompile Include="tab_widget_servant_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="resource_consume.cpp">
+    <ClCompile Include="qrightclickpushbutton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qrightclickpushbutton.cpp">
+    <ClCompile Include="resource_consume_layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_consume_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

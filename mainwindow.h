@@ -22,6 +22,7 @@ class MainWindow : public QMainWindow
 	Q_OBJECT;
 
 	//--- HAND MADE PARAMETERS
+	const int SERVANT_ICON_NUMBER = 500;
 	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
 	const QVector<QString> INI_SETTING_FILE_INDEX{
 		"wiki_xml_path", "servant_icon_present",
@@ -50,7 +51,7 @@ class MainWindow : public QMainWindow
     void set_menu();
 
 	//--- C. wiki database
-	QVector<TreeModel*> wiki_database{};
+	QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
 
     //--- N. layout
 	QGridLayout *main_layout = nullptr;

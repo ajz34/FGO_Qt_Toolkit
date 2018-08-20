@@ -3,12 +3,15 @@
 resource_consume::resource_consume(QWidget *parent)
 	: QDialog(parent)
 {
+	// layout
 	set_lower_combined_objects();
 	set_middle_left_widget();
 	set_middle_right_widget();
 	set_left_information_widget();
 	set_right_costume_widget();
 	set_layout();
+
+	// initialize
 }
 
 resource_consume::~resource_consume()
@@ -432,10 +435,6 @@ void resource_consume::set_middle_right_widget()
 
 void resource_consume::set_left_information_widget()
 {
-	left_info_icon = new QLabel;
-	left_info_icon->setFixedSize(QSize(92, 100));
-	left_info_icon->setPixmap(QPixmap(":/empty/images/empty_figure/servant_empty.png").scaled(92, 100));
-
 	QFont font;
 	font.setPixelSize(14);
 	font.setFamily("Dengxian");
@@ -491,19 +490,21 @@ void resource_consume::set_left_information_widget()
 	left_info_follow->setChecked(false);
 	left_info_follow->setLayout(left_info_layout_5);
 
-	auto left_info_layout = new QHBoxLayout;
-	left_info_layout->addWidget(left_info_icon);
-	left_info_layout->addWidget(left_info_follow);
-	left_info_layout->setSpacing(15);
+	auto left_info_main_layout = new QGridLayout;
+	left_info_main_layout->addWidget(left_info_follow);
 
 	left_info_widget = new QWidget;
-	left_info_widget->setLayout(left_info_layout);
+	left_info_widget->setLayout(left_info_main_layout);
 	left_info_widget->setFixedWidth(444);
 	qDebug() << "left information" << left_info_widget->size();
 }
 
 void resource_consume::set_right_costume_widget()
 {
+	right_info_icon = new QLabel;
+	right_info_icon->setFixedSize(QSize(138, 150));
+	right_info_icon->setPixmap(QPixmap(":/empty/images/empty_figure/servant_empty.png").scaled(138, 150));
+
 	right_costume_combobox = new QComboBox;
 	right_costume_combobox->setEnabled(false);
 
@@ -547,6 +548,7 @@ void resource_consume::set_right_costume_widget()
 	right_costume_layout_comb_2->setVerticalSpacing(5);
 
 	auto right_costume_layout_comb = new QGridLayout;
+	right_costume_layout_comb->addWidget(right_info_icon, 0, 0, 2, 1, Qt::AlignCenter);
 	right_costume_layout_comb->addWidget(right_costume_group, 0, 1);
 	right_costume_layout_comb->addLayout(right_costume_layout_comb_2, 1, 1);
 	right_costume_layout_comb->setVerticalSpacing(15);

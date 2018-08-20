@@ -10,26 +10,14 @@
 #define RESOURCE_H
 
 #include <QtWidgets>
+#include "treemodel.h"
 
 class resource_consume : public QDialog
 {
-	Q_OBJECT
+	Q_OBJECT;
 
-
-		// left_skill
-		/*
-		* QLabel *left_skill_icon = nullptr;
-		* QDial *left_skill_dial = nullptr;
-		* QLCDNumber *left_skill_dial_LCD = nullptr;
-		* QVector<QLabel*> left_skill_consume{};
-		* QVector<QLabel*> left_skill_consume_number{};
-		* QLabel *left_skill_name;
-		* QLCDNumber *left_skill_cd;
-		* QWidget *left_skill_widget = nullptr;
-		*/
-
-		// left_skill_combination
-		QVector<QLabel*> left_skill_vector_icon{};
+	// left_skill_combination
+	QVector<QLabel*> left_skill_vector_icon{};
 	QVector<QDial*> left_skill_vector_dial{};
 	QVector<QLCDNumber*> left_skill_vector_dial_LCD{};
 	QVector<QVector<QLabel*>> left_skill_vector_consume{};
@@ -37,16 +25,6 @@ class resource_consume : public QDialog
 	QVector<QLabel*> left_skill_vector_name{};
 	QVector<QLCDNumber*> left_skill_vector_cd{};
 	QVector<QWidget*> left_skill_vector_widget{};
-
-	// right_skill
-	/*
-	* QLabel* right_skill_icon;
-	* QDial* right_skill_dial{};
-	* QLCDNumber* right_skill_dial_LCD{};
-	* QVector<QLabel*> right_skill_consume{};
-	* QVector<QLabel*> right_skill_consume_number{};
-	* QWidget* right_skill_widget{};
-	*/
 
 	// right_skill_combination
 	QVector<QLabel*> right_skill_vector_icon{};
@@ -78,7 +56,6 @@ class resource_consume : public QDialog
 	QWidget *right_ascension_widget = nullptr;
 
 	// left_information
-	QLabel *left_info_icon = nullptr;
 	QLabel *left_info_servant_name = nullptr;
 	QLabel *left_info_servant_nobel = nullptr;
 	QLabel *left_info_servant_nobel_color = nullptr;
@@ -90,12 +67,14 @@ class resource_consume : public QDialog
 	QWidget *left_info_widget = nullptr;
 
 	// right costume
+	QLabel *right_info_icon = nullptr;
 	QComboBox *right_costume_combobox = nullptr;
 	QGroupBox *right_costume_group = nullptr;
 	QVector<QLabel*> right_costume_consume{};
 	QVector<QLabel*> right_costume_consume_number{};
 	QWidget *right_costume_widget = nullptr;
 
+	// function
 	void set_layout();
 	void set_lower_skill_widget();
 	void set_lower_right_widget();
@@ -104,6 +83,21 @@ class resource_consume : public QDialog
 	void set_middle_right_widget();
 	void set_left_information_widget();
 	void set_right_costume_widget();
+
+	// database
+	QVector<QString> ini_setting_data{};
+	QVector<TreeModel*> *wiki_database = nullptr;
+	QVector<QPixmap> *servant_icon_button_image = nullptr;
+	int id_number = 0;
+	void init_database();
+
+public slots:
+	void data_transin(
+		QVector<QString> ini_setting,
+		QVector<TreeModel*> *wiki,
+		QVector<QPixmap> *servant_icon,
+		int id);
+
 public:
 	resource_consume(QWidget *parent = nullptr);
 	~resource_consume();

@@ -119,6 +119,7 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 	for (int i = 0; i < wiki_database.size(); i++)
 	{
 		TreeModel *model = wiki_database[i];
+		if (model == nullptr) continue;
 		// https://stackoverflow.com/questions/3290704/howto-find-subitem-in-qabstractitemmodel-and-qtreeview-class
 		// 1. basic property
 		// initial basic property
@@ -283,9 +284,19 @@ void tab_widget_servant::table_pushbutton_double_click()
 
 void tab_widget_servant::table_pushbutton_click()
 {
+	// WARNING!!! USING sender()!!!
+	QRightClickPushButton *button = qobject_cast<QRightClickPushButton*>(sender());
+	int id_number = button->text_save.toInt();
+
 	resource_consume *consume_widget = new resource_consume(this);
 	consume_widget->setMinimumHeight(600);
 	consume_widget->setAttribute(Qt::WA_DeleteOnClose);
 	consume_widget->setFixedWidth(consume_widget->sizeHint().width());
+	connect(this, &tab_widget_servant::table_pushbutton_transout, consume_widget, &resource_consume::data_transin);
+	emit table_pushbutton_transout(
+		ini_setting_data,
+		&wiki_database,
+		&servant_icon_button_image,
+		id_number);
 	consume_widget->exec();
 }
