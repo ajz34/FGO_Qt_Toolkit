@@ -300,3 +300,18 @@ void TreeModel::xml_write_item(QXmlStreamWriter &xml, TreeItem *item)
 	}
 	xml.writeEndElement();
 }
+
+QModelIndex TreeModel::item_find(QString find_str, const QModelIndex &parent)
+{
+	if (!parent.isValid())
+		return QModelIndex();
+	QModelIndexList item = match(
+		index(0, 0, parent),
+		Qt::DisplayRole,
+		QVariant::fromValue(find_str),
+		1);
+	if (item.isEmpty())
+		return QModelIndex();
+	else
+		return item[0];
+}

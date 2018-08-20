@@ -122,23 +122,15 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 		// https://stackoverflow.com/questions/3290704/howto-find-subitem-in-qabstractitemmodel-and-qtreeview-class
 		// 1. basic property
 		// initial basic property
-		QModelIndexList item_basic = model->match(
-			model->index(0, 0),
-			Qt::DisplayRole,
-			QVariant::fromValue(QString("basic")),
-			1, Qt::MatchRecursive);
-		if (!item_basic.isEmpty())
+		QModelIndex item_basic = model->item_find("basic", model->index(0, 0));
+		if (item_basic.isValid())
 		{
 			// id
 			{
-				QModelIndexList item = model->match(
-					model->index(0, 0, item_basic[0]),
-					Qt::DisplayRole,
-					QVariant::fromValue(QString("id")),
-					1);
-				if (!item.isEmpty())
+				QModelIndex item_id = model->item_find("id", item_basic);
+				if (item_id.isValid())
 				{
-					int val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toInt();
+					int val = model->data(item_id.siblingAtColumn(2), Qt::DisplayRole).toInt();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -148,14 +140,10 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 
 			// name
 			{
-				QModelIndexList item = model->match(
-					model->index(0, 0, item_basic[0]),
-					Qt::DisplayRole,
-					QVariant::fromValue(QString("name_en")),
-					1);
-				if (!item.isEmpty())
+				QModelIndex item_name = model->item_find("name_en", item_basic);
+				if (item_name.isValid())
 				{
-					QString val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toString();
+					QString val = model->data(item_name.siblingAtColumn(2), Qt::DisplayRole).toString();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -165,14 +153,10 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 
 			// class
 			{
-				QModelIndexList item = model->match(
-					model->index(0, 0, item_basic[0]),
-					Qt::DisplayRole,
-					QVariant::fromValue(QString("class")),
-					1);
-				if (!item.isEmpty())
+				QModelIndex item_class = model->item_find("class", item_basic);
+				if (item_class.isValid())
 				{
-					QString val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toString();
+					QString val = model->data(item_class.siblingAtColumn(2), Qt::DisplayRole).toString();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -182,14 +166,10 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				
 			// rarity
 			{
-				QModelIndexList item = model->match(
-					model->index(0, 0, item_basic[0]),
-					Qt::DisplayRole,
-					QVariant::fromValue(QString("rarity")),
-					1);
-				if (!item.isEmpty())
+				QModelIndex item_rarity = model->item_find("rarity", item_basic);
+				if (item_rarity.isValid())
 				{
-					int val = model->data(item[0].siblingAtColumn(2), Qt::DisplayRole).toInt();
+					int val = model->data(item_rarity.siblingAtColumn(2), Qt::DisplayRole).toInt();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);

@@ -102,6 +102,7 @@ public:
 		const QModelIndex &parent = QModelIndex()) override;
 	// self-define
 	void xml_write(QXmlStreamWriter &xml);
+	QModelIndex item_find(QString find_str, const QModelIndex &parent = QModelIndex());
 
 private:
 	void setupModelData(QXmlStreamReader &xml, TreeItem *parent);
