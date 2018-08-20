@@ -5,7 +5,8 @@
 #include "qclickablefigurelabel.h"
 #include "xml_editable_mainwindow.h"
 #include "treemodel.h"
-#include "qdoubleclickpushbutton.h"
+#include "qrightclickpushbutton.h"
+#include "resource_consume.h"
 
 class tab_widget_servant : public QWidget
 {
@@ -103,6 +104,7 @@ private slots:
 	void filter_rarity_all_clicked_actionbehave(bool checked);
 	void table_widget_refresh();
 	void table_pushbutton_double_click();
+	void table_pushbutton_click();
 
 public slots:
 	void receive_wiki_xml_database(QVector<QString> path_pack, QVector<TreeModel*> tree_model);

@@ -29,4 +29,14 @@
         <file>images/servant_class/shielder_off.png</file>
         <file>images/servant_class/shielder_on.png</file>
     </qresource>
+    <qresource prefix="/empty">
+        <file>images/empty_figure/servant_empty.png</file>
+        <file>images/empty_figure/skill_consume_empty.png</file>
+        <file>images/empty_figure/skill_empty.png</file>
+    </qresource>
+    <qresource prefix="/card_color">
+        <file>images/card_color/Arts.png</file>
+        <file>images/card_color/Buster.png</file>
+        <file>images/card_color/Quick.png</file>
+    </qresource>
 </RCC>

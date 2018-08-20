@@ -274,14 +274,15 @@ void tab_widget_servant::table_widget_refresh()
 	// set buttons
 	for (int row = 0; row < table_widget_model->rowCount(); ++row)
 	{
-		QDoubleClickPushButton *button = new QDoubleClickPushButton(this);
+		QRightClickPushButton *button = new QRightClickPushButton(this);
 		button->text_save = table_widget_model->data(table_widget_model->index(row, 1)).toString();
 		button->setIcon(servant_icon_button_image[table_widget_model->data(table_widget_model->index(row, 1)).toInt()]);
 		button->setIconSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		button->setFixedSize(button->minimumSizeHint());
 		button->setFixedSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		table_widget->setIndexWidget(table_widget_model->index(row, 0), button);
-		connect(button, &QDoubleClickPushButton::doubleClicked, this, &tab_widget_servant::table_pushbutton_double_click);
+		connect(button, &QRightClickPushButton::rightClicked, this, &tab_widget_servant::table_pushbutton_double_click);
+		connect(button, &QRightClickPushButton::clicked, this, &tab_widget_servant::table_pushbutton_click);
 	}
 	// finalize layout
 	table_widget->resizeColumnsToContents();
@@ -292,11 +293,20 @@ void tab_widget_servant::table_widget_refresh()
 void tab_widget_servant::table_pushbutton_double_click()
 {
 	// WARNING!!! USING sender()!!!
-	QDoubleClickPushButton *button = qobject_cast<QDoubleClickPushButton*>(sender());
+	QRightClickPushButton *button = qobject_cast<QRightClickPushButton*>(sender());
 	int id_number = button->text_save.toInt();
 	char id_full[4];
 	sprintf(id_full, "%03d", id_number);
 	xml_editable_mainwindow *edit_xml = new xml_editable_mainwindow(ini_setting_data[0] + "/" + id_full + ".xml", this);
 	edit_xml->setAttribute(Qt::WA_DeleteOnClose);
 	edit_xml->show();
+}
+
+void tab_widget_servant::table_pushbutton_click()
+{
+	resource_consume *consume_widget = new resource_consume(this);
+	consume_widget->setMinimumHeight(600);
+	consume_widget->setAttribute(Qt::WA_DeleteOnClose);
+	consume_widget->setFixedWidth(consume_widget->sizeHint().width());
+	consume_widget->exec();
 }

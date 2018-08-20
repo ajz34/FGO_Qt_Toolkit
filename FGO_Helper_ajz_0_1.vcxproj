@@ -200,10 +200,11 @@
     <ClCompile Include="database_dialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
-    <ClCompile Include="qdoubleclickpushbutton.cpp" />
+    <ClCompile Include="qrightclickpushbutton.cpp" />
+    <ClCompile Include="resource_consume.cpp" />
     <ClCompile Include="tab_widget_servant_connection.cpp" />
     <ClCompile Include="qclickablefigurelabel.cpp" />
-    <ClCompile Include="tab_widget_servant.cpp" />
+    <ClCompile Include="tab_widget_servant_list.cpp" />
     <ClCompile Include="treeitem.cpp" />
     <ClCompile Include="treemodel.cpp" />
     <ClCompile Include="xml_editable_mainwindow.cpp" />
@@ -251,34 +252,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\servant_class\all_off.png" />
-    <None Include="images\servant_class\all_on.png" />
-    <None Include="images\servant_class\alterego_off.png" />
-    <None Include="images\servant_class\alterego_on.png" />
-    <None Include="images\servant_class\archer_off.png" />
-    <None Include="images\servant_class\archer_on.png" />
-    <None Include="images\servant_class\assassin_off.png" />
-    <None Include="images\servant_class\assassin_on.png" />
-    <None Include="images\servant_class\avenger_off.png" />
-    <None Include="images\servant_class\avenger_on.png" />
-    <None Include="images\servant_class\berserker_off.png" />
-    <None Include="images\servant_class\berserker_on.png" />
-    <None Include="images\servant_class\caster_off.png" />
-    <None Include="images\servant_class\caster_on.png" />
-    <None Include="images\servant_class\foreigner_off.png" />
-    <None Include="images\servant_class\foreigner_on.png" />
-    <None Include="images\servant_class\lancer_off.png" />
-    <None Include="images\servant_class\lancer_on.png" />
-    <None Include="images\servant_class\mooncancer_off.png" />
-    <None Include="images\servant_class\mooncancer_on.png" />
-    <None Include="images\servant_class\rider_off.png" />
-    <None Include="images\servant_class\rider_on.png" />
-    <None Include="images\servant_class\ruler_off.png" />
-    <None Include="images\servant_class\ruler_on.png" />
-    <None Include="images\servant_class\saber_off.png" />
-    <None Include="images\servant_class\saber_on.png" />
-    <None Include="images\servant_class\shielder_off.png" />
-    <None Include="images\servant_class\shielder_on.png" />
     <QtRcc Include="widget_images.qrc">
     </QtRcc>
   </ItemGroup>
@@ -299,7 +272,13 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="qdoubleclickpushbutton.h">
+    <QtMoc Include="qrightclickpushbutton.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtCore;.\debug;\include;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB</Define>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtCore;.\release;\include;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
+      <Define Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;NDEBUG</Define>
+    </QtMoc>
+    <QtMoc Include="resource_consume.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtCore;.\debug;\include;$(QTDIR)\mkspecs\win32-msvc</IncludePath>
       <Define Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB</Define>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\.;.\GeneratedFiles;.;$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtCore;.\release;\include;$(QTDIR)\mkspecs\win32-msvc</IncludePath>

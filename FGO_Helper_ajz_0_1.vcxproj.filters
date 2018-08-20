@@ -51,9 +51,6 @@
     <ClCompile Include="qclickablefigurelabel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tab_widget_servant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tab_widget_servant_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,7 +66,13 @@
     <ClCompile Include="xml_editable_mainwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qdoubleclickpushbutton.cpp">
+    <ClCompile Include="tab_widget_servant_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_consume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qrightclickpushbutton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,7 +95,10 @@
     <QtMoc Include="xml_editable_mainwindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="qdoubleclickpushbutton.h">
+    <QtMoc Include="resource_consume.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="qrightclickpushbutton.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -105,90 +111,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\servant_class\all_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\all_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\alterego_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\alterego_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\archer_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\archer_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\assassin_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\assassin_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\avenger_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\avenger_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\berserker_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\berserker_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\caster_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\caster_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\foreigner_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\foreigner_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\lancer_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\lancer_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\mooncancer_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\mooncancer_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\rider_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\rider_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\ruler_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\ruler_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\saber_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\saber_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\shielder_off.png">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="images\servant_class\shielder_on.png">
-      <Filter>Resource Files</Filter>
-    </None>
     <QtRcc Include="widget_images.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
