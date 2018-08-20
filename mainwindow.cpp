@@ -35,11 +35,31 @@ void MainWindow::set_menu()
 	menu_file->addSeparator();
     menu_file->addAction(action_exit);
 
+	menu_file = menuBar()->addMenu(tr("&Language"));
+	auto action_language = new QActionGroup(this);
+	action_language->addAction(action_japanese);
+	action_language->addAction(action_chinese);
+	action_language->addAction(action_traditional);
+	action_language->addAction(action_english);
+	menu_file->addAction(action_japanese);
+	menu_file->addAction(action_chinese);
+	menu_file->addAction(action_traditional);
+	menu_file->addAction(action_english);
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	QString lang = settings.value("Language", "").toString();
+	if (lang == QString("jp"))
+		action_japanese->setChecked(true);
+	else if (lang == QString("zh_sc"))
+		action_chinese->setChecked(true);
+	else if (lang == QString("zh_tc"))
+		action_traditional->setChecked(true);
+	else
+		action_english->setChecked(true);
+
     menu_about = menuBar()->addMenu(tr("&About"));
 	menu_about->addAction(action_about);
 	menu_about->addAction(action_bibliography);
-
-
 }
 
 void MainWindow::menu_create_action()
@@ -53,6 +73,20 @@ void MainWindow::menu_create_action()
 	action_database->setStatusTip(tr("Specify master insensitive servant databases"));
 	connect(action_database, &QAction::triggered, this, &MainWindow::action_database_slot);
 
+	// language
+	action_japanese = new QAction("日本語");
+	action_chinese = new QAction("简体中文");
+	action_traditional = new QAction("繁體中文");
+	action_english = new QAction("English");
+	action_japanese->setCheckable(true);
+	action_chinese->setCheckable(true);
+	action_traditional->setCheckable(true);
+	action_english->setCheckable(true);
+	connect(action_japanese, &QAction::triggered, this, &MainWindow::action_japanese_slot);
+	connect(action_chinese, &QAction::triggered, this, &MainWindow::action_chinese_slot);
+	connect(action_traditional, &QAction::triggered, this, &MainWindow::action_traditional_slot);
+	connect(action_english, &QAction::triggered, this, &MainWindow::action_english_slot);
+
     // exit
     action_exit = new QAction(tr("&Exit"), this);
     action_exit->setStatusTip(tr("Exit program"));
@@ -65,6 +99,54 @@ void MainWindow::menu_create_action()
     // bibliography
     action_bibliography = new QAction(tr("&Bibliography"), this);
 	action_bibliography->setStatusTip(tr("Bibliography, reference and acknowledge"));
+}
+
+void MainWindow::action_japanese_slot()
+{
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	settings.setValue("Language", "jp");
+	QMessageBox::warning(this,
+		"FGO Qt Toolkit",
+		"言語設定を適用するには、アプリケーションを再起動してください。",
+		QMessageBox::Ok
+	);
+}
+
+void MainWindow::action_chinese_slot()
+{
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	settings.setValue("Language", "zh_sc");
+	QMessageBox::warning(this,
+		"FGO Qt Toolkit",
+		"请重新启动应用程序以应用语言设置。",
+		QMessageBox::Ok
+	);
+}
+
+void MainWindow::action_traditional_slot()
+{
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	settings.setValue("Language", "zh_tc");
+	QMessageBox::warning(this,
+		"FGO Qt Toolkit",
+		"請重新啟動應用程式以應用語言設置。",
+		QMessageBox::Ok
+	);
+}
+
+void MainWindow::action_english_slot()
+{
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	settings.setValue("Language", "en");
+	QMessageBox::warning(this,
+		"FGO Qt Toolkit",
+		"Please restart application in order to apply language setting.",
+		QMessageBox::Ok
+	);
 }
 
 void MainWindow::action_database_slot()
@@ -163,7 +245,6 @@ void MainWindow::initialize_wiki_database()
 	}
 	foreach(QString xml_file, file_list)
 	{
-		qDebug() << xml_file;
 		QFile file(xml_file);
 		if (!file.open(QFile::ReadOnly | QFile::Text)) continue;
 		QXmlStreamReader xml;

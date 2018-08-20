@@ -40,6 +40,11 @@
       <Extensions>ui</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -124,5 +129,13 @@
     <QtUic Include="xml_editable_mainwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fgo_helper_ajz_0_1_zh.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+    <None Include="fgo_helper_ajz_0_1_ja.ts">
+      <Filter>Translation Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

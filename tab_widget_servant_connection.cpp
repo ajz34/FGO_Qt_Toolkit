@@ -236,7 +236,6 @@ void tab_widget_servant::table_widget_refresh()
 	table_widget_model->setHorizontalHeaderLabels(table_widget_model_header);
 	// set item
 	int row_count = 0;
-	qDebug() << "row count" << table_widget_model->rowCount();
 	for (int row = 0; row < table_widget_model_origin->rowCount(); ++row)
 	{
 		// check if this item is filtered

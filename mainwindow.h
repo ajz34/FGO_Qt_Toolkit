@@ -1,3 +1,11 @@
+#ifdef WIN32
+// character in chinese can't display in visual studio
+// if Qt environment, possibly you can delete this
+// this line may be included in all header files
+// https://blog.csdn.net/nabariou/article/details/60468627
+#pragma execution_character_set("utf-8")  
+#endif
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -30,6 +38,10 @@ class MainWindow : public QMainWindow
 	void ini_setting_read();
 	void ini_setting_write();
     QAction *action_exit = nullptr;
+	QAction *action_japanese = nullptr;
+	QAction *action_chinese = nullptr;
+	QAction *action_traditional = nullptr;
+	QAction *action_english = nullptr;
     QAction *action_about = nullptr;
     QAction *action_bibliography = nullptr;
 	QMenu *menu_file = nullptr;
@@ -69,6 +81,10 @@ private slots:
 	// database
 	void action_database_slot();
 	void action_database_close();
+	void action_japanese_slot();
+	void action_chinese_slot();
+	void action_traditional_slot();
+	void action_english_slot();
 	void action_database_transin(QVector<QString> path_pack);
 
 };

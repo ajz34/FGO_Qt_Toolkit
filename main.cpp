@@ -12,6 +12,26 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+	// set translation
+	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
+	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
+		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
+	QString lang = settings.value("Language", "").toString();
+
+	qDebug() << lang;
+	qDebug() << (lang == QString("jp"));
+
+	QTranslator translator;
+	if (lang == QString("jp"))
+		translator.load("fgo_helper_ajz_0_1_ja");
+	else if (lang == QString("zh_sc"))
+		translator.load("fgo_helper_ajz_0_1_zh");
+	else if (lang == QString("zh_tc"))
+		translator.load("fgo_helper_ajz_0_1_tc");
+	a.installTranslator(&translator);
+
+	// MainWindow
     MainWindow w;
     w.show();
 

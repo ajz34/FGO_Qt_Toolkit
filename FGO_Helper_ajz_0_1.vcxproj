@@ -308,6 +308,10 @@
   <ItemGroup>
     <QtUic Include="xml_editable_mainwindow.ui" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="fgo_helper_ajz_0_1_ja.ts" />
+    <None Include="fgo_helper_ajz_0_1_zh.ts" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />
