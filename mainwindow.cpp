@@ -258,7 +258,7 @@ void MainWindow::initialize_wiki_database()
 	wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
 	QDir wiki_xml_folder_dir(ini_setting_data[0]);
 	QStringList headers{};
-	headers << tr("Name") << tr("Type") << tr("Value");
+	headers << tr("Name") << tr("Value");
 	QStringList file_list{};
 	foreach(QFileInfo file_info, wiki_xml_folder_dir.entryInfoList(QDir::Files))
 	{
@@ -272,11 +272,11 @@ void MainWindow::initialize_wiki_database()
 		xml.setDevice(&file);
 		TreeModel *model = new TreeModel(headers, xml);
 		file.close();
-
+		qDebug() << xml.hasError();
 		QModelIndex index_basic = model->item_find("basic", model->index(0, 0));
 		QModelIndex index_id = model->item_find("id", index_basic);
 		if (index_id.isValid())
-			wiki_database[model->data(index_id.siblingAtColumn(2), Qt::DisplayRole).toInt()] = model;
+			wiki_database[model->data(index_id.siblingAtColumn(1), Qt::DisplayRole).toInt()] = model;
 	}
 	emit action_database_to_tableview(ini_setting_data, wiki_database);
 }
@@ -362,7 +362,7 @@ void MainWindow::open()
 bool MainWindow::load_file(const QString &file_name)
 {
 	QStringList headers;
-	headers << tr("Name") << tr("Type") << tr("Value");
+	headers << tr("Name") << tr("Value");
 
 	QString file_open(file_name);
 	if (file_name.isEmpty())

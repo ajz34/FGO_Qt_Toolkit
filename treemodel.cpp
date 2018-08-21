@@ -260,7 +260,6 @@ void TreeModel::setupModelData(QXmlStreamReader &xml, TreeItem *item)
 		{
 			parents.last()->insertChildren(parents.last()->childCount(), 1, rootItem->columnCount());
 			parents.last()->child(parents.last()->childCount() - 1)->setData(0, xml.name().toString());
-			parents.last()->child(parents.last()->childCount() - 1)->setData(1, xml.attributes().value(QStringLiteral("type")).toString());
 			parents << parents.last()->child(parents.last()->childCount() - 1);
 		}
 		else if (xml.isEndElement())
@@ -269,7 +268,7 @@ void TreeModel::setupModelData(QXmlStreamReader &xml, TreeItem *item)
 		}
 		else
 		{
-			parents.last()->setData(2, xml.text().toString());
+			parents.last()->setData(1, xml.text().toString());
 		}
 		xml.readNext();
 	}
@@ -287,8 +286,6 @@ void TreeModel::xml_write_item(QXmlStreamWriter &xml, TreeItem *item)
 	write_string = item->data(0).toString();
 	write_string.isNull() ? xml.writeStartElement(QString("")) : xml.writeStartElement(write_string);
 	write_string = item->data(1).toString();
-	if (!write_string.isNull()) xml.writeAttribute(QStringLiteral("type"), write_string);
-	write_string = item->data(2).toString();
 	if (!write_string.isNull()) xml.writeCharacters(write_string);
 
 	if (item->childCount() > 0)

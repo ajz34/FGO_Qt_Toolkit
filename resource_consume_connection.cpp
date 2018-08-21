@@ -27,7 +27,7 @@ void resource_consume::init_database()
 		left_info_servant_name->setText("");
 		QModelIndex index_servant_name = model->item_find("name_en", index_basic);
 		if (index_servant_name.isValid())
-			left_info_servant_name->setText(model->data(index_servant_name.siblingAtColumn(2), Qt::DisplayRole).toString());
+			left_info_servant_name->setText(model->data(index_servant_name.siblingAtColumn(1), Qt::DisplayRole).toString());
 
 		// alignments
 		left_info_servant_attribute->setText("");
@@ -49,7 +49,7 @@ void resource_consume::init_database()
 		}
 		QModelIndex index_attribute = model->item_find("attribute", index_basic);
 		if (index_attribute.isValid())
-			str_alignment += ("¡¤" + model->data(index_attribute.siblingAtColumn(2), Qt::DisplayRole).toString());
+			str_alignment += ("¡¤" + model->data(index_attribute.siblingAtColumn(1), Qt::DisplayRole).toString());
 		else
 			flag_alignment = false;
 		if (flag_alignment)
@@ -63,6 +63,6 @@ void resource_consume::init_database()
 	{
 		QModelIndex index_nobel_name = model->item_find("name_sc", index_nobel);
 		if (index_nobel.isValid())
-			left_info_servant_nobel->setText(model->data(index_nobel_name.siblingAtColumn(2), Qt::DisplayRole).toString());
+			left_info_servant_nobel->setText(model->data(index_nobel_name.siblingAtColumn(1), Qt::DisplayRole).toString());
 	}
 }

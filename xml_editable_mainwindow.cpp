@@ -62,7 +62,7 @@ xml_editable_mainwindow::xml_editable_mainwindow(QString file_path_transin, QWid
 	setupUi(this);
 
 	QStringList headers;
-	headers << tr("Name") << tr("Type") << tr("Value");
+	headers << tr("Name") << tr("Value");
 
 	file_path = file_path_transin;
 	QFile file(file_path);
@@ -76,8 +76,7 @@ xml_editable_mainwindow::xml_editable_mainwindow(QString file_path_transin, QWid
 	// for (int column = 0; column < model->columnCount(); ++column)
 	//     view->resizeColumnToContents(column);
 	view->setColumnWidth(0, QLabel(QString("consume_rarityconsume_rarity      ")).sizeHint().width());
-	view->setColumnWidth(1, QLabel(QString("dict      ")).sizeHint().width());
-	view->setColumnWidth(2, QLabel(QString("ジャンヌ・ダルク・オルタ・サンタ・リリィ      ")).sizeHint().width());
+	view->setColumnWidth(1, QLabel(QString("ジャンヌ・ダルク・オルタ・サンタ・リリィ      ")).sizeHint().width());
 
 	connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 

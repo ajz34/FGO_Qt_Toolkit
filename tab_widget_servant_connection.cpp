@@ -131,7 +131,7 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				QModelIndex item_id = model->item_find("id", item_basic);
 				if (item_id.isValid())
 				{
-					int val = model->data(item_id.siblingAtColumn(2), Qt::DisplayRole).toInt();
+					int val = model->data(item_id.siblingAtColumn(1), Qt::DisplayRole).toInt();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -144,7 +144,7 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				QModelIndex item_name = model->item_find("name_en", item_basic);
 				if (item_name.isValid())
 				{
-					QString val = model->data(item_name.siblingAtColumn(2), Qt::DisplayRole).toString();
+					QString val = model->data(item_name.siblingAtColumn(1), Qt::DisplayRole).toString();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -157,7 +157,7 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				QModelIndex item_class = model->item_find("class", item_basic);
 				if (item_class.isValid())
 				{
-					QString val = model->data(item_class.siblingAtColumn(2), Qt::DisplayRole).toString();
+					QString val = model->data(item_class.siblingAtColumn(1), Qt::DisplayRole).toString();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -170,7 +170,7 @@ void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, Q
 				QModelIndex item_rarity = model->item_find("rarity", item_basic);
 				if (item_rarity.isValid())
 				{
-					int val = model->data(item_rarity.siblingAtColumn(2), Qt::DisplayRole).toInt();
+					int val = model->data(item_rarity.siblingAtColumn(1), Qt::DisplayRole).toInt();
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
