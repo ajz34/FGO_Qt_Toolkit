@@ -27,6 +27,7 @@ namespace GLOB {
 	extern QVector<QMap<int, int>> VEC_ASCENSION_QP;
 	extern QVector<QMap<int, int>> VEC_SKILL_QP;
 	extern QVector<QMap<int, int>> VEC_PALINGENESIS_LEVEL;
+	extern QVector<QMap<int, int>> VEC_PALINGENESIS_QP;
 	extern QMap<int, int> MAP_LEVEL_EXP;
 }
 
