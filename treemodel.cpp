@@ -312,3 +312,18 @@ QModelIndex TreeModel::item_find(QString find_str, const QModelIndex &parent)
 	else
 		return item[0];
 }
+
+QModelIndexList TreeModel::item_find(QString find_str, int depth, const QModelIndex &parent)
+{
+	if (!parent.isValid())
+		return QModelIndexList();
+	QModelIndexList item = match(
+		index(0, 0, parent),
+		Qt::DisplayRole,
+		QVariant::fromValue(find_str),
+		depth);
+	if (item.isEmpty())
+		return QModelIndexList();
+	else
+		return item;
+}

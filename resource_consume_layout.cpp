@@ -258,7 +258,7 @@ void resource_consume::set_middle_left_widget()
 	left_levelup_dial->setMaximum(100);
 	left_levelup_dial->setEnabled(false);
 	left_ascension_dial->setNotchesVisible(true);
-	left_ascension_dial->setMinimum(1);
+	left_ascension_dial->setMinimum(0);
 	left_ascension_dial->setMaximum(5);
 	left_ascension_dial->setEnabled(false);
 
@@ -365,7 +365,7 @@ void resource_consume::set_middle_right_widget()
 	right_levelup_dial->setMinimum(1);
 	right_levelup_dial->setMaximum(100);
 	right_ascension_dial->setNotchesVisible(true);
-	right_ascension_dial->setMinimum(1);
+	right_ascension_dial->setMinimum(0);
 	right_ascension_dial->setMaximum(5);
 
 	auto right_ascension_layout_comb_1 = new QGridLayout;

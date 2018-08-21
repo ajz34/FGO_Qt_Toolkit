@@ -15,6 +15,8 @@
 class resource_consume : public QDialog
 {
 	Q_OBJECT;
+	
+	//--- Layout
 
 	// left_skill_combination
 	QVector<QLabel*> left_skill_vector_icon{};
@@ -83,6 +85,8 @@ class resource_consume : public QDialog
 	void set_middle_right_widget();
 	void set_left_information_widget();
 	void set_right_costume_widget();
+
+	//--- Data process
 
 	// database
 	QVector<QString> ini_setting_data{};

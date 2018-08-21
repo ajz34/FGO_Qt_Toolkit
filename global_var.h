@@ -16,7 +16,18 @@ namespace GLOB {
 	extern QMap<QString, QPixmap> MAP_ITEM_GOLD;
 	extern QMap<QString, QPixmap> MAP_ITEM_EVENT;
 	extern QMap<QString, QPixmap> MAP_ITEM_MISC;
+	extern QMap<QString, QPixmap> MAP_CARD;
+	extern QMap<QString, QPixmap> MAP_CLASS;
+	extern QVector<QString> LIST_ITEM;
 	extern void MAP_INIT();
+
+	// mapping of ascension or skill Exp or QP
+	extern QVector<QMap<int, int>> VEC_ASCENSION_LEVELMIN;
+	extern QVector<QMap<int, int>> VEC_ASCENSION_LEVELMAX;
+	extern QVector<QMap<int, int>> VEC_ASCENSION_QP;
+	extern QVector<QMap<int, int>> VEC_SKILL_QP;
+	extern QVector<QMap<int, int>> VEC_PALINGENESIS_LEVEL;
+	extern QMap<int, int> MAP_LEVEL_EXP;
 }
 
 

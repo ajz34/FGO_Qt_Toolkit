@@ -103,6 +103,7 @@ public:
 	// self-define
 	void xml_write(QXmlStreamWriter &xml);
 	QModelIndex item_find(QString find_str, const QModelIndex &parent = QModelIndex());
+	QModelIndexList item_find(QString find_str, int depth = 1, const QModelIndex &parent = QModelIndex());
 	inline void setModified(bool mod) { modified = mod; }
 	inline bool isModified() { return modified; }
 
