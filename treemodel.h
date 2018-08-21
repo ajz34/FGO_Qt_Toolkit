@@ -65,7 +65,7 @@ class TreeItem;
 //! [0]
 class TreeModel : public QAbstractItemModel
 {
-	Q_OBJECT
+	Q_OBJECT;
 
 public:
 	TreeModel(const QStringList &headers, QXmlStreamReader &xml,
@@ -103,6 +103,8 @@ public:
 	// self-define
 	void xml_write(QXmlStreamWriter &xml);
 	QModelIndex item_find(QString find_str, const QModelIndex &parent = QModelIndex());
+	inline void setModified(bool mod) { modified = mod; }
+	inline bool isModified() { return modified; }
 
 private:
 	void setupModelData(QXmlStreamReader &xml, TreeItem *parent);
@@ -110,6 +112,7 @@ private:
 	TreeItem *rootItem;
 	// self-define
 	void xml_write_item(QXmlStreamWriter &xml, TreeItem *item);
+	bool modified = false;
 
 };
 //! [2]

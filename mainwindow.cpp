@@ -1,10 +1,13 @@
 #include "mainwindow.h"
+#include "global_var.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 	// Qt + Visual Studio: https://stackoverflow.com/questions/28813526/qt-5-4-with-visual-studio-2013-qtcored-dll-missing
 	// set path: %QTDIR%\bin;%PATH%; 
+
+	GLOB::MAP_INIT();
 
 	//--- B. menu
 	menu_create_action();
@@ -30,7 +33,11 @@ MainWindow::~MainWindow()
 void MainWindow::set_menu()
 {
     menu_file = menuBar()->addMenu(tr("&File"));
-    menu_file->addAction(action_open);
+    menu_file->addAction(action_new);
+	menu_file->addAction(action_open);
+	menu_file->addAction(action_save);
+	menu_file->addAction(action_save_as);
+	menu_file->addSeparator();
 	menu_file->addAction(action_database);
 	menu_file->addSeparator();
     menu_file->addAction(action_exit);
@@ -64,9 +71,25 @@ void MainWindow::set_menu()
 
 void MainWindow::menu_create_action()
 {
+	// new file
+	action_new = new QAction(tr("&New"), this);
+	action_new->setStatusTip(tr("Create a servant skill level document"));
+	connect(action_new, &QAction::triggered, this, &MainWindow::new_file);
+
     // open file
     action_open = new QAction(tr("&Open"), this);
-    action_open->setStatusTip(tr("Open servant skill level document"));
+    action_open->setStatusTip(tr("Open your servant skill level document"));
+	connect(action_open, &QAction::triggered, this, &MainWindow::open);
+
+	// save file
+	action_save = new QAction(tr("&Save"), this);
+	action_save->setStatusTip(tr("Save your servant skill level document"));
+	connect(action_save, &QAction::triggered, this, &MainWindow::save);
+
+	// save as
+	action_save_as = new QAction(tr("Sa&ve as"), this);
+	action_save_as->setStatusTip(tr("Save your servant skill level document to a new file"));
+	connect(action_save_as, &QAction::triggered, this, &MainWindow::save_as);
 
 	// specify database
 	action_database = new QAction(tr("&Database"), this);
@@ -174,6 +197,7 @@ void MainWindow::ini_setting_read()
 	}
 	// apply setting
 	initialize_wiki_database();
+	load_file(ini_setting_data[2]);
 }
 
 void MainWindow::ini_setting_write()
@@ -255,4 +279,128 @@ void MainWindow::initialize_wiki_database()
 			wiki_database[model->data(index_id.siblingAtColumn(2), Qt::DisplayRole).toInt()] = model;
 	}
 	emit action_database_to_tableview(ini_setting_data, wiki_database);
+}
+
+//--- P. action on user file
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	if (ok_to_continue())
+	{
+		event->accept();
+	}
+	else 
+		event->ignore();
+}
+
+bool MainWindow::ok_to_continue()
+{
+	if (user_file->isModified())
+	{
+		int r = QMessageBox::warning(this, tr("FGO Qt Toolkit"),
+			tr("The user data has been modified.\n"
+				"Do you want to save your changes?"),
+			QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+		if (r == QMessageBox::Yes)
+			return save();
+		else if (r == QMessageBox::Cancel)
+			return false;
+	}
+	return true;
+}
+
+bool MainWindow::save()
+{
+	if (cur_user_file_path.isEmpty())
+		return save_as();
+	else
+		return save_file(cur_user_file_path);
+}
+
+bool MainWindow::save_as()
+{
+	QString file_name = QFileDialog::getSaveFileName(this,
+		tr("Save as"), ".", tr("User Data (*.xml)"));
+	if (file_name.isEmpty())
+		return false;
+	return save_file(file_name);
+}
+
+bool MainWindow::save_file(const QString &file_name)
+{
+	QFile file(file_name);
+	file.open(QIODevice::WriteOnly | QFile::Text);
+	QXmlStreamWriter xml;
+	xml.setDevice(&file);
+	xml.setAutoFormatting(true);
+	xml.writeStartDocument();
+	user_file->xml_write(xml);
+	xml.writeEndDocument();
+	if (xml.hasError())
+	{
+		statusBar()->showMessage("Save Error!", 3000);
+		return false;
+	}
+	else
+	{
+		statusBar()->showMessage("File Saved", 3000);
+		return true;
+	}
+}
+
+void MainWindow::open()
+{
+	if (ok_to_continue())
+	{
+		QString file_name = QFileDialog::getOpenFileName(this,
+			tr("Open file"), ".", tr("User Data (*.xml)"));
+		if (!file_name.isEmpty())
+			load_file(file_name);
+	}
+}
+
+bool MainWindow::load_file(const QString &file_name)
+{
+	QStringList headers;
+	headers << tr("Name") << tr("Type") << tr("Value");
+
+	QString file_open(file_name);
+	if (file_name.isEmpty())
+		file_open = ":/misc_file/misc_file/empty_user_data.xml";
+	QFile file(file_open);
+	file.open(QFile::ReadOnly | QFile::Text);
+	QXmlStreamReader xml;
+	xml.setDevice(&file);
+	if (user_file) delete user_file;
+	user_file = new TreeModel(headers, xml);
+	file.close();
+	if (xml.hasError())
+	{
+		statusBar()->showMessage("Load Error!", 3000);
+		return false;
+	}
+	else
+	{
+		statusBar()->showMessage("File Loaded", 3000);
+		set_cur_user_file_path(file_name);
+		return true;
+	}
+}
+
+void MainWindow::new_file()
+{
+	if (ok_to_continue())
+		load_file("");
+}
+
+void MainWindow::set_cur_user_file_path(const QString &file_name)
+{
+	cur_user_file_path = file_name;
+	user_file->setModified(false);
+	QString show_name = tr("Untitled");
+	if (!cur_user_file_path.isEmpty())
+	{
+		show_name = QFileInfo(cur_user_file_path).fileName();
+	}
+	setWindowTitle(tr("%1[*] - %2").arg(show_name).arg(tr("FGO Qt Toolkit")));
 }

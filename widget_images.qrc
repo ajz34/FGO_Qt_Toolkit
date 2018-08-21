@@ -204,9 +204,12 @@
         <file>images/item_icon/event/心形手链.jpg</file>
         <file>images/item_icon/event/遗忘之叶.jpg</file>
         <file>images/item_icon/event/炸鸡桶.jpg</file>
-        <file>images/item_icon/misc/Exp.png</file>
         <file>images/item_icon/misc/QP.jpg</file>
         <file>images/item_icon/misc/传承结晶.jpg</file>
         <file>images/item_icon/misc/圣杯.jpg</file>
+        <file>images/item_icon/misc/Exp.jpg</file>
+    </qresource>
+    <qresource prefix="/misc_file">
+        <file>misc_file/empty_user_data.xml</file>
     </qresource>
 </RCC>

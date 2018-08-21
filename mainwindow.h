@@ -16,6 +16,7 @@
 #include "tab_widget_servant.h"
 #include "database_dialog.h"
 #include "treemodel.h"
+#include "xml_editable_mainwindow.h"
 
 class MainWindow : public QMainWindow
 {
@@ -25,7 +26,9 @@ class MainWindow : public QMainWindow
 	const int SERVANT_ICON_NUMBER = 500;
 	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
 	const QVector<QString> INI_SETTING_FILE_INDEX{
-		"wiki_xml_path", "servant_icon_present",
+		"wiki_xml_path",
+		"servant_icon_present",
+		"cur_user_file_path",
 	};
 
 	//--- A. tab widgets
@@ -34,6 +37,9 @@ class MainWindow : public QMainWindow
 
     //--- B. menu
     QAction *action_open = nullptr;
+	QAction *action_new = nullptr;
+	QAction *action_save = nullptr;
+	QAction *action_save_as = nullptr;
 	QAction *action_database = nullptr;
 	QVector<QString> ini_setting_data{};
 	void ini_setting_read();
@@ -65,7 +71,20 @@ class MainWindow : public QMainWindow
 	void set_connection_tab_widgets();
 	void initialize_wiki_database();
 
-    // not classified
+	//--- P. action on user file
+	TreeModel *user_file = nullptr;
+	QString cur_user_file_path;
+	bool ok_to_continue();
+	bool save();
+	bool save_file(const QString &file_name);
+	bool save_as();
+	void open();
+	bool load_file(const QString &file_name);
+	void new_file();
+	void set_cur_user_file_path(const QString &file_name);
+	
+protected:
+	void closeEvent(QCloseEvent *event);
 
 public:
     MainWindow(QWidget *parent = 0);

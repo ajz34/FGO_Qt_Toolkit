@@ -52,8 +52,8 @@
 **
 ****************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef XML_EDITABLE_H
+#define XML_EDITABLE_H
 
 #include <QMainWindow>
 #include "ui_xml_editable_mainwindow.h"
@@ -65,9 +65,9 @@
 
 class xml_editable_mainwindow : public QMainWindow, private Ui::xml_editable_mainwindow
 {
-	Q_OBJECT
+	Q_OBJECT;
 
-		TreeModel *model;
+	TreeModel *model;
 	QString file_path;
 
 public:
@@ -85,4 +85,4 @@ private slots:
 	void saveFile();
 };
 
-#endif // MAINWINDOW_H
+#endif // XML_EDITABLE_H
