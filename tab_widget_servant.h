@@ -86,6 +86,9 @@ class tab_widget_servant : public QWidget
 	QVector<QPixmap> servant_icon_button_image = QVector<QPixmap>(SERVANT_ICON_NUMBER);
 	void set_table_widget();
 
+	//--- E. servant consume
+	TreeModel* user_data = nullptr;
+
 	//--- N. layouot
 	void set_main_widget_layout();
 	QGridLayout *main_widget_layout = nullptr;
@@ -99,7 +102,8 @@ signals:
 		QVector<QString> ini_setting,
 		QVector<TreeModel*> *wiki,
 		QVector<QPixmap> *servant_icon,
-		int id);
+		int id,
+		TreeModel* user_dat);
 
 private slots:
 	//--- A. servant class labels
@@ -110,9 +114,15 @@ private slots:
 	void filter_rarity_subitem_clicked_actionbehave(bool checked);
 	void filter_rarity_all_clicked_actionbehave(bool checked);
 	void table_widget_refresh();
-	void table_pushbutton_double_click();
+	//--- D. servant table
+	void table_pushbutton_right_click();
+	//--- E. servant consume
 	void table_pushbutton_click();
 
 public slots:
-	void receive_wiki_xml_database(QVector<QString> path_pack, QVector<TreeModel*> tree_model);
+	void receive_wiki_xml_database(
+		QVector<QString> path_pack,
+		QVector<TreeModel*> tree_model,
+		TreeModel* user_dat);
+	void receive_user_data_changes(TreeModel *user_dat);
 };

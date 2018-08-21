@@ -263,3 +263,4 @@ __pycache__/
 # added by ajz34
 *.bak
 .qmake.stash
+temp/

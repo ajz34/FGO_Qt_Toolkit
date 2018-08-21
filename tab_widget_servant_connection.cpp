@@ -101,10 +101,15 @@ void tab_widget_servant::filter_rarity_all_clicked_actionbehave(bool checked)
 
 //--- D. servant table
 
-void tab_widget_servant::receive_wiki_xml_database(QVector<QString> path_pack, QVector<TreeModel*> tree_model)
+void tab_widget_servant::receive_wiki_xml_database(
+	QVector<QString> path_pack,
+	QVector<TreeModel*> tree_model,
+	TreeModel* user_dat)
 {
 	ini_setting_data = path_pack;
 	wiki_database = tree_model;
+	user_data = user_dat;
+	qDebug() << "in receive" << user_data;
 	// delete table_widget_model_origin;
 	// table_widget_model_origin = new QStandardItemModel;
 	table_widget_model_origin->clear();
@@ -261,7 +266,7 @@ void tab_widget_servant::table_widget_refresh()
 		button->setFixedSize(button->minimumSizeHint());
 		button->setFixedSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		table_widget->setIndexWidget(table_widget_model->index(row, 0), button);
-		connect(button, &QRightClickPushButton::rightClicked, this, &tab_widget_servant::table_pushbutton_double_click);
+		connect(button, &QRightClickPushButton::rightClicked, this, &tab_widget_servant::table_pushbutton_right_click);
 		connect(button, &QRightClickPushButton::clicked, this, &tab_widget_servant::table_pushbutton_click);
 	}
 	// finalize layout
@@ -270,7 +275,7 @@ void tab_widget_servant::table_widget_refresh()
 	table_widget->setSortingEnabled(true);
 }
 
-void tab_widget_servant::table_pushbutton_double_click()
+void tab_widget_servant::table_pushbutton_right_click()
 {
 	// WARNING!!! USING sender()!!!
 	QRightClickPushButton *button = qobject_cast<QRightClickPushButton*>(sender());
@@ -281,6 +286,8 @@ void tab_widget_servant::table_pushbutton_double_click()
 	edit_xml->setAttribute(Qt::WA_DeleteOnClose);
 	edit_xml->show();
 }
+
+//--- E. servant_consume
 
 void tab_widget_servant::table_pushbutton_click()
 {
@@ -297,6 +304,13 @@ void tab_widget_servant::table_pushbutton_click()
 		ini_setting_data,
 		&wiki_database,
 		&servant_icon_button_image,
-		id_number);
+		id_number,
+		user_data);
 	consume_widget->exec();
 }
+
+void tab_widget_servant::receive_user_data_changes(TreeModel * user_dat)
+{
+	user_data = user_dat;
+}
+

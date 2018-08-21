@@ -4,13 +4,16 @@ void resource_consume::data_transin(
 	QVector<QString> ini_setting,
 	QVector<TreeModel*> *wiki,
 	QVector<QPixmap> *servant_icon,
-	int id)
+	int id,
+	TreeModel *user_dat)
 {
 	wiki_database = wiki;
 	servant_icon_button_image = servant_icon;
 	id_number = id;
+	user_data = user_dat;
 
 	init_database();
+	init_user_data();
 }
 
 void resource_consume::init_database()
@@ -65,4 +68,29 @@ void resource_consume::init_database()
 		if (index_nobel.isValid())
 			left_info_servant_nobel->setText(model->data(index_nobel_name.siblingAtColumn(1), Qt::DisplayRole).toString());
 	}
+}
+
+void resource_consume::init_user_data()
+{
+	// read servant index
+	TreeModel *database = (*wiki_database)[id_number];
+	QModelIndex index_database_id = 
+		database->item_find("id",
+			database->item_find("basic",
+				database->index(0, 0)));
+	Q_ASSERT(index_database_id.isValid());
+	int id = database->data(index_database_id.siblingAtColumn(1), Qt::DisplayRole).toInt();
+	char id_full_cstring[4];
+	sprintf(id_full_cstring, "%03d", id);
+	QString id_full(id_full_cstring);
+	qDebug() << "in init_user_data" << id_full_cstring;
+
+	// read user data for the current servant
+	QModelIndex index_user_id =
+		user_data->item_find("follow",
+			user_data->item_find("status",
+				user_data->item_find("servant_" + id_full,
+					user_data->index(0, 0))));
+	if (user_data->data(index_user_id.siblingAtColumn(1), Qt::DisplayRole) == 1)
+		left_info_follow->setChecked(true);
 }

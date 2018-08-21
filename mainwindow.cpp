@@ -20,7 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
 	set_connection_tab_widgets();
 	ini_setting_read();
 
-	qDebug() << "Initialize finish";
 }
 
 MainWindow::~MainWindow()
@@ -196,8 +195,8 @@ void MainWindow::ini_setting_read()
 		ini_setting_data.push_back(settings.value(INI_SETTING_FILE_INDEX[i], "").toString());
 	}
 	// apply setting
-	initialize_wiki_database();
 	load_file(ini_setting_data[2]);
+	initialize_database();
 }
 
 void MainWindow::ini_setting_write()
@@ -215,7 +214,7 @@ void MainWindow::action_database_transin(QVector<QString> path_pack)
 {
 	ini_setting_data = path_pack;
 	ini_setting_write();
-	initialize_wiki_database();
+	initialize_database();
 }
 
 void MainWindow::action_database_close()
@@ -249,9 +248,12 @@ void MainWindow::set_connection_tab_widgets()
 {
 	// connection of database update
 	connect(this, &MainWindow::action_database_to_tableview, tab_servant, &tab_widget_servant::receive_wiki_xml_database);
+
+	// connection to tableview when file changes
+	connect(this, &MainWindow::action_load_file_to_tableview, tab_servant, &tab_widget_servant::receive_user_data_changes);
 }
 
-void MainWindow::initialize_wiki_database()
+void MainWindow::initialize_database()
 {
 	// clear
 	wiki_database.clear();
@@ -272,13 +274,12 @@ void MainWindow::initialize_wiki_database()
 		xml.setDevice(&file);
 		TreeModel *model = new TreeModel(headers, xml);
 		file.close();
-		qDebug() << xml.hasError();
 		QModelIndex index_basic = model->item_find("basic", model->index(0, 0));
 		QModelIndex index_id = model->item_find("id", index_basic);
 		if (index_id.isValid())
 			wiki_database[model->data(index_id.siblingAtColumn(1), Qt::DisplayRole).toInt()] = model;
 	}
-	emit action_database_to_tableview(ini_setting_data, wiki_database);
+	emit action_database_to_tableview(ini_setting_data, wiki_database, user_data);
 }
 
 //--- P. action on user file
@@ -286,16 +287,14 @@ void MainWindow::initialize_wiki_database()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if (ok_to_continue())
-	{
 		event->accept();
-	}
 	else 
 		event->ignore();
 }
 
 bool MainWindow::ok_to_continue()
 {
-	if (user_file->isModified())
+	if (user_data->isModified())
 	{
 		int r = QMessageBox::warning(this, tr("FGO Qt Toolkit"),
 			tr("The user data has been modified.\n"
@@ -334,7 +333,7 @@ bool MainWindow::save_file(const QString &file_name)
 	xml.setDevice(&file);
 	xml.setAutoFormatting(true);
 	xml.writeStartDocument();
-	user_file->xml_write(xml);
+	user_data->xml_write(xml);
 	xml.writeEndDocument();
 	if (xml.hasError())
 	{
@@ -344,6 +343,7 @@ bool MainWindow::save_file(const QString &file_name)
 	else
 	{
 		statusBar()->showMessage("File Saved", 3000);
+		set_cur_user_file_path(file_name);
 		return true;
 	}
 }
@@ -371,13 +371,20 @@ bool MainWindow::load_file(const QString &file_name)
 	file.open(QFile::ReadOnly | QFile::Text);
 	QXmlStreamReader xml;
 	xml.setDevice(&file);
-	if (user_file) delete user_file;
-	user_file = new TreeModel(headers, xml);
+	if (user_data) delete user_data;
+	user_data = new TreeModel(headers, xml);
 	file.close();
 	if (xml.hasError())
 	{
 		statusBar()->showMessage("Load Error!", 3000);
+		load_file("");
 		return false;
+	}
+	else if (file_name.isEmpty())
+	{
+		statusBar()->showMessage("Empty File Loaded", 3000);
+		set_cur_user_file_path(file_name);
+		return true;
 	}
 	else
 	{
@@ -396,11 +403,14 @@ void MainWindow::new_file()
 void MainWindow::set_cur_user_file_path(const QString &file_name)
 {
 	cur_user_file_path = file_name;
-	user_file->setModified(false);
+	ini_setting_data[2] = cur_user_file_path;
+	user_data->setModified(false);
+	setWindowModified(false);
 	QString show_name = tr("Untitled");
 	if (!cur_user_file_path.isEmpty())
 	{
 		show_name = QFileInfo(cur_user_file_path).fileName();
 	}
 	setWindowTitle(tr("%1[*] - %2").arg(show_name).arg(tr("FGO Qt Toolkit")));
+	emit action_load_file_to_tableview(user_data);
 }

@@ -69,10 +69,10 @@ class MainWindow : public QMainWindow
 	database_dialog *database_confirm_dialog = nullptr;
 	// wiki xml data
 	void set_connection_tab_widgets();
-	void initialize_wiki_database();
+	void initialize_database();
 
 	//--- P. action on user file
-	TreeModel *user_file = nullptr;
+	TreeModel *user_data = nullptr;
 	QString cur_user_file_path;
 	bool ok_to_continue();
 	bool save();
@@ -94,7 +94,13 @@ signals:
 	//--- B. menu
 	// database
 	void action_database_transout(QVector<QString> path_pack);
-	void action_database_to_tableview(QVector<QString> path_pack, QVector<TreeModel*> tree_model);
+	void action_database_to_tableview(
+		QVector<QString> path_pack,
+		QVector<TreeModel*> tree_model,
+		TreeModel *user_dat);
+
+	// file
+	void action_load_file_to_tableview(TreeModel *user_dat);
 
 private slots:
 	//--- B. menu

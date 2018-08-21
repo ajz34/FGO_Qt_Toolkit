@@ -91,12 +91,17 @@ class resource_consume : public QDialog
 	int id_number = 0;
 	void init_database();
 
+	// user data
+	TreeModel *user_data = nullptr;
+	void init_user_data();
+
 public slots:
 	void data_transin(
 		QVector<QString> ini_setting,
 		QVector<TreeModel*> *wiki,
 		QVector<QPixmap> *servant_icon,
-		int id);
+		int id,
+		TreeModel *user_dat);
 
 public:
 	resource_consume(QWidget *parent = nullptr);
