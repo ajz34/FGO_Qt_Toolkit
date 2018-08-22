@@ -59,10 +59,10 @@ void resource_consume::set_lower_skill_widget()
 	for (int i = 0; i < 5; ++i)
 	{
 		QLabel *label = new QLabel;
-		label->setFixedSize(QSize(50, 15));
+        label->setFixedSize(QSize(50, 18));
         label->setText("");
 		QFont font;
-		font.setPixelSize(15);
+        font.setPixelSize(18);
 		font.setBold(true);
 		font.setFamily("Arial");
 		font.setStyleHint(QFont::SansSerif);
@@ -78,7 +78,7 @@ void resource_consume::set_lower_skill_widget()
 		left_skill_layout_comb_2->addWidget(left_skill_consume_number[i], 1, i);
 	}
 	left_skill_layout_comb_2->setHorizontalSpacing(10);
-	left_skill_layout_comb_2->setVerticalSpacing(5);
+    left_skill_layout_comb_2->setVerticalSpacing(2);
 
 	auto left_skill_name = new QLabel;
 	auto left_skill_cd = new QLCDNumber;
@@ -177,10 +177,10 @@ void resource_consume::set_lower_right_widget()
 	for (int i = 0; i < 27; ++i)
 	{
 		QLabel *label = new QLabel;
-		label->setFixedSize(QSize(32, 10));
+        label->setFixedSize(QSize(32, 11));
         label->setText("");
 		QFont font;
-		font.setPixelSize(9);
+        font.setPixelSize(11);
 		font.setFamily("Arial");
 		font.setStyleHint(QFont::SansSerif);
 		font.setBold(true);
@@ -202,11 +202,11 @@ void resource_consume::set_lower_right_widget()
 		right_skill_layout_comb_4->addWidget(right_skill_consume[i + 18], 0, i);
 		right_skill_layout_comb_4->addWidget(right_skill_consume_number[i + 18], 1, i);
 	}
-	right_skill_layout_comb_2->setVerticalSpacing(1);
+    right_skill_layout_comb_2->setVerticalSpacing(0);
 	right_skill_layout_comb_2->setHorizontalSpacing(10);
-	right_skill_layout_comb_3->setVerticalSpacing(1);
+    right_skill_layout_comb_3->setVerticalSpacing(0);
 	right_skill_layout_comb_3->setHorizontalSpacing(10);
-	right_skill_layout_comb_4->setVerticalSpacing(1);
+    right_skill_layout_comb_4->setVerticalSpacing(0);
 	right_skill_layout_comb_4->setHorizontalSpacing(10);
 	right_skill_layout_comb_234->addLayout(right_skill_layout_comb_2, 0, 0);
 	right_skill_layout_comb_234->addLayout(right_skill_layout_comb_3, 1, 0);
@@ -285,10 +285,10 @@ void resource_consume::set_middle_left_widget()
 	for (int i = 0; i < 6; ++i)
 	{
 		QLabel *label = new QLabel;
-		label->setFixedSize(QSize(50, 15));
+        label->setFixedSize(QSize(50, 18));
         label->setText("");
 		QFont font;
-		font.setPixelSize(15);
+        font.setPixelSize(18);
 		font.setBold(true);
 		font.setFamily("Arial");
 		font.setStyleHint(QFont::SansSerif);
@@ -307,7 +307,7 @@ void resource_consume::set_middle_left_widget()
 		left_ascension_layout_comb_2->addWidget(left_ascension_consume_number[i], 1, i);
 	}
 	left_ascension_layout_comb_2->setHorizontalSpacing(10);
-	left_ascension_layout_comb_2->setVerticalSpacing(5);
+    left_ascension_layout_comb_2->setVerticalSpacing(2);
 
 	auto left_ascension_layout_comb_3 = new QGridLayout;
 	left_ascension_layout_comb_3->addWidget(left_levelup_consume, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
@@ -388,10 +388,10 @@ void resource_consume::set_middle_right_widget()
 	for (int i = 0; i < 27; ++i)
 	{
 		QLabel *label = new QLabel;
-		label->setFixedSize(QSize(32, 10));
+        label->setFixedSize(QSize(32, 11));
         label->setText("");
 		QFont font;
-		font.setPixelSize(9);
+        font.setPixelSize(11);
 		font.setFamily("Arial");
 		font.setStyleHint(QFont::SansSerif);
 		font.setBold(true);
@@ -413,11 +413,11 @@ void resource_consume::set_middle_right_widget()
 		right_ascension_layout_comb_4->addWidget(right_ascension_consume[i + 18], 0, i);
 		right_ascension_layout_comb_4->addWidget(right_ascension_consume_number[i + 18], 1, i);
 	}
-	right_ascension_layout_comb_2->setVerticalSpacing(1);
+    right_ascension_layout_comb_2->setVerticalSpacing(0);
 	right_ascension_layout_comb_2->setHorizontalSpacing(10);
-	right_ascension_layout_comb_3->setVerticalSpacing(1);
+    right_ascension_layout_comb_3->setVerticalSpacing(0);
 	right_ascension_layout_comb_3->setHorizontalSpacing(10);
-	right_ascension_layout_comb_4->setVerticalSpacing(1);
+    right_ascension_layout_comb_4->setVerticalSpacing(0);
 	right_ascension_layout_comb_4->setHorizontalSpacing(10);
 	right_ascension_layout_comb_234->addLayout(right_ascension_layout_comb_2, 0, 0);
 	right_ascension_layout_comb_234->addLayout(right_ascension_layout_comb_3, 1, 0);
@@ -527,10 +527,10 @@ void resource_consume::set_right_costume_widget()
 	for (int i = 0; i < 5; ++i)
 	{
 		QLabel *label = new QLabel;
-		label->setFixedSize(QSize(50, 15));
+        label->setFixedSize(QSize(50, 18));
         label->setText("");
 		QFont font;
-		font.setPixelSize(15);
+        font.setPixelSize(18);
 		font.setBold(true);
 		font.setFamily("Arial");
 		font.setStyleHint(QFont::SansSerif);
@@ -546,7 +546,7 @@ void resource_consume::set_right_costume_widget()
 		right_costume_layout_comb_2->addWidget(right_costume_consume_number[i], 1, i);
 	}
 	right_costume_layout_comb_2->setHorizontalSpacing(10);
-	right_costume_layout_comb_2->setVerticalSpacing(5);
+    right_costume_layout_comb_2->setVerticalSpacing(2);
 
 	auto right_costume_layout_comb = new QGridLayout;
 	right_costume_layout_comb->addWidget(right_info_icon, 0, 0, 2, 1, Qt::AlignCenter);

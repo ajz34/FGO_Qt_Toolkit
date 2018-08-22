@@ -123,16 +123,16 @@ void resource_consume::init_database_consume()
 
     // assistant functions
     // this assist function try to append all items from parent index to map
-    auto append_map = [model](QMap<QString, long long> &map, const QString &search, const QModelIndex &parent)
+    auto append_vec = [model](QVector<int> &vec, const QString &search, const QModelIndex &parent)
     {
-        Q_ASSERT(parent.isValid());
         QModelIndex index = model->item_find(search, parent);
         Q_ASSERT(index.isValid());
+        vec = QVector<int>(GLOB::LIST_ITEM.size());
         if (index.isValid())
         {
             int child_num = model->rowCount(index);
             for (int i = 0; i < child_num; ++i)
-                map[model->data(model->index(i, 0, index), Qt::DisplayRole).toString()] =
+                vec[GLOB::LIST_ITEM.indexOf(model->data(model->index(i, 0, index), Qt::DisplayRole).toString())] =
                     model->data(model->index(i, 1, index), Qt::DisplayRole).toInt();
         }
     };
@@ -145,25 +145,32 @@ void resource_consume::init_database_consume()
     };
 
     // initialize database_skill_consume
-    // first entry of database_skill_consume is set to empty
+    // first entry of database_skill_consume is set to empty (no skill level 0)
     // every servant should have skill consume, so use assert here
     QModelIndex index_skill_consume = model->item_find("skill_consume", model->index(0, 0));
     set_int(database_skill_rarity, "consume_rarity", index_skill_consume);
+    database_skill_consume[0] = QVector<int>(GLOB::LIST_ITEM.size());
     for (int i = 1; i < 10; ++i)
     {
-        qDebug() << i << "skill_level_" + QVariant(i).toString();
-        append_map(database_skill_consume[i], "skill_level_" + QVariant(i).toString(), index_skill_consume);
+        append_vec(database_skill_consume[i], "skill_level_" + QVariant(i).toString(), index_skill_consume);
+        database_skill_consume[i][GLOB::LIST_ITEM.indexOf("QP")] = GLOB::VEC_SKILL_QP[database_skill_rarity][i];
     }
-    QModelIndex index_skill_consume_total = model->item_find("total_consume", index_skill_consume);
-    Q_ASSERT(index_skill_consume_total.isValid());
-    list_database_skill_consume = QVector<long long>(GLOB::LIST_ITEM.count(), 0);
-    for (int i = 0; i < model->rowCount(index_skill_consume_total); ++i)
+
+    // initialize database_ascension_consume
+    QModelIndex index_ascension_consume = model->item_find("ascension_consume", model->index(0, 0));
+    // for Mash Kyrielight, skip ascension code
+    if (id_number != 1)
     {
-        QString item_name = model->data(model->index(i, 0, index_skill_consume_total), Qt::DisplayRole).toString();
-        int item_number = model->data(model->index(i, 1, index_skill_consume_total), Qt::DisplayRole).toInt();
-        qDebug() << "in init_database_consume" << GLOB::LIST_ITEM.indexOf(item_name);
-        qDebug() << list_database_skill_consume;
-        list_database_skill_consume[GLOB::LIST_ITEM.indexOf(item_name)] = item_number;
+        set_int(database_ascension_rarity, "consume_rarity", index_ascension_consume);
+        for (int i = 0; i < 4; ++i)
+        {
+            append_vec(database_ascension_consume[i], "ascension_level_" + QVariant(i).toString(), index_ascension_consume);
+            database_ascension_consume[i][GLOB::LIST_ITEM.indexOf("QP")] = GLOB::VEC_ASCENSION_QP[database_ascension_rarity][i];
+        }
+    }
+    else
+    {
+        database_ascension_rarity = 3;
     }
 }
 
@@ -225,12 +232,28 @@ void resource_consume::init_user_data()
     // </servant_xxx>
 }
 
-
 void resource_consume::set_widget_database_connection()
 {
     connect(left_skill_vector_dial[0], &QDial::valueChanged, this, &resource_consume::connection_left_skill_dial);
     connect(left_skill_vector_dial[1], &QDial::valueChanged, this, &resource_consume::connection_left_skill_dial);
     connect(left_skill_vector_dial[2], &QDial::valueChanged, this, &resource_consume::connection_left_skill_dial);
+    connect(left_skill_vector_dial[0], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
+    connect(left_skill_vector_dial[1], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
+    connect(left_skill_vector_dial[2], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
+    connect(right_skill_vector_dial[0], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
+    connect(right_skill_vector_dial[1], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
+    connect(right_skill_vector_dial[2], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
+    connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_left_ascension_dial);
+    connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::check_dial_levelup_to_ascension, Qt::QueuedConnection);  //
+    connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::check_dial_levelup_to_ascension, Qt::QueuedConnection);  //
+    connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::check_dial_ascension_to_levelup);
+    connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::check_dial_ascension_to_levelup);
+    // connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_levelup_dial, Qt::QueuedConnection);
+    // connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_levelup_dial, Qt::QueuedConnection);
+    // connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
+    // connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
+    // connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
+    // connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
 }
 
 void resource_consume::connection_left_skill_dial()
@@ -240,31 +263,214 @@ void resource_consume::connection_left_skill_dial()
     if (dial == left_skill_vector_dial[0]) dial_num = 0;
     else if (dial == left_skill_vector_dial[1]) dial_num = 1;
     else if (dial == left_skill_vector_dial[2]) dial_num = 2;
-    qDebug() << "in connection_left_skill_dial" << dial_num;
     for (QLabel* label : left_skill_vector_consume[dial_num]) label->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
     for (QLabel* label : left_skill_vector_consume_number[dial_num]) label->setText("");
-    qDebug() << "in connection_left_skill_dial" << "step 1";
     if (dial->value() < 10)
     {
         int label_count = 0;
-        const QMap<QString, long long> &map = database_skill_consume[dial->value()];
-        qDebug() << "in connection_left_skill_dial" << "step 2";
-        QMap<QString, long long>::const_iterator i = map.constBegin();
-        while (i != map.constEnd() && label_count < 5)
+        const QVector<int> &vec = database_skill_consume[dial->value()];
+        for (int i = 0; i < vec.size(); ++i)
         {
-            qDebug() << "in connection_left_skill_dial" << "step 3";
-            left_skill_vector_consume[dial_num][label_count]->setPixmap(GLOB::MAP_ITEM[i.key()].scaled(46, 50));
-            left_skill_vector_consume_number[dial_num][label_count]->setText(consume_int(i.value()));
-            ++i;
-            ++label_count;
+            if (vec[i] == 0) continue;
+            left_skill_vector_consume[dial_num][label_count]->setPixmap(GLOB::MAP_ITEM[GLOB::LIST_ITEM[i]].scaled(46, 50));
+            left_skill_vector_consume_number[dial_num][label_count]->setText(consume_int(vec[i]));
+            if (++label_count >= 5) break;
         }
     }
 }
 
-QString resource_consume::consume_int(long long val)
+void resource_consume::connection_right_skill_dial()
+{
+    // NOTE!!!
+    // actually this dial should be both left and right responsive!!!
+    // this name is just convenience for the duality
+    QDial *dial = qobject_cast<QDial*>(sender());
+    int dial_num = 3;
+    if      ((dial == right_skill_vector_dial[0]) || (dial == left_skill_vector_dial[0])) dial_num = 0;
+    else if ((dial == right_skill_vector_dial[1]) || (dial == left_skill_vector_dial[1])) dial_num = 1;
+    else if ((dial == right_skill_vector_dial[2]) || (dial == left_skill_vector_dial[2])) dial_num = 2;
+    for (QLabel* label : right_skill_vector_consume[dial_num]) label->setPixmap(GLOB::MAP_EMPTY["skill_small"]);
+    for (QLabel* label : right_skill_vector_consume_number[dial_num]) label->setText("");
+    QVector<int> &consume_total = list_user_skill_consume[dial_num];
+    consume_total = QVector<int>(GLOB::LIST_ITEM.size(), 0);
+    for (int level = left_skill_vector_dial[dial_num]->value(); level < right_skill_vector_dial[dial_num]->value(); ++level)
+        list_plus(consume_total, database_skill_consume[level]);
+    int label_count = 0;
+    for (int i = 0; i < consume_total.size(); ++i)
+    {
+        if (consume_total[i] == 0) continue;
+        right_skill_vector_consume[dial_num][label_count]->setPixmap(GLOB::MAP_ITEM[GLOB::LIST_ITEM[i]].scaled(29, 32));
+        right_skill_vector_consume_number[dial_num][label_count]->setText(consume_int(consume_total[i]));
+        if (++label_count >= 27) break;
+    }
+}
+
+void resource_consume::connection_left_ascension_dial()
+{
+    if (id_number == 1) return;
+    for (QLabel* label : left_ascension_consume) label->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
+    for (QLabel* label : left_ascension_consume_number) label->setText("");
+    if (left_ascension_dial->value() < 4)
+    {
+        int label_count = 0;
+        const QVector<int> &vec = database_ascension_consume[left_ascension_dial->value()];
+        for (int i = 0; i < vec.size(); ++i)
+        {
+            if (vec[i] == 0) continue;
+            left_ascension_consume[label_count]->setPixmap(GLOB::MAP_ITEM[GLOB::LIST_ITEM[i]].scaled(46, 50));
+            left_ascension_consume_number[label_count]->setText(consume_int(vec[i]));
+            if (++label_count >= 5) break;
+        }
+    }
+}
+
+void resource_consume::check_dial_levelup_to_ascension(int in_value)
+{
+    // since we aquire servant rarity, we shouldn't use this routine before database initialization
+    // if level < level_min(ascension), set level_min(ascension)
+    // if level > level_max(ascension), set level_max(ascension)
+    // WARNING!!! USING sender()!!!
+    QDial *level_dial = qobject_cast<QDial*>(sender());
+    QDial *ascension_dial = nullptr;
+    if (level_dial == left_levelup_dial) ascension_dial = left_ascension_dial;
+    else if (level_dial == right_levelup_dial) ascension_dial = right_ascension_dial;
+    if (in_value < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][ascension_dial->value()])
+    {
+        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][ascension_dial->value()]);
+        return;
+    }
+    else if (in_value > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][ascension_dial->value()])
+    {
+        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][ascension_dial->value()]);
+        return;
+    }
+    connection_levelup_dial();
+}
+
+void resource_consume::check_dial_ascension_to_levelup(int in_value)
+{
+    // since we aquire servant rarity, we shouldn't use this routine before database initialization
+    // if level < level_min(ascension), set level_min(ascension)
+    // if level > level_max(ascension), set level_max(ascension)
+    // WARNING!!! USING sender()!!!
+    QDial *ascension_dial = qobject_cast<QDial*>(sender());
+    QDial *level_dial = nullptr;
+    if (ascension_dial == left_ascension_dial) level_dial = left_levelup_dial;
+    else if (ascension_dial == right_ascension_dial) level_dial = right_levelup_dial;
+    if (level_dial->value() < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][in_value])
+        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][in_value]);
+    else if (level_dial->value() > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][in_value])
+        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][in_value]);
+    connection_ascension_and_lvup_consume();
+}
+
+void resource_consume::connection_levelup_dial()
+{
+    left_levelup_consume->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
+    left_levelup_consume_number->setText("");
+    int exp = GLOB::MAP_LEVEL_EXP[right_levelup_dial->value()] - GLOB::MAP_LEVEL_EXP[left_levelup_dial->value()];
+    int val = exp / 27000;
+    if ((exp % 27000) != 0) val += 1;
+    if (val >= 1)
+    {
+        left_levelup_consume->setPixmap(GLOB::MAP_ITEM["Exp"].scaled(36, 50));
+        left_levelup_consume_number->setText(consume_int(val));
+    }
+    connection_ascension_and_lvup_consume();
+}
+
+void resource_consume::connection_ascension_and_lvup_consume()
+{
+    // return values needed in window widget by reference, and update list_user_ascension_and_lvup_consume
+    // palingenesis
+
+    // 1. find if current level is for palingenesis
+    int p_1 = 0, p_2 = 0, p_cup = 0, p_QP = 0;
+    QMap<int, int> map_level = GLOB::VEC_PALINGENESIS_LEVEL[database_ascension_rarity];
+    QMap<int, int> map_QP = GLOB::VEC_PALINGENESIS_QP[database_ascension_rarity];
+    QMap<int, int>::const_iterator it_1 = map_level.constBegin();
+    while (it_1 != map_level.constEnd())
+    {
+        if (left_levelup_dial->value() < it_1.value())
+        {
+            p_1 = it_1.key() - 1;
+            break;
+        }
+        ++it_1;
+    }
+    if (it_1 == map_level.constEnd()) p_1 = (it_1 - 1).key();
+    QMap<int, int>::const_iterator it_2 = map_level.constBegin();
+    while (it_2 != map_level.constEnd())
+    {
+        if (right_levelup_dial->value() < it_2.value())
+        {
+            p_2 = it_2.key() - 1;
+            break;
+        }
+        ++it_2;
+    }
+    if (it_2 == map_level.constEnd()) p_2 = (it_2 - 1).key();
+    // 2. check critical point at the first palingenesis
+    // example (SSR)
+    // if actual = 90, no cup, then p_1 -= 1, that is p_1 = 0
+    // if actual = 90, cup, then p_1 = 0
+    if ((left_ascension_dial->value() == 4) && (left_levelup_dial->value() == 90)) p_1 -= 1;
+    if ((right_ascension_dial->value() == 4) && (right_levelup_dial->value() == 90)) p_2 -= 1;
+    p_cup = p_2 - p_1;
+
+    // 3. calculate and implement consume
+    p_QP = 0;
+    for (int i = p_1 + 1; i < p_2 + 1; ++i)
+    {
+        p_QP += GLOB::VEC_PALINGENESIS_QP[database_ascension_rarity][i];
+    }
+
+    // 4. set icon for left view, but notice that we should not overwrite
+    if (left_ascension_dial->value() >= 4)
+    {
+        for (QLabel* label : left_ascension_consume) label->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
+        for (QLabel* label : left_ascension_consume_number) label->setText("");
+        if (p_cup > 0)
+        {
+            left_ascension_consume[0]->setPixmap(GLOB::MAP_ITEM[QString("Ê¥±­")].scaled(46, 50));
+            left_ascension_consume_number[0]->setText(consume_int(p_cup));
+            left_ascension_consume[1]->setPixmap(GLOB::MAP_ITEM[QString("QP")].scaled(46, 50));
+            left_ascension_consume_number[1]->setText(consume_int(p_QP));
+        }
+    }
+
+    // 5. calculate item cost
+    int a_1 = left_ascension_dial->value(), a_2 = right_ascension_dial->value();
+    if (a_1 > 3) a_1 = 4;
+    if (a_2 > 3) a_2 = 4;
+    list_user_ascension_and_lvup_consume = QVector<int>(GLOB::LIST_ITEM.size(), 0);
+    for (int level = a_1; level < a_2; ++level)
+        list_plus(list_user_ascension_and_lvup_consume, database_ascension_consume[level]);
+    list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("Ê¥±­"))] = p_cup;
+    list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("QP"))] += p_QP;
+
+    // 6. set icon for right view
+    for (QLabel* label : right_ascension_consume) label->setPixmap(GLOB::MAP_EMPTY["skill_small"]);
+    for (QLabel* label : right_ascension_consume_number) label->setText("");
+    int label_count = 0;
+    for (int i = 0; i < list_user_ascension_and_lvup_consume.size(); ++i)
+    {
+        if (list_user_ascension_and_lvup_consume[i] == 0) continue;
+        right_ascension_consume[label_count]->setPixmap(GLOB::MAP_ITEM[GLOB::LIST_ITEM[i]].scaled(29, 32));
+        qDebug() << i << list_user_ascension_and_lvup_consume[i];
+        right_ascension_consume_number[label_count]->setText(consume_int(list_user_ascension_and_lvup_consume[i]));
+        if (++label_count >= 27) break;
+    }
+};
+
+QString resource_consume::consume_int(int val)
 {
     Q_ASSERT(val >= 0);
-    Q_ASSERT(val < 1000LL * 1000LL * 1000LL * 1000LL);
+    // possible no need to set value for the largest value, since int should < 999, 999, 999 < 2,147,483,647
+    // if only one servant, QP consume maximum is 54, 400, 400;
+    // Exp maximum is 20, 311, 400
+    // HOWEVER, if more than 40 SSR servants, long long is required
+    // since this widget only handle one servant, int is enough
     if (val == 0)
         return QString();
     else if (val < 1000)
@@ -295,8 +501,21 @@ QString resource_consume::consume_int(long long val)
     }
 }
 
+void resource_consume::list_minus(QVector<int> &vec_1, const QVector<int> &vec_2)
+{
+    // vec_1 = vec_1 - vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] -= vec_2[i];
+}
 
-
+void resource_consume::list_plus(QVector<int> &vec_1, const QVector<int> &vec_2)
+{
+    // vec_1 = vec_1 + vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i];
+}
 
 
 

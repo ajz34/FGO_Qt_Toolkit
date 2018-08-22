@@ -96,15 +96,13 @@ class resource_consume : public QDialog
     void init_database_display();
     void init_database_consume();
 
-    // database
-    QVector<QMap<QString, long long>> database_skill_consume{ 10, {} };
-    QVector<QMap<QString, long long>> database_ascension_consume{ 4, {}};
-    QVector<QMap<QString, long long>> database_costume_consume{};
+    // data in database
+    QVector<QVector<int>> database_skill_consume{ 10, {} };
+    QVector<QVector<int>> database_ascension_consume{ 4, {}};
+    QVector<QVector<int>> database_costume_consume{};
     int database_skill_rarity = -1;
     int database_ascension_rarity = -1;
-    QVector<long long> list_database_skill_consume;
-    QVector<long long> list_database_ascension_and_lvup_consume;
-    QVector<QVector<long long>> list_database_costume_consume;
+    QVector<QVector<int>> database_costume_consume_total;
 
     // user data in class
     TreeModel *user_data = nullptr;
@@ -135,15 +133,14 @@ class resource_consume : public QDialog
     //   </costume>
     // </servant_xxx>
     // total information
-    QVector<QVector<long long>> list_user_skill_consume{ 3, {} };
-    QVector<QVector<long long>> list_user_ascension_and_lvup_consume{ 3, {} };
-    QVector<QVector<long long>> list_user_costume_consume{};
-    QVector<QVector<long long>> list_deviation_skill_consume{ 3, {} };
-    QVector<QVector<long long>> list_deviation_ascension_and_lvup_consume{ 3, {} };
-    QVector<QVector<long long>> list_deviation_costume_consume{};
+    QVector<QVector<int>> list_user_skill_consume{ 3, {} };
+    QVector<int> list_user_ascension_and_lvup_consume{};
+    QVector<QVector<int>> list_user_costume_consume{};
 
     // utility
-    QString consume_int(long long val);
+    QString consume_int(int val);
+    void list_minus(QVector<int> &vec_1, const QVector<int> &vec_2);
+    void list_plus(QVector<int> &vec_1, const QVector<int> &vec_2);
 
 	//--- Widget connection
     void set_widget_internal_connection();
@@ -163,9 +160,15 @@ private slots:
 	void check_dial_right_to_left(int in_value);
     void check_ascension_5(int in_value);
     inline void check_levelup_LCD_overflow() { QLCDNumber *LCD = qobject_cast<QLCDNumber*>(sender()); LCD->display("UP"); }
+    void check_dial_levelup_to_ascension(int in_value);
+    void check_dial_ascension_to_levelup(int in_value);
 
     //--- connection
     void connection_left_skill_dial();
+    void connection_right_skill_dial();
+    void connection_left_ascension_dial();
+    void connection_levelup_dial();
+    void connection_ascension_and_lvup_consume();
 
 public:
 	resource_consume(QWidget *parent = nullptr);
