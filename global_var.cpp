@@ -1,19 +1,21 @@
 #include "global_var.h"
 
 QMap<QString, QPixmap> GLOB::MAP_SKILL_ICON;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_PIECE_SILVER;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_PIECE_GOLD;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_GEM_SHINING;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_GEM_MAGIC;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_GEM_SECRET;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_BRONZE;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_SILVER;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_GOLD;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_EVENT;
-QMap<QString, QPixmap> GLOB::MAP_ITEM_MISC;
+QVector<QString> GLOB::LIST_ITEM_PIECE_SILVER;
+QVector<QString> GLOB::LIST_ITEM_PIECE_GOLD;
+QVector<QString> GLOB::LIST_ITEM_GEM_SHINING;
+QVector<QString> GLOB::LIST_ITEM_GEM_MAGIC;
+QVector<QString> GLOB::LIST_ITEM_GEM_SECRET;
+QVector<QString> GLOB::LIST_ITEM_BRONZE;
+QVector<QString> GLOB::LIST_ITEM_SILVER;
+QVector<QString> GLOB::LIST_ITEM_GOLD;
+QVector<QString> GLOB::LIST_ITEM_EVENT;
+QVector<QString> GLOB::LIST_ITEM_MISC;
+QVector<QString> GLOB::LIST_ITEM;
+QMap<QString, QPixmap> GLOB::MAP_ITEM;
 QMap<QString, QPixmap> GLOB::MAP_CARD;
 QMap<QString, QPixmap> GLOB::MAP_CLASS;
-QVector<QString> GLOB::LIST_ITEM;
+QMap<QString, QPixmap> GLOB::MAP_EMPTY;
 
 void GLOB::MAP_INIT()
 {
@@ -35,7 +37,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_PIECE_SILVER[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_PIECE_SILVER.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -46,7 +49,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_PIECE_GOLD[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_PIECE_GOLD.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -57,7 +61,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_GEM_SHINING[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_GEM_SHINING.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -68,7 +73,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_GEM_MAGIC[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_GEM_MAGIC.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -79,7 +85,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_GEM_SECRET[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_GEM_SECRET.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -90,7 +97,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_BRONZE[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_BRONZE.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -101,7 +109,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_SILVER[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_SILVER.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -112,7 +121,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_GOLD[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_GOLD.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -123,7 +133,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_EVENT[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_EVENT.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -134,7 +145,8 @@ void GLOB::MAP_INIT()
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
 		{
-			MAP_ITEM_MISC[it->fileInfo().baseName()] = QPixmap(it->filePath());
+            LIST_ITEM_MISC.push_back(it->fileInfo().baseName());
+            MAP_ITEM[it->fileInfo().baseName()] = QPixmap(it->filePath());
 			LIST_ITEM.push_back(it->fileInfo().baseName());
 		}
 	}
@@ -163,6 +175,15 @@ void GLOB::MAP_INIT()
 		{ "A", QPixmap(":/card_color/images/card_color/Arts.png") },
 		{ "B", QPixmap(":/card_color/images/card_color/Buster.png") },
 	};
+    // MAP_EMPTY
+    MAP_EMPTY =
+    {
+        { "skill_small", QPixmap(":/empty/images/empty_figure/skill_consume_empty.png").scaled(29, 32) },
+        { "skill_large", QPixmap(":/empty/images/empty_figure/skill_consume_empty.png").scaled(46, 50) },
+        { "servant", QPixmap(":/empty/images/empty_figure/servant_empty.png") },
+        { "skill_icon", QPixmap(":/empty/images/empty_figure/skill_empty.png") },
+        { "skill", QPixmap(":/empty/images/empty_figure/skill_consume_empty.png") },
+    };
 }
 
 QVector<QMap<int, int>> GLOB::VEC_ASCENSION_LEVELMIN =

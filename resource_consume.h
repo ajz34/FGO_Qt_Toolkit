@@ -93,11 +93,61 @@ class resource_consume : public QDialog
 	QVector<TreeModel*> *wiki_database = nullptr;
 	QVector<QPixmap> *servant_icon_button_image = nullptr;
 	int id_number = 0;
-	void init_database();
+    void init_database_display();
+    void init_database_consume();
 
-	// user data
-	TreeModel *user_data = nullptr;
-	void init_user_data();
+    // database
+    QVector<QMap<QString, long long>> database_skill_consume{ 10, {} };
+    QVector<QMap<QString, long long>> database_ascension_consume{ 4, {}};
+    QVector<QMap<QString, long long>> database_costume_consume{};
+    int database_skill_rarity = -1;
+    int database_ascension_rarity = -1;
+    QVector<long long> list_database_skill_consume;
+    QVector<long long> list_database_ascension_and_lvup_consume;
+    QVector<QVector<long long>> list_database_costume_consume;
+
+    // user data in class
+    TreeModel *user_data = nullptr;
+    void init_user_data();
+    // <servant_xxx>
+    int user_servant_id = 0;
+    //   <status>
+    int user_follow = 0;
+    int user_priority = 0;
+    int user_existance = 0;
+    //   </status>
+    //   <actual>
+    int user_actual_ascension = 0;
+    int user_actual_level = 1;
+    int user_actual_skill_1 = 1;
+    int user_actual_skill_2 = 1;
+    int user_actual_skill_3 = 1;
+    //   </actual>
+    //   <ideal>
+    int user_ideal_ascension = 0;
+    int user_ideal_level = 1;
+    int user_ideal_skill_1 = 1;
+    int user_ideal_skill_2 = 1;
+    int user_ideal_skill_3 = 1;
+    //   </ideal>
+    //   <costume>
+    QVector<int> user_costume;
+    //   </costume>
+    // </servant_xxx>
+    // total information
+    QVector<QVector<long long>> list_user_skill_consume{ 3, {} };
+    QVector<QVector<long long>> list_user_ascension_and_lvup_consume{ 3, {} };
+    QVector<QVector<long long>> list_user_costume_consume{};
+    QVector<QVector<long long>> list_deviation_skill_consume{ 3, {} };
+    QVector<QVector<long long>> list_deviation_ascension_and_lvup_consume{ 3, {} };
+    QVector<QVector<long long>> list_deviation_costume_consume{};
+
+    // utility
+    QString consume_int(long long val);
+
+	//--- Widget connection
+    void set_widget_internal_connection();
+    void set_widget_database_connection();
 
 public slots:
 	void data_transin(
@@ -106,6 +156,16 @@ public slots:
 		QVector<QPixmap> *servant_icon,
 		int id,
 		TreeModel *user_dat);
+
+private slots:
+    //--- Layout
+	void check_dial_left_to_right(int in_value);
+	void check_dial_right_to_left(int in_value);
+    void check_ascension_5(int in_value);
+    inline void check_levelup_LCD_overflow() { QLCDNumber *LCD = qobject_cast<QLCDNumber*>(sender()); LCD->display("UP"); }
+
+    //--- connection
+    void connection_left_skill_dial();
 
 public:
 	resource_consume(QWidget *parent = nullptr);

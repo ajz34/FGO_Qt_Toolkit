@@ -11,7 +11,8 @@ resource_consume::resource_consume(QWidget *parent)
 	set_right_costume_widget();
 	set_layout();
 
-	// initialize
+	// widget connection
+    set_widget_internal_connection();
 }
 
 resource_consume::~resource_consume()
@@ -35,7 +36,7 @@ void resource_consume::set_lower_skill_widget()
 	left_skill_dial->setNotchesVisible(true);
 	left_skill_dial->setMinimum(1);
 	left_skill_dial->setMaximum(10);
-	left_skill_dial->setEnabled(false);
+    left_skill_dial->setEnabled(true);
 	left_skill_dial_LCD->setFrameShape(QFrame::NoFrame);
 
 	auto left_skill_layout_comb_1 = new QGridLayout;
@@ -59,7 +60,7 @@ void resource_consume::set_lower_skill_widget()
 	{
 		QLabel *label = new QLabel;
 		label->setFixedSize(QSize(50, 15));
-		label->setText("54.44M");
+        label->setText("");
 		QFont font;
 		font.setPixelSize(15);
 		font.setBold(true);
@@ -177,7 +178,7 @@ void resource_consume::set_lower_right_widget()
 	{
 		QLabel *label = new QLabel;
 		label->setFixedSize(QSize(32, 10));
-		label->setText("54.44M");
+        label->setText("");
 		QFont font;
 		font.setPixelSize(9);
 		font.setFamily("Arial");
@@ -256,11 +257,11 @@ void resource_consume::set_middle_left_widget()
 	left_levelup_dial->setNotchesVisible(true);
 	left_levelup_dial->setMinimum(1);
 	left_levelup_dial->setMaximum(100);
-	left_levelup_dial->setEnabled(false);
+    left_levelup_dial->setEnabled(true);
 	left_ascension_dial->setNotchesVisible(true);
 	left_ascension_dial->setMinimum(0);
 	left_ascension_dial->setMaximum(5);
-	left_ascension_dial->setEnabled(false);
+    left_ascension_dial->setEnabled(true);
 
 	auto left_ascension_layout_comb_1 = new QGridLayout;
 	left_ascension_layout_comb_1->addWidget(left_levelup_dial, 0, 0, Qt::AlignCenter);
@@ -285,7 +286,7 @@ void resource_consume::set_middle_left_widget()
 	{
 		QLabel *label = new QLabel;
 		label->setFixedSize(QSize(50, 15));
-		label->setText("54.44M");
+        label->setText("");
 		QFont font;
 		font.setPixelSize(15);
 		font.setBold(true);
@@ -388,7 +389,7 @@ void resource_consume::set_middle_right_widget()
 	{
 		QLabel *label = new QLabel;
 		label->setFixedSize(QSize(32, 10));
-		label->setText("54.44M");
+        label->setText("");
 		QFont font;
 		font.setPixelSize(9);
 		font.setFamily("Arial");
@@ -506,14 +507,14 @@ void resource_consume::set_right_costume_widget()
 	right_info_icon->setPixmap(QPixmap(":/empty/images/empty_figure/servant_empty.png").scaled(138, 150));
 
 	right_costume_combobox = new QComboBox;
-	right_costume_combobox->setEnabled(false);
+    right_costume_combobox->setEnabled(true);
 
 	right_costume_group = new QGroupBox;
 	auto right_costume_layout_comb_1 = new QGridLayout;
 	right_costume_layout_comb_1->addWidget(right_costume_combobox);
 	right_costume_group->setLayout(right_costume_layout_comb_1);
 	right_costume_group->setTitle(tr("Costume"));
-	right_costume_group->setEnabled(false);
+    right_costume_group->setEnabled(true);
 
 	for (int i = 0; i < 5; ++i)
 	{
@@ -527,7 +528,7 @@ void resource_consume::set_right_costume_widget()
 	{
 		QLabel *label = new QLabel;
 		label->setFixedSize(QSize(50, 15));
-		label->setText("54.44M");
+        label->setText("");
 		QFont font;
 		font.setPixelSize(15);
 		font.setBold(true);
@@ -593,4 +594,94 @@ void resource_consume::set_layout()
 	layout_final->addWidget(scroll);
 	setLayout(layout_final);
 	setWindowFlags(Qt::Window);
+}
+
+void resource_consume::set_widget_internal_connection()
+{
+    // NOTE!!!
+    // this function should be static connection only, so no database information should be included here
+    // for database-related connection implementation, go to init_database_widget_connection
+
+    // combination
+    QVector<QDial*> left_dials = { left_ascension_dial, left_levelup_dial,
+        left_skill_vector_dial[0], left_skill_vector_dial[1], left_skill_vector_dial[2] };
+    QVector<QDial*> right_dials = { right_ascension_dial, right_levelup_dial,
+        right_skill_vector_dial[0], right_skill_vector_dial[1], right_skill_vector_dial[2] };
+    QVector<QLCDNumber*> left_LCDs = { left_ascension_dial_LCD, left_levelup_dial_LCD,
+        left_skill_vector_dial_LCD[0], left_skill_vector_dial_LCD[1], left_skill_vector_dial_LCD[2] };
+    QVector<QLCDNumber*> right_LCDs = { right_ascension_dial_LCD, right_levelup_dial_LCD,
+        right_skill_vector_dial_LCD[0], right_skill_vector_dial_LCD[1], right_skill_vector_dial_LCD[2] };
+
+    // dial-dial and dial-LCD control
+    // if Qt::QueuedConnection not set, the right LCD won't change value when right dial value setted lower than left dial
+    // reason: signal(valueChanged) -> [ check_dial_right_to_left -> signal(valueChanged) ]
+    //         |-> emitter thread        |-> receiver thread
+    // emitter thread will ignore the receiver's behavior, so using Qt::QueuedConnection to use receiver thread
+    // this should be useful in looped emit-receive event
+    // https://stackoverflow.com/questions/1144240/qt-how-to-call-slot-from-custom-c-code-running-in-a-different-thread
+    for (int i = 0; i < 5; ++i)
+    {
+        connect(left_dials[i], &QDial::valueChanged, this, &resource_consume::check_dial_left_to_right);
+        connect(right_dials[i], &QDial::valueChanged, this, &resource_consume::check_dial_right_to_left, Qt::QueuedConnection);
+        if (i != 0)
+        {
+            connect(left_dials[i], &QDial::valueChanged, left_LCDs[i], QOverload<int>::of(&QLCDNumber::display));
+            connect(right_dials[i], &QDial::valueChanged, right_LCDs[i], QOverload<int>::of(&QLCDNumber::display));
+        }
+        else
+        {
+            connect(left_dials[i], &QDial::valueChanged, this, &resource_consume::check_ascension_5);
+            connect(right_dials[i], &QDial::valueChanged, this, &resource_consume::check_ascension_5);
+        }
+    }
+    // overflow only occurs when level is 100
+    connect(left_levelup_dial_LCD, &QLCDNumber::overflow, this, &resource_consume::check_levelup_LCD_overflow);
+    connect(right_levelup_dial_LCD, &QLCDNumber::overflow, this, &resource_consume::check_levelup_LCD_overflow);
+
+}
+
+void resource_consume::check_dial_right_to_left(int in_value)
+{
+    // if right dial value smaller than left dial, set right dial the left dial value
+    // WARNING!!! USING sender()!!!
+    QDial *right_dial = qobject_cast<QDial*>(sender());
+    QDial *left_dial = nullptr;
+    if (right_dial == right_levelup_dial) left_dial = left_levelup_dial;
+    else if (right_dial == right_ascension_dial) left_dial = left_ascension_dial;
+    else if (right_dial == right_skill_vector_dial[0]) left_dial = left_skill_vector_dial[0];
+    else if (right_dial == right_skill_vector_dial[1]) left_dial = left_skill_vector_dial[1];
+    else if (right_dial == right_skill_vector_dial[2]) left_dial = left_skill_vector_dial[2];
+    if (in_value < left_dial->value())
+    {
+        right_dial->setValue(left_dial->value());
+    }
+}
+
+void resource_consume::check_dial_left_to_right(int in_value)
+{
+    // if left dial value larger than right dial, set right dial the left dial value
+    // WARNING!!! USING sender()!!!
+    QDial *left_dial = qobject_cast<QDial*>(sender());
+    QDial *right_dial = nullptr;
+    if (left_dial == left_levelup_dial) right_dial = right_levelup_dial;
+    else if (left_dial == left_ascension_dial) right_dial = right_ascension_dial;
+    else if (left_dial == left_skill_vector_dial[0]) right_dial = right_skill_vector_dial[0];
+    else if (left_dial == left_skill_vector_dial[1]) right_dial = right_skill_vector_dial[1];
+    else if (left_dial == left_skill_vector_dial[2]) right_dial = right_skill_vector_dial[2];
+    if (in_value > right_dial->value()) right_dial->setValue(left_dial->value());
+}
+
+void resource_consume::check_ascension_5(int in_value)
+{
+    // if left dial value larger than right dial, set right dial the left dial value
+    // WARNING!!! USING sender()!!!
+    QDial *dial = qobject_cast<QDial*>(sender());
+    QLCDNumber *LCD = nullptr;
+    qDebug() << LCD;
+    if (dial == left_ascension_dial) LCD = left_ascension_dial_LCD;
+    else if (dial == right_ascension_dial) LCD = right_ascension_dial_LCD;
+    if (in_value == 5)
+        LCD->display("UP");
+    else
+        LCD->display(in_value);
 }

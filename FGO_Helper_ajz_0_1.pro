@@ -20,27 +20,34 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp \
     qclickablefigurelabel.cpp \
-    tab_widget_servant.cpp \
+    qrightclickpushbutton.cpp \
+    resource_consume_connection.cpp \
+    resource_consume_layout.cpp \
     tab_widget_servant_connection.cpp \
+    tab_widget_servant_list.cpp \
     treeitem.cpp \
     treemodel.cpp \
     xml_editable_mainwindow.cpp \
-    database_dialog.cpp
+    database_dialog.cpp \
+    global_var.cpp
 
 HEADERS += \
-        mainwindow.h \
+    mainwindow.h \
     qclickablefigurelabel.h \
+    qrightclickpushbutton.h \
+    resource_consume.h \
     tab_widget_servant.h \
     treeitem.h \
     treemodel.h \
     xml_editable_mainwindow.h \
-    database_dialog.h
+    database_dialog.h \
+    global_var.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -52,3 +59,5 @@ FORMS += \
 
 RESOURCES += \
     widget_images.qrc
+
+DISTFILES +=

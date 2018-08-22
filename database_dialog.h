@@ -24,7 +24,7 @@ signals:
 	void database_transout(QVector<QString> path_file);
 
 private slots:
-	inline void database_accepted_slot();
+	void database_accepted_slot();
 
 public slots:
 	void database_transin(QVector<QString> path_file);
