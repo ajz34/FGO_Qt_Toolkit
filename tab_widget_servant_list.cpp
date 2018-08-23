@@ -282,6 +282,9 @@ void tab_widget_servant::set_filter_layout()
 void tab_widget_servant::set_table_widget()
 {
 	table_widget = new QTableView;
+    // scroll for pixels but not for items
+    // https://stackoverflow.com/questions/2016323/qt4-is-it-possible-to-make-a-qlistview-scroll-smoothly
+    table_widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	table_widget_model = new QStandardItemModel;
 	table_widget_model_origin = new QStandardItemModel;
 }

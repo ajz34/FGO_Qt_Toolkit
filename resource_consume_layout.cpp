@@ -40,10 +40,12 @@ void resource_consume::set_lower_skill_widget()
     left_skill_dial_LCD->setFrameShape(QFrame::NoFrame);
 
     auto left_skill_layout_comb_1 = new QGridLayout;
-    left_skill_layout_comb_1->addWidget(left_skill_icon, 0, 0, 1, 2, Qt::AlignCenter);
-    left_skill_layout_comb_1->addWidget(left_skill_dial, 1, 0, Qt::AlignCenter);
-    left_skill_layout_comb_1->addWidget(left_skill_dial_LCD, 1, 1, Qt::AlignCenter);
-    left_skill_layout_comb_1->setVerticalSpacing(21);
+    // left_skill_layout_comb_1->addWidget(left_skill_icon, 0, 0, 1, 2, Qt::AlignCenter);
+    // left_skill_layout_comb_1->addWidget(left_skill_dial, 1, 0, Qt::AlignCenter);
+    // left_skill_layout_comb_1->addWidget(left_skill_dial_LCD, 1, 1, Qt::AlignCenter);
+    left_skill_layout_comb_1->addWidget(left_skill_dial, 0, 0, Qt::AlignBottom | Qt::AlignHCenter);
+    left_skill_layout_comb_1->addWidget(left_skill_dial_LCD, 0, 1, Qt::AlignBottom | Qt::AlignHCenter);
+    // left_skill_layout_comb_1->setVerticalSpacing(21);
     left_skill_layout_comb_1->setHorizontalSpacing(8);
 
     QVector<QLabel*> left_skill_consume{};
@@ -89,7 +91,7 @@ void resource_consume::set_lower_skill_widget()
     font.setWeight(QFont::Medium);
     font.setStyleHint(QFont::SansSerif);
     left_skill_name->setFont(font);
-    left_skill_name->setMaximumWidth(180);
+    // left_skill_name->setMaximumWidth(180);
     left_skill_cd->setDigitCount(2);
     left_skill_cd->display(88);
     left_skill_cd->setFixedSize(QSize(40, 30));
@@ -99,9 +101,9 @@ void resource_consume::set_lower_skill_widget()
     auto box_name_layout = new QGridLayout;
     box_name->setTitle(tr("Skill"));
     box_name->setAlignment(Qt::AlignLeft);
-    box_name_layout->addWidget(left_skill_name, 0, 0, Qt::AlignCenter);
+    box_name_layout->addWidget(left_skill_name, 0, 0, Qt::AlignLeft);
     box_name->setLayout(box_name_layout);
-    box_name->setContentsMargins(0, 8, 0, 0);
+    box_name->setContentsMargins(30, 8, 1, 0);
     auto box_cd = new QGroupBox;
     auto box_cd_layout = new QGridLayout;
     box_cd->setTitle(tr("CD"));
@@ -113,14 +115,18 @@ void resource_consume::set_lower_skill_widget()
     auto left_skill_layout_comb_3 = new QGridLayout;
     left_skill_layout_comb_3->addWidget(box_name, 0, 0);
     left_skill_layout_comb_3->addWidget(box_cd, 0, 1);
-    left_skill_layout_comb_3->setColumnStretch(0, 5);
+    // left_skill_layout_comb_3->setColumnStretch(0, 5);
+    left_skill_layout_comb_3->setColumnStretch(0, 7);
     left_skill_layout_comb_3->setColumnStretch(1, 1);
     left_skill_layout_comb_3->setHorizontalSpacing(15);
 
     auto left_skill_layout_comb = new QGridLayout;
-    left_skill_layout_comb->addLayout(left_skill_layout_comb_1, 0, 0, 2, 1);
+    // left_skill_layout_comb->addLayout(left_skill_layout_comb_1, 0, 0, 2, 1);
+    // left_skill_layout_comb->addLayout(left_skill_layout_comb_2, 1, 1);
+    // left_skill_layout_comb->addLayout(left_skill_layout_comb_3, 0, 1);
+    left_skill_layout_comb->addLayout(left_skill_layout_comb_1, 1, 0);
     left_skill_layout_comb->addLayout(left_skill_layout_comb_2, 1, 1);
-    left_skill_layout_comb->addLayout(left_skill_layout_comb_3, 0, 1);
+    left_skill_layout_comb->addLayout(left_skill_layout_comb_3, 0, 0, 1, 2);
     left_skill_layout_comb->setVerticalSpacing(15);
     left_skill_layout_comb->setHorizontalSpacing(20);
 
@@ -507,11 +513,15 @@ void resource_consume::set_right_costume_widget()
     right_info_icon->setPixmap(QPixmap(":/empty/images/empty_figure/servant_empty.png").scaled(138, 150));
 
     right_costume_combobox = new QComboBox;
-    right_costume_combobox->setEnabled(true);
+    right_costume_combobox->setEnabled(false);
+    right_costume_check = new QCheckBox;
+    right_costume_check->setText(tr("Follow"));
+    right_costume_check->setEnabled(false);
 
     right_costume_group = new QGroupBox;
-    auto right_costume_layout_comb_1 = new QGridLayout;
+    auto right_costume_layout_comb_1 = new QHBoxLayout;
     right_costume_layout_comb_1->addWidget(right_costume_combobox);
+    right_costume_layout_comb_1->addWidget(right_costume_check);
     right_costume_group->setLayout(right_costume_layout_comb_1);
     right_costume_group->setTitle(tr("Costume"));
     right_costume_group->setEnabled(true);
@@ -616,6 +626,11 @@ void resource_consume::set_widget_internal_connection()
         connect(left_skill_vector_dial[i], &QDial::valueChanged, left_skill_vector_dial_LCD[i], QOverload<int>::of(&QLCDNumber::display));
         connect(right_skill_vector_dial[i], &QDial::valueChanged, right_skill_vector_dial_LCD[i], QOverload<int>::of(&QLCDNumber::display));
     }
+
+    // checkout box - widget control
+    connect(left_info_follow, &QGroupBox::toggled, this, &resource_consume::check_box_control);
+    connect(left_info_existance, &QCheckBox::toggled, this, &resource_consume::check_box_control);
+    connect(right_costume_check, &QCheckBox::toggled, this, &resource_consume::check_box_control);
 }
 
 void resource_consume::check_dial_right_to_left(int in_value)
@@ -640,4 +655,47 @@ void resource_consume::check_dial_left_to_right(int in_value)
     else if (left_dial == left_skill_vector_dial[1]) right_dial = right_skill_vector_dial[1];
     else if (left_dial == left_skill_vector_dial[2]) right_dial = right_skill_vector_dial[2];
     if (in_value > right_dial->value()) right_dial->setValue(left_dial->value());
+}
+
+void resource_consume::check_box_control()
+{
+    if (!(left_info_follow->isChecked()))
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            left_skill_vector_widget[i]->setEnabled(false);
+            right_skill_vector_widget[i]->setEnabled(false);
+        }
+        left_ascension_widget->setEnabled(false);
+        right_ascension_widget->setEnabled(false);
+        right_costume_widget->setEnabled(false);
+        return;
+    }
+    else
+    {
+        for (int i = 0; i < 3; ++i)
+            right_skill_vector_widget[i]->setEnabled(true);
+        right_ascension_widget->setEnabled(true);
+        right_costume_widget->setEnabled(true);
+        if (!(left_info_existance->isChecked()))
+        {
+            for (int i = 0; i < 3; ++i)
+                left_skill_vector_widget[i]->setEnabled(false);
+            left_ascension_widget->setEnabled(false);
+        }
+        else
+        {
+            for (int i = 0; i < 3; ++i)
+                left_skill_vector_widget[i]->setEnabled(true);
+            left_ascension_widget->setEnabled(true);
+        }
+        if (!(right_costume_check->isChecked()))
+        {
+            for (int i = 0; i < 5; ++i)
+            {
+                right_costume_consume[i]->setEnabled(false);
+                right_costume_consume_number[i]->setEnabled(false);
+            }
+        }
+    }
 }

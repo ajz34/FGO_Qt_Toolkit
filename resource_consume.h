@@ -71,6 +71,7 @@ class resource_consume : public QDialog
 	// right costume
 	QLabel *right_info_icon = nullptr;
 	QComboBox *right_costume_combobox = nullptr;
+    QCheckBox *right_costume_check = nullptr;
 	QGroupBox *right_costume_group = nullptr;
 	QVector<QLabel*> right_costume_consume{};
 	QVector<QLabel*> right_costume_consume_number{};
@@ -158,6 +159,7 @@ private slots:
     //--- Layout
 	void check_dial_left_to_right(int in_value);
     void check_dial_right_to_left(int in_value);
+    void check_box_control();
 
     //--- connection
     void connection_left_skill_dial();

@@ -31,6 +31,9 @@ int main(int argc, char *argv[])
 		translator.load("fgo_helper_ajz_0_1_tc");
 	a.installTranslator(&translator);
 
+    // set scroll line
+    a.setWheelScrollLines(1);
+
 	// MainWindow
     MainWindow w;
     w.show();

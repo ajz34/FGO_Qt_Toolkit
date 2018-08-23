@@ -15,8 +15,8 @@ void resource_consume::data_transin(
 
     init_database_display();
     init_database_consume();
-    init_user_data();
     set_widget_database_connection();
+    init_user_data();
 }
 
 void resource_consume::init_database_display()
@@ -115,6 +115,8 @@ void resource_consume::init_database_display()
         left_skill_vector_icon[2]->setPixmap(GLOB::MAP_SKILL_ICON[model->data(index_skill_icon_3.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(70, 70));
         right_skill_vector_icon[2]->setPixmap(GLOB::MAP_SKILL_ICON[model->data(index_skill_icon_3.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(70, 70));
     }
+
+    // costume
 }
 
 void resource_consume::init_database_consume()
@@ -172,6 +174,32 @@ void resource_consume::init_database_consume()
     {
         database_ascension_rarity = 4;
     }
+
+    // initialize database_costume_consume
+    QModelIndex index_costume = model->item_find("costume", model->index(0, 0));
+    if (index_costume.isValid())
+    {
+        for (int costume_it = 0; costume_it < model->rowCount(index_costume); ++costume_it)
+        {
+            QVector<int> vec = QVector<int>(GLOB::LIST_ITEM.size());
+            QModelIndex index_costume_cur = model->index(costume_it, 0, index_costume);
+            for (int item_it = 0; item_it < model->rowCount(index_costume_cur); ++item_it)
+            {
+                QModelIndex index_costume_cur_item = model->index(item_it, 0, index_costume_cur);
+                if (model->data(index_costume_cur_item, Qt::DisplayRole).toString() == QString("name"))
+                {
+                    right_costume_combobox->insertItem(0,
+                        model->data(model->item_find("name_sc", index_costume_cur_item).siblingAtColumn(1), Qt::DisplayRole).toString());
+                }
+                else
+                {
+                    vec[GLOB::LIST_ITEM.indexOf(model->data(index_costume_cur_item, Qt::DisplayRole).toString())] =
+                            model->data(index_costume_cur_item.siblingAtColumn(1), Qt::DisplayRole).toInt();
+                }
+            }
+            database_costume_consume.push_back(vec);
+        }
+    }
 }
 
 void resource_consume::init_user_data()
@@ -226,10 +254,35 @@ void resource_consume::init_user_data()
     //   <costume>
     QModelIndex index_costume = user_data->item_find("costume", index_user_id);
     //     in costume, we just count the number of childs, but not check the costume name here
-    for (int i = 0; i < user_data->rowCount(index_costume); ++i)
+    //     at the same time, equal or less than database values are accepted, or may some code will corrupt
+    for (int i = 0; (i < user_data->rowCount(index_costume)) && (i < database_costume_consume.size()); ++i)
         user_costume.push_back(user_data->data(user_data->index(i, 1, index_costume), Qt::DisplayRole).toInt());
     //   </costume>
     // </servant_xxx>
+
+    // 2. initialize window widgets
+    // should be sequence-dependent?
+    // left first, bottom first
+    // we need to force emit value changed signal
+    // assist_func
+    auto force_dial_emit = [this](QDial *dial, const int &value)
+    {
+        dial->setValue(value);
+        emit dial->valueChanged(value);
+    };
+    force_dial_emit(left_skill_vector_dial[0], user_actual_skill_1);
+    force_dial_emit(left_skill_vector_dial[1], user_actual_skill_2);
+    force_dial_emit(left_skill_vector_dial[2], user_actual_skill_3);
+    force_dial_emit(right_skill_vector_dial[0], user_ideal_skill_1);
+    force_dial_emit(right_skill_vector_dial[1], user_ideal_skill_2);
+    force_dial_emit(right_skill_vector_dial[2], user_ideal_skill_3);
+    force_dial_emit(left_ascension_dial, user_actual_ascension);
+    force_dial_emit(right_ascension_dial, user_ideal_ascension);
+    force_dial_emit(left_levelup_dial, user_actual_level);
+    force_dial_emit(right_levelup_dial, user_ideal_level);
+    left_info_priority[user_priority]->setChecked(true); left_info_priority[user_priority]->toggled(true);
+    left_info_existance->setChecked(user_existance > 0); left_info_existance->toggled(user_existance > 0);
+    left_info_follow->setChecked(user_follow > 0); left_info_follow->toggled(user_follow > 0);
 }
 
 void resource_consume::set_widget_database_connection()
