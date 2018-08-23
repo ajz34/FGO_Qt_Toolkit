@@ -101,9 +101,9 @@ class resource_consume : public QDialog
     QVector<QVector<int>> database_skill_consume{ 10, {} };
     QVector<QVector<int>> database_ascension_consume{ 4, {}};
     QVector<QVector<int>> database_costume_consume{};
+    QVector<int> database_skill_cd = QVector<int>(3, 0);
     int database_skill_rarity = -1;
     int database_ascension_rarity = -1;
-    QVector<QVector<int>> database_costume_consume_total;
 
     // user data in class
     TreeModel *user_data = nullptr;
@@ -168,10 +168,15 @@ private slots:
     void connection_levelup_dial();
     void connection_ascension_and_lvup_consume();
     void connection_ascension_levelup_mess();
+    void connection_costume_combobox(int in_value);
+    void connection_costume_checkbox(bool in_value);
+
+private:
+    void finalize();
 
 public:
 	resource_consume(QWidget *parent = nullptr);
-	~resource_consume();
+    ~resource_consume();
 };
 
 #endif // MAINWINDOW_H

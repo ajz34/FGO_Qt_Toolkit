@@ -17,7 +17,7 @@ resource_consume::resource_consume(QWidget *parent)
 
 resource_consume::~resource_consume()
 {
-
+    finalize();
 }
 
 void resource_consume::set_lower_skill_widget()
@@ -695,6 +695,14 @@ void resource_consume::check_box_control()
             {
                 right_costume_consume[i]->setEnabled(false);
                 right_costume_consume_number[i]->setEnabled(false);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 5; ++i)
+            {
+                right_costume_consume[i]->setEnabled(true);
+                right_costume_consume_number[i]->setEnabled(true);
             }
         }
     }

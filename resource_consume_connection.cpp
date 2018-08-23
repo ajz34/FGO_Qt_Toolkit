@@ -97,6 +97,9 @@ void resource_consume::init_database_display()
     QModelIndex index_skill_icon_1 = model->item_find("icon", index_skill_1);
     QModelIndex index_skill_icon_2 = model->item_find("icon", index_skill_2);
     QModelIndex index_skill_icon_3 = model->item_find("icon", index_skill_3);
+    QModelIndex index_skill_cd_1 = model->item_find("cool_time", index_skill_1);
+    QModelIndex index_skill_cd_2 = model->item_find("cool_time", index_skill_2);
+    QModelIndex index_skill_cd_3 = model->item_find("cool_time", index_skill_3);
     if (index_skill_name_1.isValid()) left_skill_vector_name[0]->setText(model->data(index_skill_name_1.siblingAtColumn(1), Qt::DisplayRole).toString());
     if (index_skill_name_2.isValid()) left_skill_vector_name[1]->setText(model->data(index_skill_name_2.siblingAtColumn(1), Qt::DisplayRole).toString());
     if (index_skill_name_3.isValid()) left_skill_vector_name[2]->setText(model->data(index_skill_name_3.siblingAtColumn(1), Qt::DisplayRole).toString());
@@ -115,8 +118,9 @@ void resource_consume::init_database_display()
         left_skill_vector_icon[2]->setPixmap(GLOB::MAP_SKILL_ICON[model->data(index_skill_icon_3.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(70, 70));
         right_skill_vector_icon[2]->setPixmap(GLOB::MAP_SKILL_ICON[model->data(index_skill_icon_3.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(70, 70));
     }
-
-    // costume
+    if (index_skill_cd_1.isValid()) database_skill_cd[0] = model->data(index_skill_cd_1.siblingAtColumn(1), Qt::DisplayRole).toString().split("→")[0].toInt();
+    if (index_skill_cd_2.isValid()) database_skill_cd[1] = model->data(index_skill_cd_2.siblingAtColumn(1), Qt::DisplayRole).toString().split("→")[0].toInt();
+    if (index_skill_cd_3.isValid()) database_skill_cd[2] = model->data(index_skill_cd_3.siblingAtColumn(1), Qt::DisplayRole).toString().split("→")[0].toInt();
 }
 
 void resource_consume::init_database_consume()
@@ -188,7 +192,7 @@ void resource_consume::init_database_consume()
                 QModelIndex index_costume_cur_item = model->index(item_it, 0, index_costume_cur);
                 if (model->data(index_costume_cur_item, Qt::DisplayRole).toString() == QString("name"))
                 {
-                    right_costume_combobox->insertItem(0,
+                    right_costume_combobox->insertItem(costume_it,
                         model->data(model->item_find("name_sc", index_costume_cur_item).siblingAtColumn(1), Qt::DisplayRole).toString());
                 }
                 else
@@ -255,6 +259,7 @@ void resource_consume::init_user_data()
     QModelIndex index_costume = user_data->item_find("costume", index_user_id);
     //     in costume, we just count the number of childs, but not check the costume name here
     //     at the same time, equal or less than database values are accepted, or may some code will corrupt
+    user_costume = QVector<int>(database_costume_consume.size(), 0);
     for (int i = 0; (i < user_data->rowCount(index_costume)) && (i < database_costume_consume.size()); ++i)
         user_costume.push_back(user_data->data(user_data->index(i, 1, index_costume), Qt::DisplayRole).toInt());
     //   </costume>
@@ -265,7 +270,7 @@ void resource_consume::init_user_data()
     // left first, bottom first
     // we need to force emit value changed signal
     // assist_func
-    auto force_dial_emit = [this](QDial *dial, const int &value)
+    auto force_dial_emit = [](QDial *dial, const int &value)
     {
         dial->setValue(value);
         emit dial->valueChanged(value);
@@ -283,6 +288,20 @@ void resource_consume::init_user_data()
     left_info_priority[user_priority]->setChecked(true); left_info_priority[user_priority]->toggled(true);
     left_info_existance->setChecked(user_existance > 0); left_info_existance->toggled(user_existance > 0);
     left_info_follow->setChecked(user_follow > 0); left_info_follow->toggled(user_follow > 0);
+
+    // 3. enabling / disabling costume
+    if (user_costume.size() == 0)
+        right_costume_widget->setEnabled(false);
+    else
+    {
+        right_costume_widget->setEnabled(true);
+        right_costume_combobox->setEnabled(true);
+        right_costume_check->setEnabled(true);
+        right_costume_combobox->setCurrentIndex(0);
+        right_costume_combobox->currentIndexChanged(0);
+    }
+
+    // 4. debug
 }
 
 void resource_consume::set_widget_database_connection()
@@ -300,6 +319,8 @@ void resource_consume::set_widget_database_connection()
     connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
     connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
     connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
+    connect(right_costume_check, &QCheckBox::toggled, this, &resource_consume::connection_costume_checkbox);
+    connect(right_costume_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &resource_consume::connection_costume_combobox);
 }
 
 void resource_consume::connection_ascension_levelup_mess()
@@ -392,6 +413,14 @@ void resource_consume::connection_left_skill_dial()
     if (dial == left_skill_vector_dial[0]) dial_num = 0;
     else if (dial == left_skill_vector_dial[1]) dial_num = 1;
     else if (dial == left_skill_vector_dial[2]) dial_num = 2;
+    // set cd
+    if (dial->value() < 6)
+        left_skill_vector_cd[dial_num]->display(database_skill_cd[dial_num]);
+    else if (dial->value() < 10)
+        left_skill_vector_cd[dial_num]->display(database_skill_cd[dial_num] - 1);
+    else if (dial->value() == 10)
+        left_skill_vector_cd[dial_num]->display(database_skill_cd[dial_num] - 2);
+    // set label
     for (QLabel* label : left_skill_vector_consume[dial_num]) label->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
     for (QLabel* label : left_skill_vector_consume_number[dial_num]) label->setText("");
     if (dial->value() < 10)
@@ -545,11 +574,32 @@ void resource_consume::connection_ascension_and_lvup_consume()
     {
         if (list_user_ascension_and_lvup_consume[i] == 0) continue;
         right_ascension_consume[label_count]->setPixmap(GLOB::MAP_ITEM[GLOB::LIST_ITEM[i]].scaled(29, 32));
-        qDebug() << i << list_user_ascension_and_lvup_consume[i];
         right_ascension_consume_number[label_count]->setText(consume_int(list_user_ascension_and_lvup_consume[i]));
         if (++label_count >= 27) break;
     }
-};
+}
+
+void resource_consume::connection_costume_combobox(int in_value)
+{
+    right_costume_check->setChecked(user_costume[in_value] > 0);
+    right_costume_check->toggled(user_costume[in_value] > 0);
+    for (QLabel* label : right_costume_consume) label->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
+    for (QLabel* label : right_costume_consume_number) label->setText("");
+    int label_count = 0;
+    for (int i = 0; i < database_costume_consume[in_value].size(); ++i)
+    {
+        if (database_costume_consume[in_value][i] == 0) continue;
+        right_costume_consume[label_count]->setPixmap(GLOB::MAP_ITEM[GLOB::LIST_ITEM[i]].scaled(46, 50));
+        right_costume_consume_number[label_count]->setText(consume_int(database_costume_consume[in_value][i]));
+        if (++label_count >= 5) break;
+    }
+}
+
+void resource_consume::connection_costume_checkbox(bool in_value)
+{
+    if (in_value) user_costume[right_costume_combobox->currentIndex()] = 1;
+    else user_costume[right_costume_combobox->currentIndex()] = 0;
+}
 
 QString resource_consume::consume_int(int val)
 {
@@ -605,7 +655,99 @@ void resource_consume::list_plus(QVector<int> &vec_1, const QVector<int> &vec_2)
         vec_1[i] += vec_2[i];
 }
 
+void resource_consume::finalize()
+{
+    // 1. make modification to user_data tree model
 
+    char id_full_cstring[4];
+    sprintf(id_full_cstring, "%03d", user_servant_id);
+    QString id_full(id_full_cstring);
+    // <servant_xxx>
+    // if data exists in user_data, we need to delete that first, then append data
+    QModelIndex index_user_id = user_data->item_find("servant_" + id_full, user_data->index(0, 0));
+    int int_about_to_delete = -1;
+    qDebug() << "check 0";
+    if (index_user_id.isValid())
+    {
+        for (int i = 0; i < user_data->rowCount(user_data->index(0, 0)); ++i)
+        {
+            if (index_user_id == user_data->index(i, 0, user_data->index(0, 0)))
+            {
+                int_about_to_delete = i;
+                break;
+            }
+        }
+        user_data->removeRow(int_about_to_delete, user_data->index(0, 0));
+    }
+    qDebug() << "check 1";
+    int int_about_to_append = user_data->rowCount(user_data->index(0, 0));
+    Q_ASSERT(user_data->insertRow(int_about_to_append, user_data->index(0, 0)));
+    QModelIndex index_top = user_data->index(int_about_to_append, 0, user_data->index(0, 0));
+    user_data->setData(index_top, QString("servant_" + id_full));
+    //   <status>
+    qDebug() << "check 2";
+    Q_ASSERT(user_data->insertRow(0, index_top));
+    QModelIndex index_status = user_data->index(0, 0, index_top);
+    user_data->setData(index_status, QString("status"));
+    Q_ASSERT(user_data->insertRows(0, 3, index_status));
+    user_data->setData(user_data->index(0, 0, index_status), QString("follow"));
+    user_data->setData(user_data->index(1, 0, index_status), QString("priority"));
+    user_data->setData(user_data->index(2, 0, index_status), QString("existance"));
+    user_data->setData(user_data->index(0, 1, index_status), user_follow);
+    user_data->setData(user_data->index(1, 1, index_status), user_priority);
+    user_data->setData(user_data->index(2, 1, index_status), user_existance);
+    //   </status>
+    //   <actual>
+    qDebug() << "check 3";
+    Q_ASSERT(user_data->insertRow(1, index_top));
+    QModelIndex index_actual = user_data->index(1, 0, index_top);
+    user_data->setData(index_actual, QString("actual"));
+    Q_ASSERT(user_data->insertRows(0, 5, index_actual));
+    user_data->setData(user_data->index(0, 0, index_actual), QString("ascension"));
+    user_data->setData(user_data->index(1, 0, index_actual), QString("level"));
+    user_data->setData(user_data->index(2, 0, index_actual), QString("skill_1"));
+    user_data->setData(user_data->index(3, 0, index_actual), QString("skill_2"));
+    user_data->setData(user_data->index(4, 0, index_actual), QString("skill_3"));
+    user_data->setData(user_data->index(0, 1, index_actual), user_actual_ascension);
+    user_data->setData(user_data->index(1, 1, index_actual), user_actual_level);
+    user_data->setData(user_data->index(2, 1, index_actual), user_actual_skill_1);
+    user_data->setData(user_data->index(3, 1, index_actual), user_actual_skill_2);
+    user_data->setData(user_data->index(4, 1, index_actual), user_actual_skill_3);
+    //   </actual>
+    //   <ideal>
+    qDebug() << "check 4";
+    Q_ASSERT(user_data->insertRow(2, index_top));
+    QModelIndex index_ideal = user_data->index(2, 0, index_top);
+    user_data->setData(index_ideal, QString("ideal"));
+    Q_ASSERT(user_data->insertRows(0, 5, index_ideal));
+    user_data->setData(user_data->index(0, 0, index_ideal), QString("ascension"));
+    user_data->setData(user_data->index(1, 0, index_ideal), QString("level"));
+    user_data->setData(user_data->index(2, 0, index_ideal), QString("skill_1"));
+    user_data->setData(user_data->index(3, 0, index_ideal), QString("skill_2"));
+    user_data->setData(user_data->index(4, 0, index_ideal), QString("skill_3"));
+    user_data->setData(user_data->index(0, 1, index_ideal), user_ideal_ascension);
+    user_data->setData(user_data->index(1, 1, index_ideal), user_ideal_level);
+    user_data->setData(user_data->index(2, 1, index_ideal), user_ideal_skill_1);
+    user_data->setData(user_data->index(3, 1, index_ideal), user_ideal_skill_2);
+    user_data->setData(user_data->index(4, 1, index_ideal), user_ideal_skill_3);
+    //   </ideal>
+    //   <costume>
+    qDebug() << "check 5";
+    if (user_costume.size() > 0)
+    {
+        Q_ASSERT(user_data->insertRow(3, index_top));
+        QModelIndex index_costume = user_data->index(3, 0, index_top);
+        user_data->setData(index_costume, QString("costume"));
+        for (int i = 0; i < user_costume.size(); ++i)
+        {
+            Q_ASSERT(user_data->insertRow(i, index_costume));
+            user_data->setData(user_data->index(i, 0, index_costume), QString("costume_") + QVariant(i).toString());
+            user_data->setData(user_data->index(i, 1, index_costume), user_costume[i]);
+        }
+    }
+    //   </costume>
+    // </servant_xxx>
+}
 
 
 
