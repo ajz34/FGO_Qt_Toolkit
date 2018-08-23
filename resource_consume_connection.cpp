@@ -2,20 +2,20 @@
 #include "global_var.h"
 
 void resource_consume::data_transin(
-	QVector<QString> ini_setting,
-	QVector<TreeModel*> *wiki,
-	QVector<QPixmap> *servant_icon,
-	int id,
-	TreeModel *user_dat)
+    QVector<QString> ini_setting,
+    QVector<TreeModel*> *wiki,
+    QVector<QPixmap> *servant_icon,
+    int id,
+    TreeModel *user_dat)
 {
-	wiki_database = wiki;
-	servant_icon_button_image = servant_icon;
-	id_number = id;
-	user_data = user_dat;
+    wiki_database = wiki;
+    servant_icon_button_image = servant_icon;
+    id_number = id;
+    user_data = user_dat;
 
     init_database_display();
     init_database_consume();
-	init_user_data();
+    init_user_data();
     set_widget_database_connection();
 }
 
@@ -31,61 +31,61 @@ void resource_consume::init_database_display()
     left_skill_vector_name[1]->setText("");
     left_skill_vector_name[2]->setText("");
 
-	// find servant_information
-	if (!(*servant_icon_button_image)[id_number].isNull())
-		right_info_icon->setPixmap((*servant_icon_button_image)[id_number].scaled(138, 150));
-	// find servant basic information
-	TreeModel *model = (*wiki_database)[id_number];
+    // find servant_information
+    if (!(*servant_icon_button_image)[id_number].isNull())
+        right_info_icon->setPixmap((*servant_icon_button_image)[id_number].scaled(138, 150));
+    // find servant basic information
+    TreeModel *model = (*wiki_database)[id_number];
     QModelIndex index_basic = model->item_find("basic", model->index(0, 0));
-	if (index_basic.isValid())
-	{
+    if (index_basic.isValid())
+    {
         // name
-		QModelIndex index_servant_name = model->item_find("name_en", index_basic);
-		if (index_servant_name.isValid())
-			left_info_servant_name->setText(model->data(index_servant_name.siblingAtColumn(1), Qt::DisplayRole).toString());
+        QModelIndex index_servant_name = model->item_find("name_en", index_basic);
+        if (index_servant_name.isValid())
+            left_info_servant_name->setText(model->data(index_servant_name.siblingAtColumn(1), Qt::DisplayRole).toString());
 
         // alignments
-		bool flag_alignment = true;
-		QString str_alignment = "";
-		QModelIndexList index_alignment = model->item_find("alignments", 2, index_basic);
-		if (index_alignment.count() == 2)
-		{
-			str_alignment += model->data(index_alignment[0].siblingAtColumn(1), Qt::DisplayRole).toString();
-			str_alignment += ("·" + model->data(index_alignment[1].siblingAtColumn(1), Qt::DisplayRole).toString());
-		}
-		else
-			flag_alignment = false;
-		QModelIndex index_attribute = model->item_find("attribute", index_basic);
-		if (index_attribute.isValid())
-			str_alignment += ("·" + model->data(index_attribute.siblingAtColumn(1), Qt::DisplayRole).toString());
-		else
-			flag_alignment = false;
-		if (flag_alignment)
-			left_info_servant_attribute->setText(str_alignment);
+        bool flag_alignment = true;
+        QString str_alignment = "";
+        QModelIndexList index_alignment = model->item_find("alignments", 2, index_basic);
+        if (index_alignment.count() == 2)
+        {
+            str_alignment += model->data(index_alignment[0].siblingAtColumn(1), Qt::DisplayRole).toString();
+            str_alignment += ("·" + model->data(index_alignment[1].siblingAtColumn(1), Qt::DisplayRole).toString());
+        }
+        else
+            flag_alignment = false;
+        QModelIndex index_attribute = model->item_find("attribute", index_basic);
+        if (index_attribute.isValid())
+            str_alignment += ("·" + model->data(index_attribute.siblingAtColumn(1), Qt::DisplayRole).toString());
+        else
+            flag_alignment = false;
+        if (flag_alignment)
+            left_info_servant_attribute->setText(str_alignment);
 
         // class
         QModelIndex index_class = model->item_find("class", index_basic);
-		if (index_class.isValid())
-			left_info_servant_class->setPixmap(GLOB::MAP_CLASS[model->data(index_class.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(40, 40));
+        if (index_class.isValid())
+            left_info_servant_class->setPixmap(GLOB::MAP_CLASS[model->data(index_class.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(40, 40));
 
         // rarity
         QModelIndex index_rarity = model->item_find("rarity", index_basic);
         if (index_rarity.isValid())
             left_levelup_rarity->setText(tr("Rarity:") + model->data(index_rarity.siblingAtColumn(1), Qt::DisplayRole).toString());
-	}
+    }
 
     // nobel
-	left_info_servant_nobel_color->setPixmap(QPixmap());
-	QModelIndex index_nobel = model->item_find("nobel", model->index(0, 0));
-	if (index_nobel.isValid())
-	{
-		QModelIndex index_nobel_name = model->item_find("name_sc", index_nobel);
-		if (index_nobel_name.isValid())
-			left_info_servant_nobel->setText(model->data(index_nobel_name.siblingAtColumn(1), Qt::DisplayRole).toString());
-		QModelIndex index_nobel_color = model->item_find("card", index_nobel);
-		if (index_nobel_color.isValid())
-			left_info_servant_nobel_color->setPixmap(GLOB::MAP_CARD[model->data(index_nobel_color.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(40, 40));
-	}
+    left_info_servant_nobel_color->setPixmap(QPixmap());
+    QModelIndex index_nobel = model->item_find("nobel", model->index(0, 0));
+    if (index_nobel.isValid())
+    {
+        QModelIndex index_nobel_name = model->item_find("name_sc", index_nobel);
+        if (index_nobel_name.isValid())
+            left_info_servant_nobel->setText(model->data(index_nobel_name.siblingAtColumn(1), Qt::DisplayRole).toString());
+        QModelIndex index_nobel_color = model->item_find("card", index_nobel);
+        if (index_nobel_color.isValid())
+            left_info_servant_nobel_color->setPixmap(GLOB::MAP_CARD[model->data(index_nobel_color.siblingAtColumn(1), Qt::DisplayRole).toString()].scaled(40, 40));
+    }
 
     // skill name
     QModelIndex index_skill_1 = model->item_find("skill_1", model->index(0, 0));
@@ -243,17 +243,10 @@ void resource_consume::set_widget_database_connection()
     connect(right_skill_vector_dial[0], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
     connect(right_skill_vector_dial[1], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
     connect(right_skill_vector_dial[2], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
-    // connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_left_ascension_dial);
-    connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);  //
-    connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);  //
+    connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
+    connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
     connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
     connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
-    // connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_levelup_dial, Qt::QueuedConnection);
-    // connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_levelup_dial, Qt::QueuedConnection);
-    // connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
-    // connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
-    // connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
-    // connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
 }
 
 void resource_consume::connection_ascension_levelup_mess()
@@ -405,75 +398,6 @@ void resource_consume::connection_left_ascension_dial()
             if (++label_count >= 5) break;
         }
     }
-}
-
-void resource_consume::check_dial_levelup_to_ascension(int in_value)
-{
-    // since we aquire servant rarity, we shouldn't use this routine before database initialization
-    // if level < level_min(ascension), set level_min(ascension)
-    // if level > level_max(ascension), set level_max(ascension)
-    // WARNING!!! USING sender()!!!
-    QDial *level_dial = qobject_cast<QDial*>(sender());
-    QDial *ascension_dial = nullptr;
-
-    if (level_dial == left_levelup_dial)
-    {
-        ascension_dial = left_ascension_dial;
-    }
-    else if (level_dial == right_levelup_dial)
-    {
-        ascension_dial = right_ascension_dial;
-    }
-
-    // 1. check ascension
-    if (in_value < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][ascension_dial->value()])
-    {
-        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][ascension_dial->value()]);
-        return;
-    }
-    else if (in_value > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][ascension_dial->value()])
-    {
-        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][ascension_dial->value()]);
-        return;
-    }
-
-    // 2. check left and right level
-    if (level_dial == right_levelup_dial)
-    {
-        QDial *paired_dial = left_levelup_dial;
-        // check_dial_right_to_left
-        if (in_value < paired_dial->value())
-        {
-            level_dial->setValue(paired_dial->value());
-            return;
-        }
-    }
-
-    // 3. read levelup information, then all ascension and levelup information
-    connection_levelup_dial();
-}
-
-void resource_consume::check_dial_ascension_to_levelup(int in_value)
-{
-    // since we aquire servant rarity, we shouldn't use this routine before database initialization
-    // if level < level_min(ascension), set level_min(ascension)
-    // if level > level_max(ascension), set level_max(ascension)
-    // WARNING!!! USING sender()!!!
-    QDial *ascension_dial = qobject_cast<QDial*>(sender());
-    QDial *level_dial = nullptr;
-    if (ascension_dial == left_ascension_dial) level_dial = left_levelup_dial;
-    else if (ascension_dial == right_ascension_dial) level_dial = right_levelup_dial;
-    if (level_dial->value() < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][in_value])
-    {
-        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][in_value]);
-        return;
-    }
-    else if (level_dial->value() > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][in_value])
-    {
-        level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][in_value]);
-        return;
-    }
-    connection_ascension_and_lvup_consume();
 }
 
 void resource_consume::connection_levelup_dial()

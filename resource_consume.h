@@ -157,11 +157,7 @@ public slots:
 private slots:
     //--- Layout
 	void check_dial_left_to_right(int in_value);
-	void check_dial_right_to_left(int in_value);
-    void check_ascension_5(int in_value);
-    inline void check_levelup_LCD_overflow() { QLCDNumber *LCD = qobject_cast<QLCDNumber*>(sender()); LCD->display("UP"); }
-    void check_dial_levelup_to_ascension(int in_value);
-    void check_dial_ascension_to_levelup(int in_value);
+    void check_dial_right_to_left(int in_value);
 
     //--- connection
     void connection_left_skill_dial();
