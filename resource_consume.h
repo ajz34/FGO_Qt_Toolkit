@@ -169,6 +169,7 @@ private slots:
     void connection_left_ascension_dial();
     void connection_levelup_dial();
     void connection_ascension_and_lvup_consume();
+    void connection_ascension_levelup_mess();
 
 public:
 	resource_consume(QWidget *parent = nullptr);

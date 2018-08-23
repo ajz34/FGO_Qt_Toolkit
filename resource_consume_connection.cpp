@@ -1,4 +1,4 @@
-#include "resource_consume.h"
+ï»¿#include "resource_consume.h"
 #include "global_var.h"
 
 void resource_consume::data_transin(
@@ -51,13 +51,13 @@ void resource_consume::init_database_display()
 		if (index_alignment.count() == 2)
 		{
 			str_alignment += model->data(index_alignment[0].siblingAtColumn(1), Qt::DisplayRole).toString();
-			str_alignment += ("¡¤" + model->data(index_alignment[1].siblingAtColumn(1), Qt::DisplayRole).toString());
+			str_alignment += ("Â·" + model->data(index_alignment[1].siblingAtColumn(1), Qt::DisplayRole).toString());
 		}
 		else
 			flag_alignment = false;
 		QModelIndex index_attribute = model->item_find("attribute", index_basic);
 		if (index_attribute.isValid())
-			str_alignment += ("¡¤" + model->data(index_attribute.siblingAtColumn(1), Qt::DisplayRole).toString());
+			str_alignment += ("Â·" + model->data(index_attribute.siblingAtColumn(1), Qt::DisplayRole).toString());
 		else
 			flag_alignment = false;
 		if (flag_alignment)
@@ -170,7 +170,7 @@ void resource_consume::init_database_consume()
     }
     else
     {
-        database_ascension_rarity = 3;
+        database_ascension_rarity = 4;
     }
 }
 
@@ -243,17 +243,100 @@ void resource_consume::set_widget_database_connection()
     connect(right_skill_vector_dial[0], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
     connect(right_skill_vector_dial[1], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
     connect(right_skill_vector_dial[2], &QDial::valueChanged, this, &resource_consume::connection_right_skill_dial);
-    connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_left_ascension_dial);
-    connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::check_dial_levelup_to_ascension, Qt::QueuedConnection);  //
-    connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::check_dial_levelup_to_ascension, Qt::QueuedConnection);  //
-    connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::check_dial_ascension_to_levelup);
-    connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::check_dial_ascension_to_levelup);
+    // connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_left_ascension_dial);
+    connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);  //
+    connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);  //
+    connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
+    connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
     // connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_levelup_dial, Qt::QueuedConnection);
     // connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_levelup_dial, Qt::QueuedConnection);
     // connect(left_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
     // connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
     // connect(left_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
     // connect(right_levelup_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_and_lvup_consume, Qt::QueuedConnection);
+}
+
+void resource_consume::connection_ascension_levelup_mess()
+{
+    // MASH CHECK
+    if (id_number == 1)
+    {
+        if (left_ascension_dial->value() > 4)
+        {
+            left_ascension_dial->setValue(4);
+            return;
+        }
+        if (right_ascension_dial->value() > 4)
+        {
+            right_ascension_dial->setValue(4);
+            return;
+        }
+    }
+    // LEVEL 1 CHECK
+    // 0 0
+    //
+    // 0-0
+    if (left_ascension_dial->value() > right_ascension_dial->value())
+    {
+        right_ascension_dial->setValue(left_ascension_dial->value());
+        return;
+    }
+    // 0 0
+    // |
+    // 0 0
+    if (left_levelup_dial->value() < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][left_ascension_dial->value()])
+    {
+        left_levelup_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][left_ascension_dial->value()]);
+        return;
+    }
+    else if (left_levelup_dial->value() > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][left_ascension_dial->value()])
+    {
+        left_levelup_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][left_ascension_dial->value()]);
+        return;
+    }
+
+    // LEVEL 2 CHECK
+    // 0 0
+    //   |
+    // 0 0
+    if (right_levelup_dial->value() < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][right_ascension_dial->value()])
+    {
+        right_levelup_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][right_ascension_dial->value()]);
+        return;
+    }
+    else if (right_levelup_dial->value() > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][right_ascension_dial->value()])
+    {
+        right_levelup_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][right_ascension_dial->value()]);
+        return;
+    }
+
+    // LEVEL 3 CHECK
+    // 0-0
+    //
+    // 0 0
+    if (left_levelup_dial->value() > right_levelup_dial->value())
+    {
+        right_levelup_dial->setValue(left_levelup_dial->value());
+        return;
+    }
+
+    // FINALIZE
+    // LCD
+    left_levelup_dial_LCD->display(left_levelup_dial->value());
+    right_levelup_dial_LCD->display(right_levelup_dial->value());
+    left_ascension_dial_LCD->display(left_ascension_dial->value());
+    right_ascension_dial_LCD->display(right_ascension_dial->value());
+    if (left_levelup_dial->value() == 100) left_levelup_dial_LCD->display("UP");
+    if (right_levelup_dial->value() == 100) right_levelup_dial_LCD->display("UP");
+    if (left_ascension_dial->value() == 5) left_ascension_dial_LCD->display("UP");
+    if (right_ascension_dial->value() == 5) right_ascension_dial_LCD->display("UP");
+    // icon
+    connection_levelup_dial();
+    if (id_number != 1)
+    {
+        connection_left_ascension_dial();
+        connection_ascension_and_lvup_consume();
+    }
 }
 
 void resource_consume::connection_left_skill_dial()
@@ -332,8 +415,17 @@ void resource_consume::check_dial_levelup_to_ascension(int in_value)
     // WARNING!!! USING sender()!!!
     QDial *level_dial = qobject_cast<QDial*>(sender());
     QDial *ascension_dial = nullptr;
-    if (level_dial == left_levelup_dial) ascension_dial = left_ascension_dial;
-    else if (level_dial == right_levelup_dial) ascension_dial = right_ascension_dial;
+
+    if (level_dial == left_levelup_dial)
+    {
+        ascension_dial = left_ascension_dial;
+    }
+    else if (level_dial == right_levelup_dial)
+    {
+        ascension_dial = right_ascension_dial;
+    }
+
+    // 1. check ascension
     if (in_value < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][ascension_dial->value()])
     {
         level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][ascension_dial->value()]);
@@ -344,6 +436,20 @@ void resource_consume::check_dial_levelup_to_ascension(int in_value)
         level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][ascension_dial->value()]);
         return;
     }
+
+    // 2. check left and right level
+    if (level_dial == right_levelup_dial)
+    {
+        QDial *paired_dial = left_levelup_dial;
+        // check_dial_right_to_left
+        if (in_value < paired_dial->value())
+        {
+            level_dial->setValue(paired_dial->value());
+            return;
+        }
+    }
+
+    // 3. read levelup information, then all ascension and levelup information
     connection_levelup_dial();
 }
 
@@ -358,9 +464,15 @@ void resource_consume::check_dial_ascension_to_levelup(int in_value)
     if (ascension_dial == left_ascension_dial) level_dial = left_levelup_dial;
     else if (ascension_dial == right_ascension_dial) level_dial = right_levelup_dial;
     if (level_dial->value() < GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][in_value])
+    {
         level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][in_value]);
+        return;
+    }
     else if (level_dial->value() > GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][in_value])
+    {
         level_dial->setValue(GLOB::VEC_ASCENSION_LEVELMAX[database_ascension_rarity][in_value]);
+        return;
+    }
     connection_ascension_and_lvup_consume();
 }
 
@@ -369,14 +481,13 @@ void resource_consume::connection_levelup_dial()
     left_levelup_consume->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
     left_levelup_consume_number->setText("");
     int exp = GLOB::MAP_LEVEL_EXP[right_levelup_dial->value()] - GLOB::MAP_LEVEL_EXP[left_levelup_dial->value()];
-    int val = exp / 27000;
+    int val = exp / 32400;
     if ((exp % 27000) != 0) val += 1;
     if (val >= 1)
     {
         left_levelup_consume->setPixmap(GLOB::MAP_ITEM["Exp"].scaled(36, 50));
         left_levelup_consume_number->setText(consume_int(val));
     }
-    connection_ascension_and_lvup_consume();
 }
 
 void resource_consume::connection_ascension_and_lvup_consume()
@@ -414,8 +525,8 @@ void resource_consume::connection_ascension_and_lvup_consume()
     // example (SSR)
     // if actual = 90, no cup, then p_1 -= 1, that is p_1 = 0
     // if actual = 90, cup, then p_1 = 0
-    if ((left_ascension_dial->value() == 4) && (left_levelup_dial->value() == 90)) p_1 -= 1;
-    if ((right_ascension_dial->value() == 4) && (right_levelup_dial->value() == 90)) p_2 -= 1;
+    if ((left_ascension_dial->value() == 4) && (left_levelup_dial->value() == GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][5])) p_1 -= 1;
+    if ((right_ascension_dial->value() == 4) && (right_levelup_dial->value() == GLOB::VEC_ASCENSION_LEVELMIN[database_ascension_rarity][5])) p_2 -= 1;
     p_cup = p_2 - p_1;
 
     // 3. calculate and implement consume
@@ -432,7 +543,7 @@ void resource_consume::connection_ascension_and_lvup_consume()
         for (QLabel* label : left_ascension_consume_number) label->setText("");
         if (p_cup > 0)
         {
-            left_ascension_consume[0]->setPixmap(GLOB::MAP_ITEM[QString("Ê¥±­")].scaled(46, 50));
+            left_ascension_consume[0]->setPixmap(GLOB::MAP_ITEM[QString("åœ£æ¯")].scaled(46, 50));
             left_ascension_consume_number[0]->setText(consume_int(p_cup));
             left_ascension_consume[1]->setPixmap(GLOB::MAP_ITEM[QString("QP")].scaled(46, 50));
             left_ascension_consume_number[1]->setText(consume_int(p_QP));
@@ -446,7 +557,7 @@ void resource_consume::connection_ascension_and_lvup_consume()
     list_user_ascension_and_lvup_consume = QVector<int>(GLOB::LIST_ITEM.size(), 0);
     for (int level = a_1; level < a_2; ++level)
         list_plus(list_user_ascension_and_lvup_consume, database_ascension_consume[level]);
-    list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("Ê¥±­"))] = p_cup;
+    list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("åœ£æ¯"))] = p_cup;
     list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("QP"))] += p_QP;
 
     // 6. set icon for right view
