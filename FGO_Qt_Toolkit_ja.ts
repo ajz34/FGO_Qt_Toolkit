@@ -4,82 +4,152 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.cpp" line="32"/>
+        <location filename="mainwindow.cpp" line="34"/>
         <source>&amp;File</source>
-        <translation type="unfinished">ファイル (&amp;F)</translation>
+        <translation>ファイル (&amp;F)</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="38"/>
-        <source>&amp;About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="48"/>
-        <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="49"/>
-        <source>Open servant skill level document</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="52"/>
-        <source>&amp;Database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="53"/>
-        <source>Specify master insensitive servant databases</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="57"/>
-        <source>&amp;Exit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="58"/>
-        <source>Exit program</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="62"/>
-        <source>About &amp;Program</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="63"/>
-        <source>About this program</source>
+        <location filename="mainwindow.cpp" line="44"/>
+        <source>&amp;Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="66"/>
+        <source>&amp;About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="74"/>
+        <source>&amp;New</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="75"/>
+        <source>Create a servant skill level document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="79"/>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="80"/>
+        <source>Open your servant skill level document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="84"/>
+        <source>&amp;Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="85"/>
+        <source>Save your servant skill level document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="89"/>
+        <source>Sa&amp;ve as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="90"/>
+        <source>Save your servant skill level document to a new file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="94"/>
+        <source>&amp;Database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="95"/>
+        <source>Specify master insensitive servant databases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="113"/>
+        <source>&amp;Exit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="114"/>
+        <source>Exit program</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="118"/>
+        <source>About &amp;Program</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="119"/>
+        <source>About this program</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="122"/>
         <source>&amp;Bibliography</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="67"/>
+        <location filename="mainwindow.cpp" line="123"/>
         <source>Bibliography, reference and acknowledge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="130"/>
+        <location filename="mainwindow.cpp" line="235"/>
         <source>Servant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="158"/>
+        <location filename="mainwindow.cpp" line="263"/>
+        <location filename="mainwindow.cpp" line="365"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="158"/>
-        <source>Type</source>
+        <location filename="mainwindow.cpp" line="299"/>
+        <location filename="mainwindow.cpp" line="415"/>
+        <source>FGO Qt Toolkit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="158"/>
+        <location filename="mainwindow.cpp" line="300"/>
+        <source>The user data has been modified.
+Do you want to save your changes?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="322"/>
+        <source>Save as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="322"/>
+        <location filename="mainwindow.cpp" line="356"/>
+        <source>User Data (*.xml)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="356"/>
+        <source>Open file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="410"/>
+        <source>Untitled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="415"/>
+        <source>%1[*] - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="263"/>
+        <location filename="mainwindow.cpp" line="365"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -100,82 +170,88 @@
 <context>
     <name>resource_consume</name>
     <message>
-        <location filename="resource_consume.cpp" line="81"/>
+        <location filename="resource_consume_layout.cpp" line="87"/>
         <source>大神的睿智 A++</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="96"/>
+        <location filename="resource_consume_layout.cpp" line="102"/>
         <source>Skill</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="103"/>
+        <location filename="resource_consume_layout.cpp" line="109"/>
         <source>CD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="315"/>
+        <location filename="resource_consume_layout.cpp" line="325"/>
         <source>Rarity: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="326"/>
+        <location filename="resource_consume_layout.cpp" line="336"/>
         <source>Ascention</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="473"/>
+        <location filename="resource_consume_layout.cpp" line="479"/>
         <source>Exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="489"/>
+        <location filename="resource_consume_layout.cpp" line="495"/>
+        <location filename="resource_consume_layout.cpp" line="518"/>
         <source>Follow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="resource_consume.cpp" line="514"/>
+        <location filename="resource_consume_layout.cpp" line="526"/>
         <source>Costume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="resource_consume_connection.cpp" line="74"/>
+        <source>Rarity:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>tab_widget_servant</name>
     <message>
-        <location filename="tab_widget_servant_connection.cpp" line="113"/>
-        <location filename="tab_widget_servant_connection.cpp" line="231"/>
+        <location filename="tab_widget_servant_connection.cpp" line="118"/>
+        <location filename="tab_widget_servant_connection.cpp" line="217"/>
         <source>Servant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="tab_widget_servant_connection.cpp" line="114"/>
-        <location filename="tab_widget_servant_connection.cpp" line="232"/>
+        <location filename="tab_widget_servant_connection.cpp" line="119"/>
+        <location filename="tab_widget_servant_connection.cpp" line="218"/>
         <location filename="tab_widget_servant_list.cpp" line="201"/>
         <source>ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="tab_widget_servant_connection.cpp" line="115"/>
-        <location filename="tab_widget_servant_connection.cpp" line="233"/>
+        <location filename="tab_widget_servant_connection.cpp" line="120"/>
+        <location filename="tab_widget_servant_connection.cpp" line="219"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="tab_widget_servant_connection.cpp" line="116"/>
-        <location filename="tab_widget_servant_connection.cpp" line="234"/>
+        <location filename="tab_widget_servant_connection.cpp" line="121"/>
+        <location filename="tab_widget_servant_connection.cpp" line="220"/>
         <source>Class</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="tab_widget_servant_connection.cpp" line="117"/>
-        <location filename="tab_widget_servant_connection.cpp" line="235"/>
+        <location filename="tab_widget_servant_connection.cpp" line="122"/>
+        <location filename="tab_widget_servant_connection.cpp" line="221"/>
         <location filename="tab_widget_servant_list.cpp" line="239"/>
         <source>Rarity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="tab_widget_servant_connection.cpp" line="203"/>
+        <location filename="tab_widget_servant_connection.cpp" line="189"/>
         <source>Setup table icon image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,7 +351,7 @@
     <message>
         <location filename="xml_editable_mainwindow.ui" line="71"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">ファイル (&amp;F)</translation>
     </message>
     <message>
         <location filename="xml_editable_mainwindow.ui" line="78"/>
@@ -359,21 +435,16 @@
     </message>
     <message>
         <location filename="xml_editable_mainwindow.cpp" line="65"/>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="xml_editable_mainwindow.cpp" line="65"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="xml_editable_mainwindow.cpp" line="205"/>
+        <location filename="xml_editable_mainwindow.cpp" line="204"/>
         <source>Position: (%1,%2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="xml_editable_mainwindow.cpp" line="207"/>
+        <location filename="xml_editable_mainwindow.cpp" line="206"/>
         <source>Position: (%1,%2) in top level</source>
         <translation type="unfinished"></translation>
     </message>

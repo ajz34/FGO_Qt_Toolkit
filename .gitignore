@@ -264,3 +264,10 @@ __pycache__/
 *.bak
 .qmake.stash
 temp/
+*.rc
+*.vcxproj
+*.vcxproj.filters
+*.qm
+resource1.h
+GeneratedFiles/
+*.sln

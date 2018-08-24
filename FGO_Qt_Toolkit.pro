@@ -22,6 +22,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++14
 
+TRANSLATIONS = \
+    FGO_Qt_Toolkit_ja.ts \
+    FGO_Qt_Toolkit_zh.ts
+
 SOURCES += \
     main.cpp \
     mainwindow.cpp \

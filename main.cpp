@@ -24,11 +24,12 @@ int main(int argc, char *argv[])
 
 	QTranslator translator;
 	if (lang == QString("jp"))
-		translator.load("fgo_helper_ajz_0_1_ja");
+        translator.load("FGO_Qt_Toolkit_ja");
 	else if (lang == QString("zh_sc"))
-		translator.load("fgo_helper_ajz_0_1_zh");
+        translator.load("FGO_Qt_Toolkit_zh");
 	else if (lang == QString("zh_tc"))
-		translator.load("fgo_helper_ajz_0_1_tc");
+        translator.load("FGO_Qt_Toolkit_ja");
+    qDebug() << translator.isEmpty();
 	a.installTranslator(&translator);
 
     // set scroll line
