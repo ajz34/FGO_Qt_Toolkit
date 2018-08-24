@@ -43,6 +43,8 @@ class resource_consume : public QDialog
 	QLCDNumber *left_ascension_dial_LCD = nullptr;
 	QLabel *left_levelup_consume = nullptr;
 	QLabel *left_levelup_consume_number = nullptr;
+    QLabel *left_levelup_QP = nullptr;
+    QLabel *left_levelup_QP_number = nullptr;
 	QVector<QLabel*> left_ascension_consume{};
 	QVector<QLabel*> left_ascension_consume_number{};
 	QLabel *left_levelup_rarity = nullptr;
@@ -139,7 +141,7 @@ class resource_consume : public QDialog
     QVector<QVector<int>> list_user_costume_consume{};
 
     // utility
-    QString consume_int(int val);
+    QString consume_int(int val, bool trun_100 = false);
     void list_minus(QVector<int> &vec_1, const QVector<int> &vec_2);
     void list_plus(QVector<int> &vec_1, const QVector<int> &vec_2);
 

@@ -487,13 +487,38 @@ void resource_consume::connection_levelup_dial()
 {
     left_levelup_consume->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
     left_levelup_consume_number->setText("");
+    left_levelup_QP->setPixmap(GLOB::MAP_EMPTY["skill_large"]);
+    left_levelup_QP_number->setText("");
+    // calculate Exp card number
     int exp = GLOB::MAP_LEVEL_EXP[right_levelup_dial->value()] - GLOB::MAP_LEVEL_EXP[left_levelup_dial->value()];
     int val = exp / 32400;
-    if ((exp % 27000) != 0) val += 1;
+    if ((exp % 32400) != 0) val += 1;
     if (val >= 1)
     {
         left_levelup_consume->setPixmap(GLOB::MAP_ITEM["Exp"].scaled(36, 50));
         left_levelup_consume_number->setText(consume_int(val));
+        // calculate QP number
+        // how to calculate: https://bbs.ngacn.cc/read.php?tid=10938622
+        QMap<int, int> QP_BIAS = { {0, 150}, {1, 100}, {2, 150}, {3, 200}, {4, 400}, {5, 600} };
+        QMap<int, int> QP_SLOP = { {0, 45}, {1, 30}, {2, 45}, {3, 60}, {4, 120}, {5, 180} };
+        int cur_level = right_levelup_dial->value();
+        int QP = 0;
+        for (int i = GLOB::MAP_LEVEL_EXP[left_levelup_dial->value()]; i < GLOB::MAP_LEVEL_EXP[right_levelup_dial->value()]; i += 32400)
+        {
+            // search for current level
+            for (int j = cur_level; j <= 100; ++j)
+            {
+                if (GLOB::MAP_LEVEL_EXP[j] >= i)
+                {
+                    cur_level = j;
+                    break;
+                }
+            }
+            // add QP
+            QP += (QP_BIAS[database_ascension_rarity] + (cur_level - 1) * QP_SLOP[database_ascension_rarity]);
+        }
+        left_levelup_QP->setPixmap(GLOB::MAP_ITEM["QP"].scaled(46, 50));
+        left_levelup_QP_number->setText(consume_int(QP, true));
     }
 }
 
@@ -613,7 +638,7 @@ void resource_consume::connection_existance_checkbox(bool in_value)
     }
 }
 
-QString resource_consume::consume_int(int val)
+QString resource_consume::consume_int(int val, bool trun_100)
 {
     Q_ASSERT(val >= 0);
     // possible no need to set value for the largest value, since int should < 999, 999, 999 < 2,147,483,647
@@ -621,6 +646,7 @@ QString resource_consume::consume_int(int val)
     // Exp maximum is 20, 311, 400
     // HOWEVER, if more than 40 SSR servants, long long is required
     // since this widget only handle one servant, int is enough
+    // trun_100: if returned value > 100, then the space is not enough for many labels; we need to truncate them.
     if (val == 0)
         return QString();
     else if (val < 1000)
@@ -629,25 +655,31 @@ QString resource_consume::consume_int(int val)
     {
         if (val % 1000 == 0)
             return QVariant(val / 1000).toString() + QString("k");
-        else
-            return QVariant(val / 1000).toString() + QString(".")
-                    + QVariant((val % 1000) / 100).toString() + QString("k");
+        else if (trun_100)
+            if (val / 1000 > 100)
+                return QVariant(val / 1000).toString() + QString("k");
+        return QVariant(val / 1000).toString() + QString(".")
+                + QVariant((val % 1000) / 100).toString() + QString("k");
     }
     else if (val < 1000 * 1000 * 1000)
     {
         if (val % (1000 * 1000) == 0)
             return QVariant(val / 1000 / 1000).toString() + QString("M");
-        else
-            return QVariant(val / 1000 / 1000).toString() + QString(".")
-                    + QVariant((val % (1000 * 1000)) / 100 / 1000).toString() + QString("M");
+        else if (trun_100)
+            if (val / 1000 / 1000 > 100)
+                return QVariant(val / 1000 / 1000).toString() + QString("M");
+        return QVariant(val / 1000 / 1000).toString() + QString(".")
+                + QVariant((val % (1000 * 1000)) / 100 / 1000).toString() + QString("M");
     }
     else
     {
         if (val % (1000 * 1000 * 1000) == 0)
             return QVariant(val / 1000 / 1000 / 1000).toString() + QString("G");
-        else
-            return QVariant(val / 1000 / 1000 / 1000).toString() + QString(".")
-                    + QVariant((val % (1000 * 1000 * 1000)) / 100 / 1000 / 1000).toString() + QString("G");
+        else if (trun_100)
+            if (val / 1000 / 1000 / 1000 > 100)
+                return QVariant(val / 1000 / 1000 / 1000).toString() + QString("G");
+        return QVariant(val / 1000 / 1000 / 1000).toString() + QString(".")
+                + QVariant((val % (1000 * 1000 * 1000)) / 100 / 1000 / 1000).toString() + QString("G");
     }
 }
 

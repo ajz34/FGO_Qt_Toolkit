@@ -277,7 +277,7 @@ void resource_consume::set_middle_left_widget()
     left_ascension_layout_comb_1->setHorizontalSpacing(8);
     left_ascension_layout_comb_1->setVerticalSpacing(36);
 
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 7; ++i)
     {
         QLabel *label = new QLabel;
         label->setFixedSize(QSize(50, 50));
@@ -285,10 +285,12 @@ void resource_consume::set_middle_left_widget()
         label->setAlignment(Qt::AlignCenter);
         if (i < 5)
             left_ascension_consume.push_back(label);
-        else
+        else if (i == 5)
             left_levelup_consume = label;
+        else if (i == 6)
+            left_levelup_QP = label;
     }
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 7; ++i)
     {
         QLabel *label = new QLabel;
         label->setFixedSize(QSize(50, 18));
@@ -302,24 +304,30 @@ void resource_consume::set_middle_left_widget()
         label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         if (i < 5)
             left_ascension_consume_number.push_back(label);
-        else
+        else if (i == 5)
             left_levelup_consume_number = label;
+        else if (i == 6)
+            left_levelup_QP_number = label;
     }
 
-    auto left_ascension_layout_comb_2 = new QGridLayout;
+    QVector<QGridLayout*> left_ascension_layout_comb_2;
     for (int i = 0; i < 5; ++i)
     {
-        left_ascension_layout_comb_2->addWidget(left_ascension_consume[i], 0, i);
-        left_ascension_layout_comb_2->addWidget(left_ascension_consume_number[i], 1, i);
+        left_ascension_layout_comb_2.push_back(new QGridLayout);
+        left_ascension_layout_comb_2[i]->addWidget(left_ascension_consume[i], 0, i);
+        left_ascension_layout_comb_2[i]->addWidget(left_ascension_consume_number[i], 1, i);
+        left_ascension_layout_comb_2[i]->setVerticalSpacing(2);
     }
-    left_ascension_layout_comb_2->setHorizontalSpacing(10);
-    left_ascension_layout_comb_2->setVerticalSpacing(2);
 
-    auto left_ascension_layout_comb_3 = new QGridLayout;
-    left_ascension_layout_comb_3->addWidget(left_levelup_consume, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
-    left_ascension_layout_comb_3->addWidget(left_levelup_consume_number, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
-    left_ascension_layout_comb_3->setHorizontalSpacing(10);
-    left_ascension_layout_comb_3->setVerticalSpacing(5);
+    QVector<QGridLayout*> left_ascension_layout_comb_3;
+    left_ascension_layout_comb_3.push_back(new QGridLayout);
+    left_ascension_layout_comb_3.push_back(new QGridLayout);
+    left_ascension_layout_comb_3[0]->addWidget(left_levelup_consume, 0, 0);
+    left_ascension_layout_comb_3[0]->addWidget(left_levelup_consume_number, 1, 0);
+    left_ascension_layout_comb_3[1]->addWidget(left_levelup_QP, 0, 1);
+    left_ascension_layout_comb_3[1]->addWidget(left_levelup_QP_number, 1, 1);
+    left_ascension_layout_comb_3[0]->setVerticalSpacing(2);
+    left_ascension_layout_comb_3[1]->setVerticalSpacing(2);
 
     left_levelup_rarity = new QLabel;
     left_levelup_rarity->setText(tr("Rarity: ") + QString("5"));
@@ -336,11 +344,18 @@ void resource_consume::set_middle_left_widget()
     left_levelup_rarity_box->setTitle(tr("Ascention"));
     left_levelup_rarity_box->setLayout(left_levelup_rarity_layout);
 
+    QGridLayout *left_ascension_layout_comb_4 = new QGridLayout;
+    for (int i = 0; i < 5; ++i)
+        left_ascension_layout_comb_4->addLayout(left_ascension_layout_comb_2[i], 1, i);
+    left_ascension_layout_comb_4->addWidget(left_levelup_rarity_box, 0, 0, 1, 3);
+    left_ascension_layout_comb_4->addLayout(left_ascension_layout_comb_3[0], 0, 3);
+    left_ascension_layout_comb_4->addLayout(left_ascension_layout_comb_3[1], 0, 4);
+    left_ascension_layout_comb_4->setVerticalSpacing(15);
+    left_ascension_layout_comb_4->setHorizontalSpacing(10);
+
     auto left_ascension_layout_comb = new QGridLayout;
-    left_ascension_layout_comb->addLayout(left_ascension_layout_comb_1, 0, 0, 2, 1);
-    left_ascension_layout_comb->addLayout(left_ascension_layout_comb_2, 1, 1, 1, 5);
-    left_ascension_layout_comb->addWidget(left_levelup_rarity_box, 0, 1, 1, 4);
-    left_ascension_layout_comb->addLayout(left_ascension_layout_comb_3, 0, 5);
+    left_ascension_layout_comb->addLayout(left_ascension_layout_comb_1, 0, 0);
+    left_ascension_layout_comb->addLayout(left_ascension_layout_comb_4, 0, 1);
     left_ascension_layout_comb->setVerticalSpacing(15);
     left_ascension_layout_comb->setHorizontalSpacing(20);
 

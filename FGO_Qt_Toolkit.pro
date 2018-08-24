@@ -62,6 +62,6 @@ FORMS += \
     xml_editable_mainwindow.ui
 
 RESOURCES += \
-    widget_images.qrc
+    FGO_Qt_Toolkit.qrc
 
 DISTFILES +=
