@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+ï»¿#include "mainwindow.h"
 #include "global_var.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -88,7 +88,7 @@ void MainWindow::menu_create_action()
 	// save as
 	action_save_as = new QAction(tr("Sa&ve as"), this);
 	action_save_as->setStatusTip(tr("Save your servant skill level document to a new file"));
-	connect(action_save_as, &QAction::triggered, this, &MainWindow::save_as);
+    connect(action_save_as, &QAction::triggered, this, &MainWindow::save_as);
 
 	// specify database
 	action_database = new QAction(tr("&Database"), this);
@@ -96,9 +96,9 @@ void MainWindow::menu_create_action()
 	connect(action_database, &QAction::triggered, this, &MainWindow::action_database_slot);
 
 	// language
-	action_japanese = new QAction("ÈÕ±¾ÕZ");
-	action_chinese = new QAction("¼òÌåÖÐÎÄ");
-	action_traditional = new QAction("·±ówÖÐÎÄ");
+	action_japanese = new QAction("æ—¥æœ¬èªž");
+	action_chinese = new QAction("ç®€ä½“ä¸­æ–‡");
+	action_traditional = new QAction("ç¹é«”ä¸­æ–‡");
 	action_english = new QAction("English");
 	action_japanese->setCheckable(true);
 	action_chinese->setCheckable(true);
@@ -130,7 +130,7 @@ void MainWindow::action_japanese_slot()
 	settings.setValue("Language", "jp");
 	QMessageBox::warning(this,
 		"FGO Qt Toolkit",
-		"ÑÔÕZÔO¶¨¤òßmÓÃ¤¹¤ë¤Ë¤Ï¡¢¥¢¥×¥ê¥±©`¥·¥ç¥ó¤òÔÙÆð„Ó¤·¤Æ¤¯¤À¤µ¤¤¡£",
+		"è¨€èªžè¨­å®šã‚’é©ç”¨ã™ã‚‹ã«ã¯ã€ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å†èµ·å‹•ã—ã¦ãã ã•ã„ã€‚",
 		QMessageBox::Ok
 	);
 }
@@ -142,7 +142,7 @@ void MainWindow::action_chinese_slot()
 	settings.setValue("Language", "zh_sc");
 	QMessageBox::warning(this,
 		"FGO Qt Toolkit",
-		"ÇëÖØÐÂÆô¶¯Ó¦ÓÃ³ÌÐòÒÔÓ¦ÓÃÓïÑÔÉèÖÃ¡£",
+		"è¯·é‡æ–°å¯åŠ¨åº”ç”¨ç¨‹åºä»¥åº”ç”¨è¯­è¨€è®¾ç½®ã€‚",
 		QMessageBox::Ok
 	);
 }
@@ -154,7 +154,7 @@ void MainWindow::action_traditional_slot()
 	settings.setValue("Language", "zh_tc");
 	QMessageBox::warning(this,
 		"FGO Qt Toolkit",
-		"ÕˆÖØÐÂ†¢„Ó‘ªÓÃ³ÌÊ½ÒÔ‘ªÓÃÕZÑÔÔOÖÃ¡£",
+		"è«‹é‡æ–°å•Ÿå‹•æ‡‰ç”¨ç¨‹å¼ä»¥æ‡‰ç”¨èªžè¨€è¨­ç½®ã€‚",
 		QMessageBox::Ok
 	);
 }
@@ -294,7 +294,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::ok_to_continue()
 {
-	if (user_data->isModified())
+    if (isWindowModified())
 	{
 		int r = QMessageBox::warning(this, tr("FGO Qt Toolkit"),
 			tr("The user data has been modified.\n"
@@ -373,6 +373,7 @@ bool MainWindow::load_file(const QString &file_name)
 	xml.setDevice(&file);
 	if (user_data) delete user_data;
 	user_data = new TreeModel(headers, xml);
+    connect(user_data, &TreeModel::modified, this, &MainWindow::setWindowModified);
 	file.close();
 	if (xml.hasError())
 	{

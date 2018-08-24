@@ -261,7 +261,7 @@ void resource_consume::init_user_data()
     //     at the same time, equal or less than database values are accepted, or may some code will corrupt
     user_costume = QVector<int>(database_costume_consume.size(), 0);
     for (int i = 0; (i < user_data->rowCount(index_costume)) && (i < database_costume_consume.size()); ++i)
-        user_costume.push_back(user_data->data(user_data->index(i, 1, index_costume), Qt::DisplayRole).toInt());
+        user_costume[i] = user_data->data(user_data->index(i, 1, index_costume), Qt::DisplayRole).toInt();
     //   </costume>
     // </servant_xxx>
 
@@ -321,6 +321,7 @@ void resource_consume::set_widget_database_connection()
     connect(right_ascension_dial, &QDial::valueChanged, this, &resource_consume::connection_ascension_levelup_mess, Qt::QueuedConnection);
     connect(right_costume_check, &QCheckBox::toggled, this, &resource_consume::connection_costume_checkbox);
     connect(right_costume_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &resource_consume::connection_costume_combobox);
+    connect(left_info_existance, &QCheckBox::toggled, this, &resource_consume::connection_existance_checkbox);
 }
 
 void resource_consume::connection_ascension_levelup_mess()
@@ -601,6 +602,17 @@ void resource_consume::connection_costume_checkbox(bool in_value)
     else user_costume[right_costume_combobox->currentIndex()] = 0;
 }
 
+void resource_consume::connection_existance_checkbox(bool in_value)
+{
+    if (!in_value)
+    {
+        left_ascension_dial->setValue(0);
+        left_levelup_dial->setValue(1);
+        for (int i = 0; i < 3; ++i)
+            left_skill_vector_dial[i]->setValue(1);
+    }
+}
+
 QString resource_consume::consume_int(int val)
 {
     Q_ASSERT(val >= 0);
@@ -657,8 +669,25 @@ void resource_consume::list_plus(QVector<int> &vec_1, const QVector<int> &vec_2)
 
 void resource_consume::finalize()
 {
-    // 1. make modification to user_data tree model
+    // 1. record the dial and checkbox behavior
+    // costume takes no need to attention, since it is maintained when checkbox and combobox changed
+    user_follow = (left_info_follow->isChecked() ? 1 : 0);
+    user_priority = 0;
+    for (int i = 0; i <= 5; ++i)
+        if (left_info_priority[i]->isChecked()) user_priority = i;
+    user_existance = (left_info_existance->isChecked() ? 1: 0);
+    user_actual_ascension = left_ascension_dial->value();
+    user_actual_level = left_levelup_dial->value();
+    user_actual_skill_1 = left_skill_vector_dial[0]->value();
+    user_actual_skill_2 = left_skill_vector_dial[1]->value();
+    user_actual_skill_3 = left_skill_vector_dial[2]->value();
+    user_ideal_ascension = right_ascension_dial->value();
+    user_ideal_level = right_levelup_dial->value();
+    user_ideal_skill_1 = right_skill_vector_dial[0]->value();
+    user_ideal_skill_2 = right_skill_vector_dial[1]->value();
+    user_ideal_skill_3 = right_skill_vector_dial[2]->value();
 
+    // 2. make modification to user_data tree model
     char id_full_cstring[4];
     sprintf(id_full_cstring, "%03d", user_servant_id);
     QString id_full(id_full_cstring);
@@ -747,6 +776,9 @@ void resource_consume::finalize()
     }
     //   </costume>
     // </servant_xxx>
+
+    // 3. make changes to the tree model and main window
+    user_data->setModified(true);
 }
 
 

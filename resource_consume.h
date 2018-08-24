@@ -170,6 +170,7 @@ private slots:
     void connection_ascension_levelup_mess();
     void connection_costume_combobox(int in_value);
     void connection_costume_checkbox(bool in_value);
+    void connection_existance_checkbox(bool in_value);
 
 private:
     void finalize();

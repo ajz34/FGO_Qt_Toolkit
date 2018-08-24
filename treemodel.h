@@ -103,9 +103,12 @@ public:
 	// self-define
 	void xml_write(QXmlStreamWriter &xml);
 	QModelIndex item_find(QString find_str, const QModelIndex &parent = QModelIndex());
-	QModelIndexList item_find(QString find_str, int depth = 1, const QModelIndex &parent = QModelIndex());
-	inline void setModified(bool mod) { modified = mod; }
-	inline bool isModified() { return modified; }
+    QModelIndexList item_find(QString find_str, int depth = 1, const QModelIndex &parent = QModelIndex());
+    inline bool isModified() { return file_modified; }
+    inline void setModified(bool mod) { file_modified = mod; emit modified(file_modified);  }
+
+signals:
+    void modified(bool mod);
 
 private:
 	void setupModelData(QXmlStreamReader &xml, TreeItem *parent);
@@ -113,7 +116,7 @@ private:
 	TreeItem *rootItem;
 	// self-define
 	void xml_write_item(QXmlStreamWriter &xml, TreeItem *item);
-	bool modified = false;
+    bool file_modified = false;
 
 };
 //! [2]
