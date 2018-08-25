@@ -14,6 +14,7 @@
 
 #include "qclickablefigurelabel.h"
 #include "tab_widget_servant.h"
+#include "tab_widget_item.h"
 #include "database_dialog.h"
 #include "treemodel.h"
 #include "xml_editable_mainwindow.h"
@@ -34,6 +35,7 @@ class MainWindow : public QMainWindow
 	//--- A. tab widgets
 	QTabWidget *main_tabwidget = nullptr;
 	tab_widget_servant *tab_servant = nullptr;
+    tab_widget_item *tab_item = nullptr;
 
     //--- B. menu
     QAction *action_open = nullptr;

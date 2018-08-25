@@ -11,8 +11,10 @@ class database_dialog : public QDialog
 
 	QLabel *wiki_xml_database_label;
 	QLineEdit *wiki_xml_database_textedit;
+    QPushButton *wiki_xml_database_button;
 	QLabel *servant_icon_present_label;
 	QLineEdit *servant_icon_present_textedit;
+    QPushButton *servant_icon_present_button;
 
 	void database_textedit_update();
 
@@ -25,6 +27,7 @@ signals:
 
 private slots:
 	void database_accepted_slot();
+    void button_clicked();
 
 public slots:
 	void database_transin(QVector<QString> path_file);

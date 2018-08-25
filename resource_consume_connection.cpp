@@ -822,7 +822,7 @@ void resource_consume::finalize()
     list_user_total_consume = QVector<int>(GLOB::LIST_ITEM.size());
     if (user_servant_id != 1) list_plus(list_user_total_consume, list_user_ascension_and_lvup_consume);
     qDebug() << "check 51";
-    for (vec : list_user_skill_consume)
+    for (auto vec : list_user_skill_consume)
         list_plus(list_user_total_consume, vec);
     qDebug() << "check 52";
     for (int i = 0; i < user_costume.size(); ++i)

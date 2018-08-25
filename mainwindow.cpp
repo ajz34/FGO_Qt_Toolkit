@@ -234,11 +234,15 @@ void MainWindow::set_main_layout()
 	tab_servant = new tab_widget_servant(this);
 	main_tabwidget->addTab(tab_servant, tr("Servant"));
 
+    tab_item = new tab_widget_item(this);
+    main_tabwidget->addTab(tab_item, tr("Item"));
+
 	main_layout = new QGridLayout;
 	main_layout->addWidget(main_tabwidget);
 
 	auto central = new QWidget;
 	central->setLayout(main_layout);
+    central->setMinimumHeight(650);
 	setCentralWidget(central);
 }
 

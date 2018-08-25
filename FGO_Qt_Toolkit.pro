@@ -39,7 +39,10 @@ SOURCES += \
     treemodel.cpp \
     xml_editable_mainwindow.cpp \
     database_dialog.cpp \
-    global_var.cpp
+    global_var.cpp \
+    tab_widget_item_connection.cpp \
+    tab_widget_item_layout.cpp \
+    flowlayout.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -51,7 +54,9 @@ HEADERS += \
     treemodel.h \
     xml_editable_mainwindow.h \
     database_dialog.h \
-    global_var.h
+    global_var.h \
+    tab_widget_item.h \
+    flowlayout.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
