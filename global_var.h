@@ -17,6 +17,7 @@ namespace GLOB {
 	extern QVector<QString> LIST_ITEM_EVENT;
 	extern QVector<QString> LIST_ITEM_MISC;
     extern QVector<QString> LIST_ITEM;
+    extern QMap<QString, int> MAP_ITEM_INDEX;
     extern QMap<QString, QPixmap> MAP_ITEM;
 	extern QMap<QString, QPixmap> MAP_CARD;
     extern QMap<QString, QPixmap> MAP_CLASS;

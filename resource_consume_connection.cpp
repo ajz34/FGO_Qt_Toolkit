@@ -177,6 +177,8 @@ void resource_consume::init_database_consume()
     else
     {
         database_ascension_rarity = 4;
+        for (int i = 0; i < 4; ++i)
+            database_ascension_consume[i] = QVector<int>(GLOB::LIST_ITEM.size());
     }
 
     // initialize database_costume_consume
@@ -496,6 +498,7 @@ void resource_consume::connection_levelup_dial()
     if (val >= 1)
     {
         left_levelup_consume->setPixmap(GLOB::MAP_ITEM["Exp"].scaled(36, 50));
+        user_lvup_Exp = val;
         left_levelup_consume_number->setText(consume_int(val));
         // calculate QP number
         // how to calculate: https://bbs.ngacn.cc/read.php?tid=10938622
@@ -518,7 +521,13 @@ void resource_consume::connection_levelup_dial()
             QP += (QP_BIAS[database_ascension_rarity] + (cur_level - 1) * QP_SLOP[database_ascension_rarity]);
         }
         left_levelup_QP->setPixmap(GLOB::MAP_ITEM["QP"].scaled(46, 50));
+        user_lvup_QP = QP;
         left_levelup_QP_number->setText(consume_int(QP, true));
+    }
+    else
+    {
+        user_lvup_Exp = 0;
+        user_lvup_QP = 0;
     }
 }
 
@@ -809,7 +818,44 @@ void resource_consume::finalize()
     //   </costume>
     // </servant_xxx>
 
-    // 3. make changes to the tree model and main window
+    // 3. calculate total consume
+    list_user_total_consume = QVector<int>(GLOB::LIST_ITEM.size());
+    if (user_servant_id != 1) list_plus(list_user_total_consume, list_user_ascension_and_lvup_consume);
+    qDebug() << "check 51";
+    for (vec : list_user_skill_consume)
+        list_plus(list_user_total_consume, vec);
+    qDebug() << "check 52";
+    for (int i = 0; i < user_costume.size(); ++i)
+    {
+        if (user_costume.at(i) > 0)
+            list_plus(list_user_total_consume, database_costume_consume.at(i));
+    }
+    qDebug() << "check 53";
+    list_user_total_consume[GLOB::MAP_ITEM_INDEX.value("QP")] += user_lvup_QP;
+    list_user_total_consume[GLOB::MAP_ITEM_INDEX.value("Exp")] += user_lvup_Exp;
+    qDebug() << "check 54";
+    if (user_costume.size() <= 0)
+        Q_ASSERT(user_data->insertRow(3, index_top));
+    else
+        Q_ASSERT(user_data->insertRow(4, index_top));
+    qDebug() << "check 55";
+    QModelIndex index_total = ((user_costume.size() <= 0) ? user_data->index(3, 0, index_top) : user_data->index(4, 0, index_top));
+    qDebug() << "check 56";
+    user_data->setData(index_total, QString("total"));
+    int cur_total_sub_index = -1;
+    for (int i = 0; i < list_user_total_consume.size(); ++i)
+    {
+        if (list_user_total_consume.at(i) != 0)
+        {
+            qDebug() << "check 57";
+            cur_total_sub_index += 1;
+            Q_ASSERT(user_data->insertRow(cur_total_sub_index, index_total));
+            user_data->setData(user_data->index(cur_total_sub_index, 0, index_total), GLOB::LIST_ITEM.at(i));
+            user_data->setData(user_data->index(cur_total_sub_index, 1, index_total), list_user_total_consume.at(i));
+        }
+    }
+
+    // 4. make changes to the tree model and main window
     user_data->setModified(true);
 }
 

@@ -136,9 +136,11 @@ class resource_consume : public QDialog
     //   </costume>
     // </servant_xxx>
     // total information
+    int user_lvup_QP = 0;
+    int user_lvup_Exp = 0;
     QVector<QVector<int>> list_user_skill_consume{ 3, {} };
     QVector<int> list_user_ascension_and_lvup_consume{};
-    QVector<QVector<int>> list_user_costume_consume{};
+    QVector<int> list_user_total_consume{};
 
     // utility
     QString consume_int(int val, bool trun_100 = false);
