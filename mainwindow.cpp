@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 	set_main_layout();
 
 	//--- O. actions on data
-	set_connection_tab_widgets();
+	set_central_connection();
 	ini_setting_read();
 
 }
@@ -248,18 +248,21 @@ void MainWindow::set_main_layout()
 
 //--- O. actions on data
 
-void MainWindow::set_connection_tab_widgets()
+void MainWindow::set_central_connection()
 {
-	// connection of database update
-	connect(this, &MainWindow::action_database_to_tableview, tab_servant, &tab_widget_servant::receive_wiki_xml_database);
+    // output connection
+	connect(this, &MainWindow::signal_database_changed, tab_servant, &tab_widget_servant::from_parent_database_changed);
+	connect(this, &MainWindow::signal_user_data_loaded, tab_servant, &tab_widget_servant::from_parent_user_data_loaded);
 
-	// connection to tableview when file changes
-	connect(this, &MainWindow::action_load_file_to_tableview, tab_servant, &tab_widget_servant::receive_user_data_changes);
+    // input connection
+    connect(tab_servant, &tab_widget_servant::signal_user_data_changed, this, &MainWindow::from_tab_user_data_changed);
 }
 
 void MainWindow::initialize_database()
 {
-	// clear
+	// wiki database
+    for (auto i : wiki_database)
+        if (i) delete i;
 	wiki_database.clear();
 	wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
 	QDir wiki_xml_folder_dir(ini_setting_data[0]);
@@ -283,7 +286,35 @@ void MainWindow::initialize_database()
 		if (index_id.isValid())
 			wiki_database[model->data(index_id.siblingAtColumn(1), Qt::DisplayRole).toInt()] = model;
 	}
-	emit action_database_to_tableview(ini_setting_data, wiki_database, user_data);
+
+    // servant present icon
+    if (servant_icon_button_image) delete servant_icon_button_image;
+    servant_icon_button_image = new QVector<QPixmap>(SERVANT_ICON_NUMBER, QPixmap());
+    QProgressDialog progress(tr("Setup table icon image"), "", 0, SERVANT_ICON_NUMBER);
+    progress.setCancelButton(0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
+    for (int id = 0; id < SERVANT_ICON_NUMBER; ++id)
+    {
+        progress.setValue(id);
+        QApplication::processEvents();
+        if (progress.wasCanceled())
+            break;
+        char num_full[4];
+        sprintf(num_full, "%03d", id);
+        QPixmap pixmap(ini_setting_data[1] + QString("/") + QString(num_full) + QString(".png"));
+        (*servant_icon_button_image)[id] = pixmap;
+    }
+    progress.setValue(SERVANT_ICON_NUMBER);
+
+    // signal
+	emit signal_database_changed(ini_setting_data, wiki_database, user_data, servant_icon_button_image);
+}
+
+void MainWindow::from_tab_user_data_changed(TreeModel *user_dat)
+{
+    user_data = user_dat;
+    emit signal_user_data_loaded(user_dat);
 }
 
 //--- P. action on user file
@@ -417,5 +448,5 @@ void MainWindow::set_cur_user_file_path(const QString &file_name)
 		show_name = QFileInfo(cur_user_file_path).fileName();
 	}
 	setWindowTitle(tr("%1[*] - %2").arg(show_name).arg(tr("FGO Qt Toolkit")));
-	emit action_load_file_to_tableview(user_data);
+	emit signal_user_data_loaded(user_data);
 }

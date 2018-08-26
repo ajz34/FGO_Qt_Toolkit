@@ -23,12 +23,13 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT;
 
-public:
+private:
     // these variables should be accessible to its child widgets (not child classes)
+    // however, I just know using signal-slot to trans them
 
     //--- HAND MADE PARAMETERS
     const int SERVANT_ICON_NUMBER = 500;
-    const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
+    const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");
     const QVector<QString> INI_SETTING_FILE_INDEX{
         "wiki_xml_path",
         "servant_icon_present",
@@ -39,6 +40,7 @@ public:
     QVector<QString> ini_setting_data{};
     QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
     TreeModel *user_data = nullptr;
+    QVector<QPixmap> *servant_icon_button_image = nullptr;
 
 private:
 
@@ -76,7 +78,7 @@ private:
 	// setting
 	database_dialog *database_confirm_dialog = nullptr;
 	// wiki xml data
-	void set_connection_tab_widgets();
+	void set_central_connection();
 	void initialize_database();
 
 	//--- P. action on user file
@@ -101,13 +103,14 @@ signals:
 	//--- B. menu
 	// database
 	void action_database_transout(QVector<QString> path_pack);
-	void action_database_to_tableview(
+	void signal_database_changed(
 		QVector<QString> path_pack,
 		QVector<TreeModel*> tree_model,
-		TreeModel *user_dat);
+		TreeModel *user_dat,
+        QVector<QPixmap> *serv_img);
 
 	// file
-	void action_load_file_to_tableview(TreeModel *user_dat);
+	void signal_user_data_loaded(TreeModel *user_dat);
 
 private slots:
 	//--- B. menu
@@ -119,6 +122,7 @@ private slots:
 	void action_traditional_slot();
 	void action_english_slot();
 	void action_database_transin(QVector<QString> path_pack);
+    void from_tab_user_data_changed(TreeModel *user_dat);
 
 };
 

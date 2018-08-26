@@ -133,14 +133,16 @@ void tab_widget_servant::filter_follow_all_clicked_actionbehave(bool checked)
 
 //--- D. servant table
 
-void tab_widget_servant::receive_wiki_xml_database(
+void tab_widget_servant::from_parent_database_changed(
 	QVector<QString> path_pack,
 	QVector<TreeModel*> tree_model,
-	TreeModel* user_dat)
+	TreeModel* user_dat,
+    QVector<QPixmap> *serv_img)
 {
 	ini_setting_data = path_pack;
 	wiki_database = tree_model;
     user_data = user_dat;
+    servant_icon_button_image = serv_img;
     table_original_table_refresh();
 }
 
@@ -274,6 +276,7 @@ void tab_widget_servant::table_original_table_refresh()
 	}
 	// set buttons
 	// this process is slow, set process bar here
+    /*
 	QProgressDialog progress(tr("Setup table icon image"), "", 0, table_widget_model_origin->rowCount());
 	progress.setCancelButton(0);
 	progress.setWindowModality(Qt::WindowModal);
@@ -290,6 +293,7 @@ void tab_widget_servant::table_original_table_refresh()
 		servant_icon_button_image[table_widget_model_origin->data(table_widget_model_origin->index(row, 1)).toInt()] = pixmap;
 	}
 	progress.setValue(table_widget_model_origin->rowCount());
+    */
 	table_widget_refresh();
 }
 
@@ -369,7 +373,7 @@ void tab_widget_servant::table_widget_refresh()
 	{
 		QRightClickPushButton *button = new QRightClickPushButton(this);
 		button->text_save = table_widget_model->data(table_widget_model->index(row, 1)).toString();
-		button->setIcon(servant_icon_button_image[table_widget_model->data(table_widget_model->index(row, 1)).toInt()]);
+		button->setIcon((*servant_icon_button_image)[table_widget_model->data(table_widget_model->index(row, 1)).toInt()]);
 		button->setIconSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		button->setFixedSize(button->minimumSizeHint());
 		button->setFixedSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
@@ -411,16 +415,17 @@ void tab_widget_servant::table_pushbutton_click()
 	emit table_pushbutton_transout(
 		ini_setting_data,
 		&wiki_database,
-		&servant_icon_button_image,
+		servant_icon_button_image,
 		id_number,
 		user_data);
     consume_widget->exec();
-    table_original_table_refresh();
+    emit signal_user_data_changed(user_data);
+    // table_original_table_refresh();
 }
 
-void tab_widget_servant::receive_user_data_changes(TreeModel * user_dat)
+void tab_widget_servant::from_parent_user_data_loaded(TreeModel * user_dat)
 {
 	user_data = user_dat;
-    table_widget_refresh();
+    table_original_table_refresh();
 }
 

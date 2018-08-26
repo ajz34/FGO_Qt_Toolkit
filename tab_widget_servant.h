@@ -12,9 +12,18 @@ class tab_widget_servant : public QWidget
 {
 	Q_OBJECT;
 
+private:
+    //--- frequently used data
+    const int SERVANT_ICON_NUMBER = 500;
+    const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");
+    QVector<QString> ini_setting_data{};
+    QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
+    TreeModel *user_data = nullptr;
+    QVector<QPixmap> *servant_icon_button_image = nullptr;
+
+private:
 	//--- HAND MADE PARAMETERS
 	const int SCALE_SIZE = 40;  // servant class label width and height (px)
-	const int SERVANT_ICON_NUMBER = 500;
 	const int SERVANT_ICON_WIDTH = 69;
 	const int SERVANT_ICON_HEIGHT = 75;
 
@@ -75,13 +84,7 @@ class tab_widget_servant : public QWidget
 	QTableView *table_widget = nullptr;
 	QStandardItemModel *table_widget_model = nullptr;
 	QStandardItemModel *table_widget_model_origin = nullptr;
-	QVector<QString> ini_setting_data;
-	QVector<TreeModel*> wiki_database{};
-	QVector<QPixmap> servant_icon_button_image = QVector<QPixmap>(SERVANT_ICON_NUMBER);
 	void set_table_widget();
-
-	//--- E. servant consume
-	TreeModel* user_data = nullptr;
 
 	//--- N. layouot
 	void set_main_widget_layout();
@@ -98,6 +101,7 @@ signals:
 		QVector<QPixmap> *servant_icon,
 		int id,
 		TreeModel* user_dat);
+    void signal_user_data_changed(TreeModel *user_dat);
 
 private slots:
 	//--- A. servant class labels
@@ -119,9 +123,10 @@ private slots:
 	void table_pushbutton_click();
 
 public slots:
-	void receive_wiki_xml_database(
+	void from_parent_database_changed(
 		QVector<QString> path_pack,
 		QVector<TreeModel*> tree_model,
-		TreeModel* user_dat);
-	void receive_user_data_changes(TreeModel *user_dat);
+		TreeModel* user_dat,
+        QVector<QPixmap> *serv_img);
+	void from_parent_user_data_loaded(TreeModel *user_dat);
 };
