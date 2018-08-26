@@ -37,19 +37,7 @@ class tab_widget_servant : public QWidget
 	QHBoxLayout *servant_class_layout = nullptr;
 	void set_servant_class_label();
 	void set_servant_class_layout();
-	void set_servant_class_connection();
-
-	//--- B. sort
-	QRadioButton *sort_button_id_ascending = nullptr;
-	QRadioButton *sort_button_id_descending = nullptr;
-	QRadioButton *sort_button_atk_ascending = nullptr;
-	QRadioButton *sort_button_atk_descending = nullptr;
-	QRadioButton *sort_button_hp_ascending = nullptr;
-	QRadioButton *sort_button_hp_descending = nullptr;
-	QButtonGroup *sort_button_group = nullptr;
-	QHBoxLayout *sort_button_layout = nullptr;
-	void set_sort_button();
-	void set_sort_layout();
+    void set_servant_class_connection();
 
 	//--- C. filter
 	// QComboBox *filter_existence;
@@ -67,12 +55,18 @@ class tab_widget_servant : public QWidget
 	QAction *filter_rarity_2 = nullptr;
 	QAction *filter_rarity_1 = nullptr;
 	QAction *filter_rarity_0 = nullptr;
-	void set_filter_rarity();
+    void set_filter_rarity();
+    // follow
+    QPushButton *filter_follow = nullptr;
+    QAction *filter_follow_all = nullptr;
+    QAction *filter_follow_yes = nullptr;
+    QAction *filter_follow_no = nullptr;
+    void set_filter_follow();
 	// other
 	QVBoxLayout *filter_layout = nullptr;
 	void set_filter_button();
-	void set_filter_layout();
-	void set_filter_connection();
+    void set_filter_layout();
+    void set_filter_connection();
 
 	//--- D. servant table
 	// though it is possible to use proxy model, 
@@ -111,11 +105,16 @@ private slots:
 	void class_all_off_clicked_labelbehave();
 	void class_trival_clicked_labelbehave();
 	//--- C. filter
+    // rarity
 	void filter_rarity_subitem_clicked_actionbehave(bool checked);
-	void filter_rarity_all_clicked_actionbehave(bool checked);
-	void table_widget_refresh();
+    void filter_rarity_all_clicked_actionbehave(bool checked);
+    // follow
+    void filter_follow_subitem_clicked_actionbehave(bool checked);
+    void filter_follow_all_clicked_actionbehave(bool checked);
 	//--- D. servant table
 	void table_pushbutton_right_click();
+    void table_widget_refresh();
+    void table_original_table_refresh();
 	//--- E. servant consume
 	void table_pushbutton_click();
 

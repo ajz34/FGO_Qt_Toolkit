@@ -6,10 +6,7 @@ tab_widget_servant::tab_widget_servant(QWidget *parent)
 	//--- A. servant class labels
 	set_servant_class_label();
 	set_servant_class_connection();
-	set_servant_class_layout();
-	//--- B. sort
-	set_sort_button();
-	set_sort_layout();
+    set_servant_class_layout();
 	//--- C. filter
 	set_filter_button();
 	set_filter_connection();
@@ -167,83 +164,24 @@ void tab_widget_servant::set_servant_class_layout()
 	servant_class_layout->addStretch();
 }
 
-//--- B. sort
-
-void tab_widget_servant::set_sort_button()
-{
-	sort_button_id_ascending = new QRadioButton;
-	sort_button_id_descending = new QRadioButton;
-	sort_button_atk_ascending = new QRadioButton;
-	sort_button_atk_descending = new QRadioButton;
-	sort_button_hp_ascending = new QRadioButton;
-	sort_button_hp_descending = new QRadioButton;
-
-	sort_button_id_descending->setChecked(true);
-
-	sort_button_group = new QButtonGroup;
-	sort_button_group->addButton(sort_button_id_ascending);
-	sort_button_group->addButton(sort_button_id_descending);
-	sort_button_group->addButton(sort_button_atk_ascending);
-	sort_button_group->addButton(sort_button_atk_descending);
-	sort_button_group->addButton(sort_button_hp_ascending);
-	sort_button_group->addButton(sort_button_hp_descending);
-}
-
-void tab_widget_servant::set_sort_layout()
-{
-	QLabel *sort_label_ascending = new QLabel;
-	QLabel *sort_label_descending = new QLabel;
-	QLabel *sort_label_id = new QLabel;
-	QLabel *sort_label_atk = new QLabel;
-	QLabel *sort_label_hp = new QLabel;
-	sort_label_ascending->setText(tr("Ascending"));
-	sort_label_descending->setText(tr("Descending"));
-	sort_label_id->setText(tr("ID"));
-	sort_label_atk->setText(tr("ATK"));
-	sort_label_hp->setText(tr("HP"));
-
-	QGridLayout *sort_button_layout_temp = new QGridLayout;
-
-	sort_button_layout_temp->addWidget(sort_label_ascending, 1, 0, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_label_descending, 2, 0, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_label_id, 0, 1, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_label_atk, 0, 2, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_label_hp, 0, 3, Qt::AlignCenter);
-
-	sort_button_layout_temp->addWidget(sort_button_id_ascending, 1, 1, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_button_id_descending, 2, 1, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_button_atk_ascending, 1, 2, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_button_atk_descending, 2, 2, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_button_hp_ascending, 1, 3, Qt::AlignCenter);
-	sort_button_layout_temp->addWidget(sort_button_hp_descending, 2, 3, Qt::AlignCenter);
-
-	sort_button_layout_temp->setColumnMinimumWidth(1, 1.5 * SCALE_SIZE);
-	sort_button_layout_temp->setColumnMinimumWidth(2, 1.5 * SCALE_SIZE);
-	sort_button_layout_temp->setColumnMinimumWidth(3, 1.5 * SCALE_SIZE);
-
-	sort_button_layout = new QHBoxLayout;
-	sort_button_layout->addStretch();
-	sort_button_layout->addLayout(sort_button_layout_temp);
-	sort_button_layout->addStretch();
-}
-
 //--- C. filter
 
 void tab_widget_servant::set_filter_button()
 {
 	set_filter_rarity();
+    set_filter_follow();
 }
 
 void tab_widget_servant::set_filter_rarity()
 {
 	filter_rarity = new QPushButton(tr("Rarity"));
 	filter_rarity_all = new QAction(tr("All"));
-	filter_rarity_5 = new QAction(tr("5"));
-	filter_rarity_4 = new QAction(tr("4"));
-	filter_rarity_3 = new QAction(tr("3"));
-	filter_rarity_2 = new QAction(tr("2"));
-	filter_rarity_1 = new QAction(tr("1"));
-	filter_rarity_0 = new QAction(tr("0"));
+    filter_rarity_5 = new QAction("5");
+    filter_rarity_4 = new QAction("4");
+    filter_rarity_3 = new QAction("3");
+    filter_rarity_2 = new QAction("2");
+    filter_rarity_1 = new QAction("1");
+    filter_rarity_0 = new QAction("0");
 	QMenu *menu = new QMenu;
 
 	QVector<QAction*> filter_rarities{
@@ -255,7 +193,7 @@ void tab_widget_servant::set_filter_rarity()
 	{
 		i->setCheckable(true);
 		i->setChecked(false);
-		menu->addAction(i);
+        menu->addAction(i);
 	}
 	filter_rarity_all->setChecked(true);
 
@@ -263,10 +201,35 @@ void tab_widget_servant::set_filter_rarity()
 	filter_rarity->setFlat(true);
 }
 
+void tab_widget_servant::set_filter_follow()
+{
+    filter_follow = new QPushButton(tr("Follow"));
+    filter_follow_all = new QAction(tr("All"));
+    filter_follow_yes = new QAction(tr("Yes"));
+    filter_follow_no = new QAction(tr("No"));
+    QMenu *menu = new QMenu;
+
+    QVector<QAction*> filter_follows{
+        filter_follow_all, filter_follow_yes, filter_follow_no,
+    };
+
+    for (auto i : filter_follows)
+    {
+        i->setCheckable(true);
+        i->setChecked(false);
+        menu->addAction(i);
+    };
+    filter_follow_all->setChecked(true);
+
+    filter_follow->setMenu(menu);
+    filter_follow->setFlat(true);
+}
+
 void tab_widget_servant::set_filter_layout()
 {
 	QVBoxLayout *filter_layout_temp = new QVBoxLayout;
 	filter_layout_temp->addWidget(filter_rarity);
+    filter_layout_temp->addWidget(filter_follow);
 	filter_layout_temp->addStretch();
 
 	QGroupBox *filter_layout_frame = new QGroupBox;
@@ -296,8 +259,7 @@ void tab_widget_servant::set_main_widget_layout()
 	main_widget_layout = new QGridLayout;
 	QGridLayout *upper_left_layout = new QGridLayout;
 	QWidget *upper_left_widget = new QWidget;
-	upper_left_layout->addLayout(servant_class_layout, 0, 0);
-	// upper_left_layout->addLayout(sort_button_layout, 1, 0);
+    upper_left_layout->addLayout(servant_class_layout, 0, 0);
 	upper_left_layout->addLayout(filter_layout, 0, 1);
 	upper_left_widget->setLayout(upper_left_layout);
 	upper_left_widget->setFixedHeight(upper_left_layout->sizeHint().height());

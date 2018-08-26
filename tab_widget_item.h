@@ -2,6 +2,7 @@
 
 #include <QtWidgets>
 #include "qclickablefigurelabel.h"
+#include "qrightclickpushbutton.h"
 
 class tab_widget_item : public QWidget
 {
@@ -21,10 +22,15 @@ class tab_widget_item : public QWidget
     QCheckBox *filter_other_check = nullptr;
     QClickableFigureLabel *filter_upper_switch = nullptr;
     QClickableFigureLabel *filter_lower_switch = nullptr;
+    QMap<int, QRightClickPushButton*> filter_map_button;
+    QVector<bool> filter_map_mask;
     QScrollArea *filter_upper_widget = nullptr;
     QScrollArea *filter_lower_widget = nullptr;
-
-    ;
+    QTableView *filter_upper_table = nullptr;
+    QTableView *filter_lower_table = nullptr;
+    QStandardItemModel *filter_upper_model = nullptr;
+    QStandardItemModel *filter_lower_model = nullptr;
+    QSplitter *filter_split_widget = nullptr;
 
     // 2. event
     QWidget *event_widget = nullptr;
@@ -38,7 +44,14 @@ class tab_widget_item : public QWidget
     // [6:9] piece, monument, misc
     QVector<QWidget*> category_widget = QVector<QWidget*>(9, nullptr);
 
+    //--- Connection
 
+    // 0. main tab control
+private:
+    // void main_set_connection();
+
+public slots:
+    // void main_set_ini();
 
 public:
     tab_widget_item(QWidget *parent);

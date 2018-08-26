@@ -212,4 +212,8 @@
     <qresource prefix="/misc_file">
         <file>misc_file/empty_user_data.xml</file>
     </qresource>
+    <qresource prefix="/self_icon">
+        <file>images/self_icon/filter_list.png</file>
+        <file>images/self_icon/filter_square.png</file>
+    </qresource>
 </RCC>

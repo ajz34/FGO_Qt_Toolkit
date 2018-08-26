@@ -56,17 +56,21 @@ void tab_widget_servant::class_trival_clicked_labelbehave()
 
 void tab_widget_servant::set_filter_connection()
 {
+    // rarity
 	QVector<QAction*> filter_rarities{
 		filter_rarity_5, filter_rarity_4, filter_rarity_3,
 		filter_rarity_2, filter_rarity_1, filter_rarity_0,
 	};
-
 	for (auto i : filter_rarities)
 	{
 		connect(i, &QAction::triggered, this, &tab_widget_servant::filter_rarity_subitem_clicked_actionbehave);
 	}
-
 	connect(filter_rarity_all, &QAction::triggered, this, &tab_widget_servant::filter_rarity_all_clicked_actionbehave);
+
+    // follow
+    connect(filter_follow_all, &QAction::triggered, this, &tab_widget_servant::filter_follow_all_clicked_actionbehave);
+    connect(filter_follow_yes, &QAction::triggered, this, &tab_widget_servant::filter_follow_subitem_clicked_actionbehave);
+    connect(filter_follow_no, &QAction::triggered, this, &tab_widget_servant::filter_follow_subitem_clicked_actionbehave);
 }
 
 void tab_widget_servant::filter_rarity_subitem_clicked_actionbehave(bool checked)
@@ -76,6 +80,7 @@ void tab_widget_servant::filter_rarity_subitem_clicked_actionbehave(bool checked
 		filter_rarity_all->setChecked(false);
 		filter_rarity->setFlat(false);
 	}
+    table_widget_refresh();
 }
 
 void tab_widget_servant::filter_rarity_all_clicked_actionbehave(bool checked)
@@ -97,6 +102,33 @@ void tab_widget_servant::filter_rarity_all_clicked_actionbehave(bool checked)
 	{
 		filter_rarity->setFlat(false);
 	}
+    table_widget_refresh();
+}
+
+void tab_widget_servant::filter_follow_subitem_clicked_actionbehave(bool checked)
+{
+    if (checked)
+    {
+        filter_follow_all->setChecked(false);
+        filter_follow->setFlat(false);
+    }
+    table_widget_refresh();
+}
+
+void tab_widget_servant::filter_follow_all_clicked_actionbehave(bool checked)
+{
+    if (checked)
+    {
+        filter_follow_all->setChecked(true);
+        filter_follow_yes->setChecked(false);
+        filter_follow_no->setChecked(false);
+        filter_follow->setFlat(true);
+    }
+    else
+    {
+        filter_follow->setFlat(false);
+    }
+    table_widget_refresh();
 }
 
 //--- D. servant table
@@ -108,18 +140,24 @@ void tab_widget_servant::receive_wiki_xml_database(
 {
 	ini_setting_data = path_pack;
 	wiki_database = tree_model;
-	user_data = user_dat;
-	qDebug() << "in receive" << user_data;
-	// delete table_widget_model_origin;
-	// table_widget_model_origin = new QStandardItemModel;
+    user_data = user_dat;
+    table_original_table_refresh();
+}
+
+void tab_widget_servant::table_original_table_refresh()
+{
 	table_widget_model_origin->clear();
 	QStringList table_widget_model_header;
 	table_widget_model_header
-		<< tr("Servant")		// 0
-		<< tr("ID")				// 1
-		<< tr("Name")			// 2
-		<< tr("Class")			// 3
-		<< tr("Rarity");		// 4
+        << tr("Servant")        // 0
+        << tr("ID")             // 1
+        << tr("Name")           // 2
+        << tr("Class")          // 3
+        << tr("Rarity")         // 4
+        << tr("Follow")         // 5
+        << tr("Priority")       // 6
+        << tr("Exist")          // 7
+    ;
 	table_widget_model_origin->setHorizontalHeaderLabels(table_widget_model_header);
 	for (int i = 0; i < wiki_database.size(); i++)
 	{
@@ -131,12 +169,17 @@ void tab_widget_servant::receive_wiki_xml_database(
 		QModelIndex item_basic = model->item_find("basic", model->index(0, 0));
 		if (item_basic.isValid())
 		{
-			// id
+            // need to have outer variable to know current id
+            int id = 0;
+            // id, 1
 			{
+                // id is the most important, so we use assert here
 				QModelIndex item_id = model->item_find("id", item_basic);
+                Q_ASSERT(item_id.isValid());
 				if (item_id.isValid())
 				{
 					int val = model->data(item_id.siblingAtColumn(1), Qt::DisplayRole).toInt();
+                    id = val;
 					QStandardItem *item = new QStandardItem;
 					item->setData(val, Qt::DisplayRole);
 					item->setEditable(false);
@@ -144,7 +187,7 @@ void tab_widget_servant::receive_wiki_xml_database(
 				}
 			}
 
-			// name
+            // name, 2
 			{
 				QModelIndex item_name = model->item_find("name_en", item_basic);
 				if (item_name.isValid())
@@ -157,7 +200,7 @@ void tab_widget_servant::receive_wiki_xml_database(
 				}
 			}
 
-			// class
+            // class, 3
 			{
 				QModelIndex item_class = model->item_find("class", item_basic);
 				if (item_class.isValid())
@@ -170,7 +213,7 @@ void tab_widget_servant::receive_wiki_xml_database(
 				}
 			}
 				
-			// rarity
+            // rarity, 4
 			{
 				QModelIndex item_rarity = model->item_find("rarity", item_basic);
 				if (item_rarity.isValid())
@@ -182,6 +225,51 @@ void tab_widget_servant::receive_wiki_xml_database(
 					table_widget_model_origin->setItem(i, 4, item);
 				}
 			}
+
+            // user_data, 5-7
+            {
+                char id_full[4];
+                sprintf(id_full, "%03d", id);
+                QModelIndex item_user_data = user_data->item_find(QString("servant_") + QString(id_full), user_data->index(0, 0));
+                if (item_user_data.isValid())
+                {
+                    QModelIndex item_status = user_data->item_find("status", item_user_data);
+                    Q_ASSERT(item_status.isValid());
+
+                    // follow, 5
+                    QModelIndex item_follow = user_data->item_find("follow", item_status);
+                    Q_ASSERT(item_follow.isValid());
+                    if (user_data->data(item_follow.siblingAtColumn(1), Qt::DisplayRole).toInt() > 0)
+                    {
+                        QStandardItem *item = new QStandardItem;
+                        item->setData(tr("Yes"), Qt::DisplayRole);
+                        item->setEditable(false);
+                        table_widget_model_origin->setItem(i, 5, item);
+                    }
+
+                    // priority, 6
+                    QModelIndex item_priority = user_data->item_find("priority", item_status);
+                    Q_ASSERT(item_priority.isValid());
+                    {
+                        int val = user_data->data(item_priority.siblingAtColumn(1), Qt::DisplayRole).toInt();
+                        QStandardItem *item = new QStandardItem;
+                        item->setData(val, Qt::DisplayRole);
+                        item->setEditable(false);
+                        table_widget_model_origin->setItem(i, 6, item);
+                    }
+
+                    // existance, 7
+                    QModelIndex item_existance = user_data->item_find("existance", item_status);
+                    Q_ASSERT(item_existance.isValid());
+                    if (user_data->data(item_existance.siblingAtColumn(1), Qt::DisplayRole).toInt() > 0)
+                    {
+                        QStandardItem *item = new QStandardItem;
+                        item->setData(tr("Yes"), Qt::DisplayRole);
+                        item->setEditable(false);
+                        table_widget_model_origin->setItem(i, 7, item);
+                    }
+                }
+            }
 		}
 	}
 	// set buttons
@@ -214,11 +302,15 @@ void tab_widget_servant::table_widget_refresh()
 	// set header
 	QStringList table_widget_model_header;
 	table_widget_model_header
-		<< tr("Servant")		// 0
-		<< tr("ID")				// 1
-		<< tr("Name")			// 2
-		<< tr("Class")			// 3
-		<< tr("Rarity");		// 4
+        << tr("Servant")        // 0
+        << tr("ID")             // 1
+        << tr("Name")           // 2
+        << tr("Class")          // 3
+        << tr("Rarity")         // 4
+        << tr("Follow")         // 5
+        << tr("Priority")       // 6
+        << tr("Exist")          // 7
+    ;
 	table_widget_model->setHorizontalHeaderLabels(table_widget_model_header);
 	// set item
 	int row_count = 0;
@@ -242,6 +334,22 @@ void tab_widget_servant::table_widget_refresh()
 			((class_mooncancer->click_status) &&	QString::compare(class_name, "MoonCancer"	, Qt::CaseInsensitive) == 0) ||
 			((class_foreigner->click_status) &&		QString::compare(class_name, "Foreigner"	, Qt::CaseInsensitive) == 0)
 			)) continue;
+        // check rarity
+        int rarity = table_widget_model_origin->data(table_widget_model_origin->index(row, 4)).toInt();
+        if (!(filter_rarity_all->isChecked()) && !(
+            ((filter_rarity_0->isChecked()) && rarity == 0) ||
+            ((filter_rarity_1->isChecked()) && rarity == 1) ||
+            ((filter_rarity_2->isChecked()) && rarity == 2) ||
+            ((filter_rarity_3->isChecked()) && rarity == 3) ||
+            ((filter_rarity_4->isChecked()) && rarity == 4) ||
+            ((filter_rarity_5->isChecked()) && rarity == 5)
+            )) continue;
+        // check follow
+        bool follow = (table_widget_model_origin->data(table_widget_model_origin->index(row, 5)).isValid());
+        if (!(filter_follow_all->isChecked()) && !(
+            (filter_follow_yes->isChecked() && follow) ||
+            (filter_follow_no->isChecked() && !follow)
+            )) continue;
 		// set vertical header
 		for (int col = 0; col < table_widget_model_origin->columnCount(); ++col)
 		{
@@ -299,18 +407,20 @@ void tab_widget_servant::table_pushbutton_click()
 	consume_widget->setMinimumHeight(600);
 	consume_widget->setAttribute(Qt::WA_DeleteOnClose);
 	consume_widget->setFixedWidth(consume_widget->sizeHint().width());
-	connect(this, &tab_widget_servant::table_pushbutton_transout, consume_widget, &resource_consume::data_transin);
+    connect(this, &tab_widget_servant::table_pushbutton_transout, consume_widget, &resource_consume::data_transin);
 	emit table_pushbutton_transout(
 		ini_setting_data,
 		&wiki_database,
 		&servant_icon_button_image,
 		id_number,
 		user_data);
-	consume_widget->exec();
+    consume_widget->exec();
+    table_original_table_refresh();
 }
 
 void tab_widget_servant::receive_user_data_changes(TreeModel * user_dat)
 {
 	user_data = user_dat;
+    table_widget_refresh();
 }
 

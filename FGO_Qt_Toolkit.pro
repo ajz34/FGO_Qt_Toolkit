@@ -6,7 +6,7 @@
 
 QT       += core gui widgets
 
-TARGET = FGO_Helper_ajz_0_1
+TARGET = FGO_Qt_Toolkit
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
