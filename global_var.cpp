@@ -1,6 +1,6 @@
-#include "global_var.h"
+﻿#include "global_var.h"
 
-QMap<QString, QPixmap> GLOB::MAP_SKILL_ICON;
+QHash<QString, QPixmap> GLOB::MAP_SKILL_ICON;
 QVector<QString> GLOB::LIST_ITEM_PIECE_SILVER;
 QVector<QString> GLOB::LIST_ITEM_PIECE_GOLD;
 QVector<QString> GLOB::LIST_ITEM_GEM_SHINING;
@@ -12,11 +12,11 @@ QVector<QString> GLOB::LIST_ITEM_GOLD;
 QVector<QString> GLOB::LIST_ITEM_EVENT;
 QVector<QString> GLOB::LIST_ITEM_MISC;
 QVector<QString> GLOB::LIST_ITEM;
-QMap<QString, int> GLOB::MAP_ITEM_INDEX;
-QMap<QString, QPixmap> GLOB::MAP_ITEM;
-QMap<QString, QPixmap> GLOB::MAP_CARD;
-QMap<QString, QPixmap> GLOB::MAP_CLASS;
-QMap<QString, QPixmap> GLOB::MAP_EMPTY;
+QHash<QString, int> GLOB::MAP_ITEM_INDEX;
+QHash<QString, QPixmap> GLOB::MAP_ITEM;
+QHash<QString, QPixmap> GLOB::MAP_CARD;
+QHash<QString, QPixmap> GLOB::MAP_CLASS;
+QHash<QString, QPixmap> GLOB::MAP_EMPTY;
 
 void GLOB::MAP_INIT()
 {
@@ -33,6 +33,7 @@ void GLOB::MAP_INIT()
 	}
 	delete it;
 	// MAP_ITEM_PIECE_SILVER
+    /*
 	it = new QDirIterator(":/item_icon/images/item_icon/piece_silver", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
@@ -44,8 +45,22 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/piece_silver/";
+        QVector<QString> items = {
+            "剑阶银棋", "弓阶银棋", "枪阶银棋", "骑阶银棋", "术阶银棋", "杀阶银棋", "狂阶银棋"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_PIECE_SILVER.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_PIECE_GOLD
-	it = new QDirIterator(":/item_icon/images/item_icon/piece_gold", QDirIterator::Subdirectories);
+	/*
+    it = new QDirIterator(":/item_icon/images/item_icon/piece_gold", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
@@ -56,7 +71,21 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/piece_gold/";
+        QVector<QString> items = {
+            "剑阶金像", "弓阶金像", "枪阶金像", "骑阶金像", "术阶金像", "杀阶金像", "狂阶金像"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_PIECE_GOLD.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_GEM_SHINING
+    /*
 	it = new QDirIterator(":/item_icon/images/item_icon/gem_shining", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
@@ -68,7 +97,22 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/gem_shining/";
+        QVector<QString> items = {
+            QString("剑之辉石"), "弓之辉石", "枪之辉石", "骑之辉石", "术之辉石", "杀之辉石", "狂之辉石"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_GEM_SHINING.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
+    qDebug() << LIST_ITEM;
 	// MAP_ITEM_GEM_MAGIC
+    /*
 	it = new QDirIterator(":/item_icon/images/item_icon/gem_magic", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
@@ -80,7 +124,21 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/gem_magic/";
+        QVector<QString> items = {
+            "剑之魔石", "弓之魔石", "枪之魔石", "骑之魔石", "术之魔石", "杀之魔石", "狂之魔石"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_GEM_MAGIC.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_GEM_SECRET
+    /*
 	it = new QDirIterator(":/item_icon/images/item_icon/gem_secret", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
@@ -92,7 +150,21 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/gem_secret/";
+        QVector<QString> items = {
+            "剑之秘石", "弓之秘石", "枪之秘石", "骑之秘石", "术之秘石", "杀之秘石", "狂之秘石"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_GEM_SECRET.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_BRONZE
+    /*
 	it = new QDirIterator(":/item_icon/images/item_icon/bronze", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
@@ -104,8 +176,22 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/bronze/";
+        QVector<QString> items = {
+            "英雄之证", "凶骨", "龙之牙", "虚影之尘", "愚者之锁", "万死的毒针", "魔术髓液", "宵哭铁桩", "励振火药"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_BRONZE.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_SILVER
-	it = new QDirIterator(":/item_icon/images/item_icon/silver", QDirIterator::Subdirectories);
+    /*
+    it = new QDirIterator(":/item_icon/images/item_icon/silver", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
 		if (it->fileInfo().suffix() == "jpg")
@@ -116,7 +202,22 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/silver/";
+        QVector<QString> items = {
+            "世界树之种", "鬼魂提灯", "八连双晶", "蛇之宝玉", "凤凰羽毛", "无间齿轮", "禁断书页",
+            "人工生命体幼体", "陨蹄铁", "大骑士勋章", "追忆的贝壳", "枯淡勾玉", "永远结冰", "巨人的指轮", "极光之钢"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_SILVER.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_GOLD
+    /*
 	it = new QDirIterator(":/item_icon/images/item_icon/gold", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
 		it->next();
@@ -128,6 +229,20 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    */
+    {
+        QString path_root = ":/item_icon/images/item_icon/gold/";
+        QVector<QString> items = {
+            "混沌之爪", "蛮神心脏", "龙之逆鳞", "精灵根", "战马的幼角", "血之泪石",
+            "黑兽脂", "封魔之灯", "智慧之圣甲虫像", "起源的胎毛", "咒兽胆石", "奇奇神酒"
+        };
+        for (QString item : items)
+        {
+            LIST_ITEM_GOLD.push_back(item);
+            LIST_ITEM.push_back(item);
+            MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
+        }
+    }
 	// MAP_ITEM_EVENT
 	it = new QDirIterator(":/item_icon/images/item_icon/event", QDirIterator::Subdirectories);
 	while (it->hasNext()) {
@@ -254,7 +369,7 @@ QVector<QMap<int, int>> GLOB::VEC_PALINGENESIS_QP =
 	{ { 0, 0 },{ 1, 9000000 },{ 2, 10000000 },{ 3, 11000000 },{ 4, 12000000 },{ 5, 13000000 }                                                                             ,{ -1, 55000000 } }, // 5 star
 };
 
-QMap<int, int> GLOB::MAP_LEVEL_EXP =
+QHash<int, int> GLOB::MAP_LEVEL_EXP =
 { 
 	{ 1,0 },{ 2,100 },{ 3,400 },{ 4,1000 },{ 5,2000 },{ 6,3500 },{ 7,5600 },{ 8,8400 },{ 9,12000 },{ 10,16500 },
 	{ 11,22000 },{ 12,28600 },{ 13,36400 },{ 14,45500 },{ 15,56000 },{ 16,68000 },{ 17,81600 },{ 18,96900 },{ 19,114000 },{ 20,133000 },

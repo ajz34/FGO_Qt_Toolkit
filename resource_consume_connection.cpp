@@ -129,7 +129,7 @@ void resource_consume::init_database_consume()
 
     // assistant functions
     // this assist function try to append all items from parent index to map
-    auto append_vec = [model](QVector<int> &vec, const QString &search, const QModelIndex &parent)
+    auto append_vec = [model, this](QVector<int> &vec, const QString &search, const QModelIndex &parent)
     {
         QModelIndex index = model->item_find(search, parent);
         Q_ASSERT(index.isValid());
@@ -138,8 +138,16 @@ void resource_consume::init_database_consume()
         {
             int child_num = model->rowCount(index);
             for (int i = 0; i < child_num; ++i)
-                vec[GLOB::LIST_ITEM.indexOf(model->data(model->index(i, 0, index), Qt::DisplayRole).toString())] =
-                    model->data(model->index(i, 1, index), Qt::DisplayRole).toInt();
+            {
+                QString item_name = model->data(model->index(i, 0, index), Qt::DisplayRole).toString();
+                int loc = GLOB::MAP_ITEM_INDEX.value(item_name, -1);
+                if (loc == -1)
+                {
+                    QMessageBox::warning(this, "FGO Qt Toolkit", tr("No such item: ") + item_name, QMessageBox::Ok);
+                    return;
+                }
+                vec[loc] = model->data(model->index(i, 1, index), Qt::DisplayRole).toInt();
+            }
         }
     };
     // this assist function try to set the integer value
@@ -159,7 +167,7 @@ void resource_consume::init_database_consume()
     for (int i = 1; i < 10; ++i)
     {
         append_vec(database_skill_consume[i], "skill_level_" + QVariant(i).toString(), index_skill_consume);
-        database_skill_consume[i][GLOB::LIST_ITEM.indexOf("QP")] = GLOB::VEC_SKILL_QP[database_skill_rarity][i];
+        database_skill_consume[i][GLOB::MAP_ITEM_INDEX.value("QP", -1)] = GLOB::VEC_SKILL_QP[database_skill_rarity][i];
     }
 
     // initialize database_ascension_consume
@@ -171,7 +179,7 @@ void resource_consume::init_database_consume()
         for (int i = 0; i < 4; ++i)
         {
             append_vec(database_ascension_consume[i], "ascension_level_" + QVariant(i).toString(), index_ascension_consume);
-            database_ascension_consume[i][GLOB::LIST_ITEM.indexOf("QP")] = GLOB::VEC_ASCENSION_QP[database_ascension_rarity][i];
+            database_ascension_consume[i][GLOB::MAP_ITEM_INDEX.value("QP", -1)] = GLOB::VEC_ASCENSION_QP[database_ascension_rarity][i];
         }
     }
     else
@@ -199,8 +207,14 @@ void resource_consume::init_database_consume()
                 }
                 else
                 {
-                    vec[GLOB::LIST_ITEM.indexOf(model->data(index_costume_cur_item, Qt::DisplayRole).toString())] =
-                            model->data(index_costume_cur_item.siblingAtColumn(1), Qt::DisplayRole).toInt();
+                    QString item_name = model->data(index_costume_cur_item, Qt::DisplayRole).toString();
+                    int loc = GLOB::MAP_ITEM_INDEX.value(item_name, -1);
+                    if (loc == -1)
+                    {
+                        QMessageBox::warning(this, "FGO Qt Toolkit", tr("No such item: ") + item_name, QMessageBox::Ok);
+                        break;
+                    }
+                    vec[loc] = model->data(index_costume_cur_item.siblingAtColumn(1), Qt::DisplayRole).toInt();
                 }
             }
             database_costume_consume.push_back(vec);
@@ -598,8 +612,8 @@ void resource_consume::connection_ascension_and_lvup_consume()
     list_user_ascension_and_lvup_consume = QVector<int>(GLOB::LIST_ITEM.size(), 0);
     for (int level = a_1; level < a_2; ++level)
         list_plus(list_user_ascension_and_lvup_consume, database_ascension_consume[level]);
-    list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("圣杯"))] = p_cup;
-    list_user_ascension_and_lvup_consume[GLOB::LIST_ITEM.indexOf(QString("QP"))] += p_QP;
+    list_user_ascension_and_lvup_consume[GLOB::MAP_ITEM_INDEX.value(QString("圣杯"), -1)] = p_cup;
+    list_user_ascension_and_lvup_consume[GLOB::MAP_ITEM_INDEX.value(QString("QP"), -1)] += p_QP;
 
     // 6. set icon for right view
     for (QLabel* label : right_ascension_consume) label->setPixmap(GLOB::MAP_EMPTY["skill_small"]);

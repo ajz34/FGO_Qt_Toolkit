@@ -1,11 +1,18 @@
 #pragma once
+#ifdef WIN32
+// character in chinese can't display in visual studio
+// if Qt environment, possibly you can delete this
+// this line may be included in all header files
+// https://blog.csdn.net/nabariou/article/details/60468627
+#pragma execution_character_set("utf-8")  
+#endif
 
 #include <QtWidgets>
 
 namespace GLOB {
 	// mapping icon and item to figure
 	// since images are stored in project and not specified by user, this process is user safe
-	extern QMap<QString, QPixmap> MAP_SKILL_ICON;
+	extern QHash<QString, QPixmap> MAP_SKILL_ICON;
 	extern QVector<QString> LIST_ITEM_PIECE_SILVER;
 	extern QVector<QString> LIST_ITEM_PIECE_GOLD;
 	extern QVector<QString> LIST_ITEM_GEM_SHINING;
@@ -17,11 +24,11 @@ namespace GLOB {
 	extern QVector<QString> LIST_ITEM_EVENT;
 	extern QVector<QString> LIST_ITEM_MISC;
     extern QVector<QString> LIST_ITEM;
-    extern QMap<QString, int> MAP_ITEM_INDEX;
-    extern QMap<QString, QPixmap> MAP_ITEM;
-	extern QMap<QString, QPixmap> MAP_CARD;
-    extern QMap<QString, QPixmap> MAP_CLASS;
-    extern QMap<QString, QPixmap> MAP_EMPTY;
+    extern QHash<QString, int> MAP_ITEM_INDEX;
+    extern QHash<QString, QPixmap> MAP_ITEM;
+	extern QHash<QString, QPixmap> MAP_CARD;
+    extern QHash<QString, QPixmap> MAP_CLASS;
+    extern QHash<QString, QPixmap> MAP_EMPTY;
 	extern void MAP_INIT();
 
 	// mapping of ascension or skill Exp or QP
@@ -31,7 +38,7 @@ namespace GLOB {
 	extern QVector<QMap<int, int>> VEC_SKILL_QP;
 	extern QVector<QMap<int, int>> VEC_PALINGENESIS_LEVEL;
 	extern QVector<QMap<int, int>> VEC_PALINGENESIS_QP;
-	extern QMap<int, int> MAP_LEVEL_EXP;
+	extern QHash<int, int> MAP_LEVEL_EXP;
 }
 
 

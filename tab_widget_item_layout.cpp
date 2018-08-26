@@ -74,7 +74,6 @@ void tab_widget_item::filter_set_layout()
     filter_split_widget->setOrientation(Qt::Vertical);
 
     // layout
-
     auto filter_option_group = new QGroupBox;
     auto filter_option_layout = new QHBoxLayout;
     filter_option_group->setTitle(tr("Filter Option"));

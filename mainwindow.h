@@ -23,14 +23,24 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT;
 
-	//--- HAND MADE PARAMETERS
-	const int SERVANT_ICON_NUMBER = 500;
-	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
-	const QVector<QString> INI_SETTING_FILE_INDEX{
-		"wiki_xml_path",
-		"servant_icon_present",
-		"cur_user_file_path",
-	};
+public:
+    // these variables should be accessible to its child widgets (not child classes)
+
+    //--- HAND MADE PARAMETERS
+    const int SERVANT_ICON_NUMBER = 500;
+    const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
+    const QVector<QString> INI_SETTING_FILE_INDEX{
+        "wiki_xml_path",
+        "servant_icon_present",
+        "cur_user_file_path",
+    };
+
+    //--- frequently used data
+    QVector<QString> ini_setting_data{};
+    QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
+    TreeModel *user_data = nullptr;
+
+private:
 
 	//--- A. tab widgets
 	QTabWidget *main_tabwidget = nullptr;
@@ -43,7 +53,6 @@ class MainWindow : public QMainWindow
 	QAction *action_save = nullptr;
 	QAction *action_save_as = nullptr;
 	QAction *action_database = nullptr;
-	QVector<QString> ini_setting_data{};
 	void ini_setting_read();
 	void ini_setting_write();
     QAction *action_exit = nullptr;
@@ -58,9 +67,6 @@ class MainWindow : public QMainWindow
     void menu_create_action();
     void set_menu();
 
-	//--- C. wiki database
-	QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
-
     //--- N. layout
 	QGridLayout *main_layout = nullptr;
 	QLabel *status_bar = nullptr;
@@ -74,7 +80,6 @@ class MainWindow : public QMainWindow
 	void initialize_database();
 
 	//--- P. action on user file
-	TreeModel *user_data = nullptr;
 	QString cur_user_file_path;
 	bool ok_to_continue();
 	bool save();

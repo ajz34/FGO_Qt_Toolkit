@@ -270,7 +270,7 @@ void MainWindow::initialize_database()
 	{
 		if (file_info.suffix() == "xml") file_list << file_info.filePath();
 	}
-	foreach(QString xml_file, file_list)
+	for (QString xml_file : file_list)
 	{
 		QFile file(xml_file);
 		if (!file.open(QFile::ReadOnly | QFile::Text)) continue;
