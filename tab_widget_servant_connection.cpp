@@ -1,4 +1,4 @@
-#include "tab_widget_servant.h"
+﻿#include "tab_widget_servant.h"
 
 //--- A. servant class labels
 
@@ -354,8 +354,7 @@ void tab_widget_servant::table_widget_refresh()
 		QRightClickPushButton *button = new QRightClickPushButton(this);
 		button->text_save = table_widget_model->data(table_widget_model->index(row, 1)).toString();
 		button->setIcon((*servant_icon_button_image)[table_widget_model->data(table_widget_model->index(row, 1)).toInt()]);
-		button->setIconSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
-		button->setFixedSize(button->minimumSizeHint());
+        button->setIconSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		button->setFixedSize(QSize(SERVANT_ICON_WIDTH, SERVANT_ICON_HEIGHT));
 		table_widget->setIndexWidget(table_widget_model->index(row, 0), button);
 		connect(button, &QRightClickPushButton::rightClicked, this, &tab_widget_servant::table_pushbutton_right_click);

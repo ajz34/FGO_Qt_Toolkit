@@ -1,4 +1,4 @@
-#include "tab_widget_item.h"
+﻿#include "tab_widget_item.h"
 
 tab_widget_item::tab_widget_item(QWidget *parent)
     : QWidget(parent)
@@ -76,6 +76,16 @@ void tab_widget_item::filter_set_layout()
     filter_lower_layout = new FlowLayout;
     filter_upper_table = new QTableView;
     filter_lower_table = new QTableView;
+    filter_upper_table->setSortingEnabled(true);
+    filter_upper_table->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    filter_upper_table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    filter_lower_table->setSortingEnabled(true);
+    filter_lower_table->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    filter_lower_table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    filter_upper_model = new QStandardItemModel;
+    filter_lower_model = new QStandardItemModel;
+    filter_upper_table->setModel(filter_upper_model);
+    filter_lower_table->setModel(filter_lower_model);
     filter_split_widget = new QSplitter;
     filter_split_widget->setOrientation(Qt::Vertical);
 

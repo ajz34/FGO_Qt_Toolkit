@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtWidgets>
 #include "qclickablefigurelabel.h"
@@ -41,6 +41,9 @@ private:
     QMap<int, bool> filter_map_mask{};
     QMap<int, int> filter_map_priority{};
     QMap<int, bool> filter_map_exist{};
+    QMap<int, QVector<int>> filter_map_actual{};
+    QMap<int, QVector<int>> filter_map_ideal{};
+    QMap<int, QVector<int>> filter_map_costume{};
     QScrollArea *filter_upper_widget = nullptr;
     QScrollArea *filter_lower_widget = nullptr;
     FlowLayout *filter_upper_layout = nullptr;
@@ -58,7 +61,6 @@ private:
     void filter_reset_data();
     void filter_refresh_table();
 private slots:
-    void filter_refresh_condition();
     void filter_interchange_table();
     void filter_refresh_layout();
     void filter_on_trival_check_clicked();
