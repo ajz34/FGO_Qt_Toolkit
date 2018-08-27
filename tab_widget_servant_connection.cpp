@@ -273,27 +273,7 @@ void tab_widget_servant::table_original_table_refresh()
                 }
             }
 		}
-	}
-	// set buttons
-	// this process is slow, set process bar here
-    /*
-	QProgressDialog progress(tr("Setup table icon image"), "", 0, table_widget_model_origin->rowCount());
-	progress.setCancelButton(0);
-	progress.setWindowModality(Qt::WindowModal);
-	progress.show();
-	for (int row = 0; row < table_widget_model_origin->rowCount(); ++row)
-	{
-		progress.setValue(row + 1);
-		QApplication::processEvents();
-		if (progress.wasCanceled())
-			break;
-		char num_full[4];
-		sprintf(num_full, "%03d", table_widget_model_origin->data(table_widget_model_origin->index(row, 1)).toInt());
-		QPixmap pixmap(ini_setting_data[1] + QString("/") + QString(num_full) + QString(".png"));
-		servant_icon_button_image[table_widget_model_origin->data(table_widget_model_origin->index(row, 1)).toInt()] = pixmap;
-	}
-	progress.setValue(table_widget_model_origin->rowCount());
-    */
+    }
 	table_widget_refresh();
 }
 

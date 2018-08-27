@@ -4,6 +4,7 @@ tab_widget_item::tab_widget_item(QWidget *parent)
     : QWidget(parent)
 {
     main_set_layout();
+    main_set_connection();
 }
 
 tab_widget_item::~tab_widget_item()
@@ -53,9 +54,12 @@ void tab_widget_item::filter_set_layout()
         filter_priority_check.at(i)->setText(QVariant(i).toString());
         filter_priority_check.at(i)->setChecked(true);
     }
-    filter_exist_check = new QCheckBox;
-    filter_exist_check->setText(tr("Exist"));
-    filter_exist_check->setChecked(true);
+    filter_exist_check[0] = new QCheckBox;
+    filter_exist_check.at(0)->setText(tr("Exist"));
+    filter_exist_check.at(0)->setChecked(true);
+    filter_exist_check[1] = new QCheckBox;
+    filter_exist_check.at(1)->setText(tr("Not Exist"));
+    filter_exist_check.at(1)->setChecked(true);
     filter_other_check = new QCheckBox;
     filter_other_check->setText(tr("Other"));
     filter_other_check->setChecked(false);
@@ -68,6 +72,8 @@ void tab_widget_item::filter_set_layout()
         QPixmap(":/self_icon/images/self_icon/filter_list.png").scaled(20, 20));
     filter_upper_widget = new QScrollArea;
     filter_lower_widget = new QScrollArea;
+    filter_upper_layout = new FlowLayout;
+    filter_lower_layout = new FlowLayout;
     filter_upper_table = new QTableView;
     filter_lower_table = new QTableView;
     filter_split_widget = new QSplitter;
@@ -85,14 +91,20 @@ void tab_widget_item::filter_set_layout()
     temp_layout_1->addWidget(filter_priority_check.at(4), 1, 1);
     temp_layout_1->addWidget(filter_priority_check.at(5), 1, 2);
     auto temp_layout_2 = new QGridLayout;
-    temp_layout_2->addWidget(filter_exist_check, 0, 0);
-    temp_layout_2->addWidget(filter_other_check, 1, 0);
+    temp_layout_2->addWidget(filter_exist_check.at(0), 0, 0);
+    temp_layout_2->addWidget(filter_exist_check.at(1), 1, 0);
+    auto temp_layout_3 = new QVBoxLayout;
+    temp_layout_3->addStretch();
+    temp_layout_3->addWidget(filter_other_check);
+    temp_layout_3->addStretch();
     filter_option_layout->addStretch();
     filter_option_layout->addStretch();
     filter_option_layout->addStretch();
     filter_option_layout->addLayout(temp_layout_1);
     filter_option_layout->addStretch();
     filter_option_layout->addLayout(temp_layout_2);
+    filter_option_layout->addStretch();
+    filter_option_layout->addLayout(temp_layout_3);
     filter_option_layout->addStretch();
     filter_option_layout->addStretch();
     filter_option_layout->addStretch();
@@ -106,14 +118,19 @@ void tab_widget_item::filter_set_layout()
     filter_switch_group->setTitle(tr("layout"));
 
     auto filter_top_widgets = new QWidget;
-    auto temp_layout_3 = new QHBoxLayout;
-    temp_layout_3->addWidget(filter_option_group);
-    temp_layout_3->addWidget(filter_switch_group);
-    filter_top_widgets->setLayout(temp_layout_3);
+    auto temp_layout_4 = new QHBoxLayout;
+    temp_layout_4->addWidget(filter_option_group);
+    temp_layout_4->addWidget(filter_switch_group);
+    filter_top_widgets->setLayout(temp_layout_4);
     filter_top_widgets->setFixedHeight(filter_top_widgets->sizeHint().height());
 
+    filter_upper_widget->setLayout(filter_upper_layout);
+    filter_lower_widget->setLayout(filter_lower_layout);
     filter_split_widget->addWidget(filter_upper_widget);
     filter_split_widget->addWidget(filter_lower_widget);
+    filter_split_widget->setStyleSheet("background-color:white;");
+    filter_upper_widget->setStyleSheet("background-color:white;");
+    filter_lower_widget->setStyleSheet("background-color:white;");
 
     auto filter_mainlayout = new QVBoxLayout;
     filter_mainlayout->addWidget(filter_top_widgets);

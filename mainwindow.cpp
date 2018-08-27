@@ -195,8 +195,15 @@ void MainWindow::ini_setting_read()
 		ini_setting_data.push_back(settings.value(INI_SETTING_FILE_INDEX[i], "").toString());
 	}
 	// apply setting
-	load_file(ini_setting_data[2]);
-	initialize_database();
+    // the reason for the following initialization process is
+    // first, we need to load a file, whatever it is
+    // this may initialize the tab_servant table, and avoid situation that wiki_database or figure is empty in tab_item initialization
+    // then, we read database
+    // finally, we load the current file; this process is the same as any change of user_data after program initialization
+    QString file_path = ini_setting_data[2];
+    load_file("");
+    initialize_database();
+    load_file(file_path);
 }
 
 void MainWindow::ini_setting_write()
@@ -251,11 +258,14 @@ void MainWindow::set_main_layout()
 void MainWindow::set_central_connection()
 {
     // output connection
-	connect(this, &MainWindow::signal_database_changed, tab_servant, &tab_widget_servant::from_parent_database_changed);
+    connect(this, &MainWindow::signal_database_changed, tab_servant, &tab_widget_servant::from_parent_database_changed);
+    connect(this, &MainWindow::signal_database_changed, tab_item, &tab_widget_item::from_parent_database_changed);
 	connect(this, &MainWindow::signal_user_data_loaded, tab_servant, &tab_widget_servant::from_parent_user_data_loaded);
+    connect(this, &MainWindow::signal_user_data_loaded, tab_item, &tab_widget_item::from_parent_user_data_loaded);
 
     // input connection
     connect(tab_servant, &tab_widget_servant::signal_user_data_changed, this, &MainWindow::from_tab_user_data_changed);
+    connect(tab_item, &tab_widget_item::signal_user_data_changed, this, &MainWindow::from_tab_user_data_changed);
 }
 
 void MainWindow::initialize_database()
