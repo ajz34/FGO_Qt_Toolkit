@@ -85,11 +85,11 @@ void tab_widget_item::filter_reset_data()
         // priority
         QModelIndex index_priority = user_data->item_find("priority", index_status);
         Q_ASSERT(index_priority.isValid());
-        filter_map_priority[id] = user_data->data(index_priority, Qt::DisplayRole).toInt();
+        filter_map_priority[id] = user_data->data(index_priority.siblingAtColumn(1), Qt::DisplayRole).toInt();
         // exist
         QModelIndex index_exist = user_data->item_find("exist", index_status);
         Q_ASSERT(index_exist.isValid());
-        filter_map_exist[id] = user_data->data(index_exist, Qt::DisplayRole).toInt() > 0;
+        filter_map_exist[id] = user_data->data(index_exist.siblingAtColumn(1), Qt::DisplayRole).toInt() > 0;
         // mask
         filter_map_mask[id] = true;
         // button setting
@@ -100,6 +100,8 @@ void tab_widget_item::filter_reset_data()
         filter_widget_button.value(id)->setFixedSize(QSize(69, 75));
         connect(filter_widget_button.value(id), &QRightClickPushButton::rightClicked,
                 this, &tab_widget_item::filter_on_button_right_clicked);
+        connect(filter_widget_button.value(id), &QRightClickPushButton::clicked,
+                this, &tab_widget_item::filter_interchange_table);
     }
 
     // finalize
@@ -109,14 +111,31 @@ void tab_widget_item::filter_reset_data()
 void tab_widget_item::filter_refresh_table()
 {
     // 1. reconstruct mask
+    qDebug() << filter_map_priority;
+    qDebug() << filter_map_exist;
+    for (int id : filter_map_mask.keys())
+    {
+        if (
+               ((filter_map_priority.value(id) == 0 && filter_priority_check.at(0)->isChecked()) ||
+                (filter_map_priority.value(id) == 1 && filter_priority_check.at(1)->isChecked()) ||
+                (filter_map_priority.value(id) == 2 && filter_priority_check.at(2)->isChecked()) ||
+                (filter_map_priority.value(id) == 3 && filter_priority_check.at(3)->isChecked()) ||
+                (filter_map_priority.value(id) == 4 && filter_priority_check.at(4)->isChecked()) ||
+                (filter_map_priority.value(id) == 5 && filter_priority_check.at(5)->isChecked())) &&
+               ((filter_map_exist.value(id) && filter_exist_check.at(0)->isChecked()) ||
+                (!filter_map_exist.value(id) && filter_exist_check.at(1)->isChecked()))
+            )
+            filter_map_mask[id] = true;
+        else
+            filter_map_mask[id] = false;
+    }
+    emit from_filter_mask_changed();
     // 2. apply widgets
     for (int id : filter_map_mask.keys())
     {
         if (filter_map_mask.value(id)) filter_upper_layout->addWidget(filter_widget_button.value(id));
         else filter_lower_layout->addWidget(filter_widget_button.value(id));
     }
-    filter_upper_widget->setLayout(filter_upper_layout);
-    filter_lower_widget->setLayout(filter_lower_layout);
 }
 
 void tab_widget_item::filter_refresh_condition()
@@ -126,7 +145,30 @@ void tab_widget_item::filter_refresh_condition()
 
 void tab_widget_item::filter_interchange_table()
 {
-
+    QRightClickPushButton *button = qobject_cast<QRightClickPushButton*>(sender());
+    int id = button->text_save.toInt();
+    // 1. change mask
+    bool origin_mask = filter_map_mask.value(id);
+    filter_map_mask[id] = !origin_mask;
+    emit from_filter_mask_changed();
+    // 2. change widget item
+    if (origin_mask)
+    {
+        filter_upper_layout->removeWidget(filter_widget_button.value(id));
+        filter_lower_layout->addWidget(filter_widget_button.value(id));
+    }
+    else
+    {
+        filter_lower_layout->removeWidget(filter_widget_button.value(id));
+        filter_upper_layout->addWidget(filter_widget_button.value(id));
+    }
+    // 3. change check box status
+    for (auto i : filter_priority_check)
+        i->setChecked(false);
+    for (auto i : filter_exist_check)
+        i->setChecked(false);
+    filter_other_check->setChecked(true);
+    filter_other_check->setEnabled(true);
 }
 
 void tab_widget_item::filter_refresh_layout()
