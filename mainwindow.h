@@ -34,6 +34,9 @@ private:
         "wiki_xml_path",
         "servant_icon_present",
         "cur_user_file_path",
+        "event_item",
+        "exchange_item",
+        "event_figure",
     };
 
     //--- frequently used data

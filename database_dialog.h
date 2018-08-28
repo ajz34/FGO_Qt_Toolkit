@@ -9,12 +9,21 @@ class database_dialog : public QDialog
 
 	QVector<QString> ini_setting_data;
 
-	QLabel *wiki_xml_database_label;
-	QLineEdit *wiki_xml_database_textedit;
-    QPushButton *wiki_xml_database_button;
-	QLabel *servant_icon_present_label;
-	QLineEdit *servant_icon_present_textedit;
-    QPushButton *servant_icon_present_button;
+	QLabel *wiki_xml_database_label = nullptr;
+	QLineEdit *wiki_xml_database_textedit = nullptr;
+    QPushButton *wiki_xml_database_button = nullptr;
+	QLabel *servant_icon_present_label = nullptr;
+	QLineEdit *servant_icon_present_textedit = nullptr;
+    QPushButton *servant_icon_present_button = nullptr;
+    QLabel *event_item_label = nullptr;
+    QLineEdit *event_item_textedit = nullptr;
+    QPushButton *event_item_button = nullptr;
+    QLabel *exchange_item_label = nullptr;
+    QLineEdit *exchange_item_textedit = nullptr;
+    QPushButton *exchange_item_button = nullptr;
+    QLabel *event_figure_label = nullptr;
+    QLineEdit *event_figure_textedit = nullptr;
+    QPushButton *event_figure_button = nullptr;
 
 	void database_textedit_update();
 
@@ -27,7 +36,8 @@ signals:
 
 private slots:
 	void database_accepted_slot();
-    void button_clicked();
+    void dir_button_clicked();
+    void file_button_clicked();
 
 public slots:
 	void database_transin(QVector<QString> path_file);
