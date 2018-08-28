@@ -20,17 +20,20 @@ void tab_widget_item::from_parent_database_changed(
     event_figure = event_figure_dat;
 
     filter_reset_data();
+    event_refresh();
 }
 
 void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
 {
     user_data = user_dat;
     filter_reset_data();
+    event_refresh();
 }
 
 void tab_widget_item::main_set_connection()
 {
     filter_set_connection();
+    event_set_connection();
 }
 
 // 1. filter
@@ -500,3 +503,194 @@ void tab_widget_item::filter_on_button_right_clicked()
     consume_widget->exec();
     emit signal_user_data_changed(user_data);
 }
+
+// 2. event
+
+void tab_widget_item::event_set_connection()
+{
+
+}
+
+void tab_widget_item::event_refresh()
+{
+    // re-initialize variables and widgets
+    event_data_item = QHash<QString, QVector<QVector<int>>>{};
+    event_data_date = QHash<QString, QVector<QDate>>{};
+    event_data_type = QHash<QString, QVector<int>>{};
+    event_user_type = QHash<QString, QVector<int>>{};
+    event_seq = QHash<QString, int>{};
+    event_sorted_events = QVector<QString>{};
+    // we should know that, since all items are reparented to event_upper_vec,
+    // we only need to delete event_upper_vec, the other widgets should also be freed
+    for (auto i : event_upper_vec) if (i) delete i;
+
+    // 1. read the whole data imported from mainwindow
+    // however, if event_item = 0, nothing should happen here
+    if (event_item == nullptr) return;
+    {
+        QModelIndex index_root = event_item->index(0, 0);
+        Q_ASSERT(index_root.isValid());
+        if (event_item->rowCount(index_root) == 0) return;
+        for (int row = 0; row < event_item->rowCount(index_root); ++row)
+        {
+            QModelIndex index_name = event_item->index(row, 0, index_root);
+            QModelIndex index_date_init = event_item->item_find("date_init", index_name);
+            QModelIndex index_date_end = event_item->item_find("date_end", index_name);
+            QModelIndex index_event = event_item->item_find("event", index_name);
+            // since every event should have "event" list of items, as well as "date_init" and "date_end"
+            // so these index must be exist
+            Q_ASSERT(index_event.isValid() && index_date_init.isValid() && index_date_end.isValid());
+            QString event_name = event_item->data(index_name, Qt::DisplayRole).toString();
+            // init space for hash mappings
+            event_data_type[event_name] = QVector<int>(3, -1);
+            event_data_item[event_name] = QVector<QVector<int>>(5, QVector<int>{});
+            // date process
+            QStringList str_date_init = event_item->data(index_date_init.siblingAtColumn(1), Qt::DisplayRole).toString().split("-");
+            QStringList str_date_end = event_item->data(index_date_end.siblingAtColumn(1), Qt::DisplayRole).toString().split("-");
+            Q_ASSERT((str_date_init.size() == 3) && (str_date_end.size() == 3));
+            event_data_date[event_name] = QVector<QDate>
+            {
+                QDate(QVariant(str_date_init[0]).toInt(), QVariant(str_date_init[1]).toInt(), QVariant(str_date_init[2]).toInt()),
+                QDate(QVariant(str_date_end[0]).toInt(), QVariant(str_date_end[1]).toInt(), QVariant(str_date_end[2]).toInt())
+            };
+            // process event
+            event_data_item[event_name][0] = util_read_items(user_data, index_event);
+            event_data_type[event_name][0] = 1;
+            // process infinity_ / infinity-
+            // first we judge what's type of infinity is, then we return to to the processing step
+            for (int sub_row = 0; sub_row < event_item->rowCount(index_name); ++sub_row)
+            {
+                QModelIndex index_sub = event_item->index(sub_row, 0, index_name);
+                QString sub_name = event_item->data(index_sub, Qt::DisplayRole).toString();
+                QStringList sub_name_char_under = sub_name.split("_");
+                if ((sub_name_char_under.size() == 2) && (sub_name_char_under.at(0) == "infinity"))
+                {
+                    int sub_val = sub_name_char_under.at(1).toInt();
+                    if (sub_val > event_data_type[event_name].at(1))
+                        event_data_type[event_name][1] = sub_val;
+                }
+                QStringList sub_name_char_minus = sub_name.split("-");
+                if ((sub_name_char_minus.size() == 2) && (sub_name_char_minus.at(0) == "infinity"))
+                {
+                    int sub_val = sub_name_char_minus.at(1).toInt();
+                    if (sub_val > event_data_type[event_name].at(1))
+                        event_data_type[event_name][2] = sub_val;
+                }
+            }
+            // process infinity_
+            if (event_data_type.value(event_name).at(1) > 0)
+            {
+                QModelIndex index_inf1_1 = event_item->item_find("infinity_1", index_name);
+                QModelIndex index_inf1_2 = event_item->item_find("infinity_" + QVariant(event_data_type.value(event_name).at(1)).toString(), index_name);
+                event_data_item[event_name][1] = util_read_items(user_data, index_inf1_1);
+                event_data_item[event_name][2] = util_read_items(user_data, index_inf1_2);
+            }
+            // process infinity-
+            if (event_data_type.value(event_name).at(2) > 0)
+            {
+                QModelIndex index_inf2_1 = event_item->item_find("infinity-1", index_name);
+                QModelIndex index_inf2_2 = event_item->item_find("infinity-" + QVariant(event_data_type.value(event_name).at(2)).toString(), index_name);
+                event_data_item[event_name][3] = util_read_items(user_data, index_inf2_1);
+                event_data_item[event_name][4] = util_read_items(user_data, index_inf2_2);
+            }
+        }
+    }
+    qDebug() << event_data_type;
+
+    // 2. sort events by their starting date
+    {
+        QHash<QString, QVector<QDate>>::const_iterator it = event_data_date.constBegin();
+        Q_ASSERT(it != event_data_date.constEnd()); // it is estimated that we have at least one event
+        event_sorted_events.push_back(it.key());
+        ++it;
+        while (it != event_data_date.constEnd())
+        {
+            QDate cur_date = it.value().at(1);
+            int insert_key = -1;
+            for (int i = 0; i < event_sorted_events.size(); ++i)
+            {
+                if (cur_date < event_data_date.value(event_sorted_events.at(i)).at(0))
+                {
+                    insert_key = i;
+                    break;
+                }
+            }
+            if (insert_key == -1) insert_key = event_sorted_events.size();
+            event_sorted_events.insert(insert_key, it.key());
+            ++it;
+        }
+        qDebug() << event_sorted_events;
+        for (int i = 0; i < event_sorted_events.size(); ++i)
+        {
+            event_seq[event_sorted_events.at(i)] = i;
+        }
+        qDebug() << event_seq;
+    }
+
+    // 3. prepare connection
+    // this is probably a big role, and I decided to let this part an individual function
+    event_set_after_layout();
+}
+
+void tab_widget_item::event_set_after_layout()
+{
+    // initialize widget numbers
+    {
+        int number = event_seq.size();
+        event_upper_vec = QVector<QWidget*>(number, nullptr);
+        event_upper_figure = QVector<QPushButton*>(number, nullptr);
+        event_upper_follow = QVector<QCheckBox*>(number, nullptr);
+        event_upper_inf1 = QVector<QLabel*>(number, nullptr);
+        event_upper_inf1_spin = QVector<QSpinBox*>(number, nullptr);
+        event_upper_inf2 = QVector<QLabel*>(number, nullptr);
+        event_upper_inf2_spin = QVector<QSpinBox*>(number, nullptr);
+    }
+
+    // setup widgets
+    {
+        for (int i = 0; i < event_sorted_events.size(); ++i)
+        {
+            // initialize
+            event_upper_figure[i] = new QPushButton;
+            event_upper_vec[i] = new QWidget;
+            // figure
+            event_upper_figure.at(i)->setIcon(event_figure->value(event_sorted_events.at(i), QPixmap()));
+            event_upper_figure.at(i)->setIconSize(QSize(400, 150));
+            event_upper_figure.at(i)->setFixedSize(QSize(400, 150));
+
+            auto layout = new QGridLayout;
+            layout->addWidget(event_upper_figure.at(i));
+            event_upper_vec.at(i)->setLayout(layout);
+
+            event_upper_layout->addWidget(event_upper_vec.at(i));
+        }
+    }
+}
+
+void tab_widget_item::event_on_follow_clicked()
+{
+
+}
+
+void tab_widget_item::event_on_figure_clicked()
+{
+
+}
+
+void tab_widget_item::event_on_spin_changed()
+{
+
+}
+
+void tab_widget_item::event_on_date_changed()
+{
+
+}
+
+
+
+
+
+
+
+

@@ -73,6 +73,8 @@ void tab_widget_item::filter_set_layout()
         QPixmap(":/self_icon/images/self_icon/filter_list.png").scaled(20, 20));
     filter_upper_widget = new QScrollArea;
     filter_lower_widget = new QScrollArea;
+    filter_upper_widget->setWidgetResizable(true);
+    filter_lower_widget->setWidgetResizable(true);
     filter_upper_layout = new FlowLayout;
     filter_lower_layout = new FlowLayout;
     filter_upper_table = new QTableView;
@@ -135,8 +137,16 @@ void tab_widget_item::filter_set_layout()
     filter_top_widgets->setLayout(temp_layout_4);
     filter_top_widgets->setFixedHeight(filter_top_widgets->sizeHint().height());
 
-    filter_upper_widget->setLayout(filter_upper_layout);
-    filter_lower_widget->setLayout(filter_lower_layout);
+    // flow layout is not directly applicable to the scrollarea;
+    // however, we can use a widget to wrap that around
+    // some more codes need to be added, and it is not wise to set layout other than here
+    // solution: https://forum.qt.io/topic/11938/solved-flowlayout-in-a-qscrollarea/
+    auto filter_upper_widget_inter = new QWidget;
+    auto filter_lower_widget_inter = new QWidget;
+    filter_upper_widget_inter->setLayout(filter_upper_layout);
+    filter_lower_widget_inter->setLayout(filter_lower_layout);
+    filter_upper_widget->setWidget(filter_upper_widget_inter);
+    filter_lower_widget->setWidget(filter_lower_widget_inter);
     filter_split_widget->addWidget(filter_upper_widget);
     filter_split_widget->addWidget(filter_lower_widget);
     filter_split_widget->setStyleSheet("background-color:white;");
@@ -157,10 +167,12 @@ void tab_widget_item::event_set_layout()
     event_date_widget->setDate(QDate::currentDate().addDays(-410));
     event_date_notify = new QLabel;
     event_date_notify->setText(tr("Only select date after"));
-    event_upper_widget = new QWidget;
     event_upper_layout = new FlowLayout;
-    event_lower_widget = new QWidget;
     event_lower_layout = new FlowLayout;
+    event_upper_widget = new QScrollArea;
+    event_lower_widget = new QScrollArea;
+    event_upper_widget->setWidgetResizable(true);
+    event_lower_widget->setWidgetResizable(true);
     event_split = new QSplitter;
     event_split->setStyleSheet("background-color:white;");
     event_upper_widget->setStyleSheet("background-color:white;");
@@ -172,8 +184,12 @@ void tab_widget_item::event_set_layout()
     temp_layout_1->addWidget(event_date_notify);
     temp_layout_1->addWidget(event_date_widget);
 
-    event_upper_widget->setLayout(event_upper_layout);
-    event_lower_widget->setLayout(event_lower_layout);
+    auto event_upper_widget_inter = new QWidget;
+    auto event_lower_widget_inter = new QWidget;
+    event_upper_widget_inter->setLayout(event_upper_layout);
+    event_lower_widget_inter->setLayout(event_lower_layout);
+    event_upper_widget->setWidget(event_upper_widget_inter);
+    event_lower_widget->setWidget(event_lower_widget_inter);
 
     event_split->setOrientation(Qt::Vertical);
     event_split->addWidget(event_upper_widget);
@@ -187,9 +203,21 @@ void tab_widget_item::event_set_layout()
     event_widget->setLayout(event_main_layout);
 }
 
+//--- Utility
 
-
-
+QVector<int> tab_widget_item::util_read_items(TreeModel *tree, const QModelIndex &index)
+{
+    QVector<int> item_list = QVector<int>(GLOB::LIST_ITEM.size(), 0);
+    Q_ASSERT(index.isValid());
+    for (int row = 0; row < tree->rowCount(index); ++row)
+    {
+        QModelIndex item_index = tree->index(row, 0, index);
+        QString item_str = tree->data(item_index, Qt::DisplayRole).toString();
+        int item_val = tree->data(item_index.siblingAtColumn(1), Qt::DisplayRole).toInt();
+        item_list[GLOB::MAP_ITEM_INDEX.value(item_str)] = item_val;
+    }
+    return item_list;
+}
 
 
 
