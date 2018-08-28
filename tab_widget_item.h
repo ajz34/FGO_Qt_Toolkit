@@ -19,6 +19,9 @@ private:
     QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
     TreeModel *user_data = nullptr;
     QVector<QPixmap> *servant_icon_button_image = nullptr;
+    TreeModel *event_item = nullptr;
+    TreeModel *exchange_item = nullptr;
+    QHash<QString, QPixmap> *event_figure = nullptr;
 
 private:
     //--- Layout and Controls
@@ -96,7 +99,10 @@ public slots:
         QVector<QString> path_pack,
         QVector<TreeModel*> tree_model,
         TreeModel* user_dat,
-        QVector<QPixmap> *serv_img);
+        QVector<QPixmap> *serv_img,
+        TreeModel *event_item_dat,
+        TreeModel *exchange_item_dat,
+        QHash<QString, QPixmap> *event_figure_dat);
     void from_parent_user_data_loaded(TreeModel *user_dat);
 
 public:

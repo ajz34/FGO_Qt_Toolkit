@@ -388,7 +388,14 @@ void MainWindow::initialize_database()
     }
 
     // signal
-	emit signal_database_changed(ini_setting_data, wiki_database, user_data, servant_icon_button_image);
+	emit signal_database_changed(
+        ini_setting_data,
+        wiki_database,
+        user_data,
+        servant_icon_button_image,
+        event_item,
+        exchange_item,
+        event_figure);
 }
 
 void MainWindow::from_tab_user_data_changed(TreeModel *user_dat)
@@ -489,6 +496,8 @@ bool MainWindow::load_file(const QString &file_name)
 	if (user_data) delete user_data;
 	user_data = new TreeModel(headers, xml);
     connect(user_data, &TreeModel::modified, this, &MainWindow::setWindowModified);
+    // we don't connect user_data modified to signal_user_data_loaded, since in tab_item, not in filter subtab,
+    // we don't want to refresh the whole table, and just refresh what item we currently have.
 	file.close();
 	if (xml.hasError())
 	{

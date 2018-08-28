@@ -113,7 +113,10 @@ signals:
 		QVector<QString> path_pack,
 		QVector<TreeModel*> tree_model,
 		TreeModel *user_dat,
-        QVector<QPixmap> *serv_img);
+        QVector<QPixmap> *serv_img,
+        TreeModel *event_item_dat,
+        TreeModel *exchange_item_dat,
+        QHash<QString, QPixmap> *event_figure_dat);
 
 	// file
 	void signal_user_data_loaded(TreeModel *user_dat);

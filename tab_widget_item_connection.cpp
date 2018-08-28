@@ -6,12 +6,18 @@ void tab_widget_item::from_parent_database_changed(
     QVector<QString> path_pack,
     QVector<TreeModel*> tree_model,
     TreeModel* user_dat,
-    QVector<QPixmap> *serv_img)
+    QVector<QPixmap> *serv_img,
+    TreeModel *event_item_dat,
+    TreeModel *exchange_item_dat,
+    QHash<QString, QPixmap> *event_figure_dat)
 {
     ini_setting_data = path_pack;
     wiki_database = tree_model;
     user_data = user_dat;
     servant_icon_button_image = serv_img;
+    event_item = event_item_dat;
+    exchange_item = exchange_item_dat;
+    event_figure = event_figure_dat;
 
     filter_reset_data();
 }
