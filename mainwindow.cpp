@@ -291,31 +291,101 @@ void MainWindow::initialize_database()
 		xml.setDevice(&file);
 		TreeModel *model = new TreeModel(headers, xml);
 		file.close();
+        if (xml.hasError())
+        {
+            delete model;
+            continue;
+        }
 		QModelIndex index_basic = model->item_find("basic", model->index(0, 0));
 		QModelIndex index_id = model->item_find("id", index_basic);
-		if (index_id.isValid())
-			wiki_database[model->data(index_id.siblingAtColumn(1), Qt::DisplayRole).toInt()] = model;
+        if (index_id.isValid())
+            wiki_database[model->data(index_id.siblingAtColumn(1), Qt::DisplayRole).toInt()] = model;
+        else
+            delete model;
 	}
 
     // servant present icon
     if (servant_icon_button_image) delete servant_icon_button_image;
     servant_icon_button_image = new QVector<QPixmap>(SERVANT_ICON_NUMBER, QPixmap());
-    QProgressDialog progress(tr("Setup table icon image"), "", 0, SERVANT_ICON_NUMBER);
-    progress.setCancelButton(0);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.show();
+    QProgressDialog progress_servant_icon(tr("Setup table icon image"), "", 0, SERVANT_ICON_NUMBER);
+    progress_servant_icon.setCancelButton(0);
+    progress_servant_icon.setWindowModality(Qt::WindowModal);
+    progress_servant_icon.show();
     for (int id = 0; id < SERVANT_ICON_NUMBER; ++id)
     {
-        progress.setValue(id);
+        progress_servant_icon.setValue(id);
         QApplication::processEvents();
-        if (progress.wasCanceled())
+        if (progress_servant_icon.wasCanceled())
             break;
         char num_full[4];
         sprintf(num_full, "%03d", id);
         QPixmap pixmap(ini_setting_data[1] + QString("/") + QString(num_full) + QString(".png"));
         (*servant_icon_button_image)[id] = pixmap;
     }
-    progress.setValue(SERVANT_ICON_NUMBER);
+    progress_servant_icon.setValue(SERVANT_ICON_NUMBER);
+
+    // event_item database
+    if (event_item) delete event_item;
+    event_item = nullptr;
+    QFile file_event_item(ini_setting_data[3]);
+    if (file_event_item.open(QFile::ReadOnly | QFile::Text))
+    {
+        QStringList headers{};
+        headers << tr("Name") << tr("Value");
+        QXmlStreamReader xml;
+        xml.setDevice(&file_event_item);
+        event_item = new TreeModel(headers, xml);
+        file_event_item.close();
+        if (xml.hasError())
+        {
+            delete event_item;
+            event_item = nullptr;
+        }
+    }
+
+    // exchange_item database
+    if (exchange_item) delete exchange_item;
+    exchange_item = nullptr;
+    QFile file_exchange_item(ini_setting_data[4]);
+    if (file_exchange_item.open(QFile::ReadOnly | QFile::Text))
+    {
+        QStringList headers{};
+        headers << tr("Name") << tr("Value");
+        QXmlStreamReader xml;
+        xml.setDevice(&file_exchange_item);
+        exchange_item = new TreeModel(headers, xml);
+        file_exchange_item.close();
+        if (xml.hasError())
+        {
+            delete exchange_item;
+            exchange_item = nullptr;
+        }
+    }
+
+    // event_figure
+    if (event_figure) delete event_figure;
+    event_figure = new QHash<QString, QPixmap>;
+    // when reading event_figure, what we actually use the information form event_item treemodel
+    if (event_item)
+    {
+        QModelIndex index_event_item = event_item->index(0, 0);
+        int number_of_events = event_item->rowCount(index_event_item);
+        QProgressDialog progress_event_item(tr("Setup event figure"), "", 0, number_of_events);
+        progress_event_item.setCancelButton(0);
+        progress_event_item.setWindowModality(Qt::WindowModal);
+        progress_event_item.show();
+        for (int row = 0; row < number_of_events; ++row)
+        {
+            progress_event_item.setValue(row);
+            QString cur_event = event_item->data(event_item->index(row, 0, index_event_item), Qt::DisplayRole).toString();
+            QPixmap cur_figure = QPixmap(ini_setting_data[5] + "/" + cur_event + ".png");
+            if (cur_figure.isNull()) cur_figure = QPixmap(ini_setting_data[5] + "/" + cur_event + ".jpg");
+            if (cur_figure.isNull()) cur_figure = QPixmap(ini_setting_data[5] + "/" + cur_event + ".jpeg");
+            if (cur_figure.isNull()) cur_figure = QPixmap(ini_setting_data[5] + "/" + cur_event + ".bmp");
+            (*event_figure)[cur_event] = cur_figure;
+        }
+        progress_event_item.setValue(number_of_events);
+    }
 
     // signal
 	emit signal_database_changed(ini_setting_data, wiki_database, user_data, servant_icon_button_image);

@@ -44,6 +44,9 @@ private:
     QVector<TreeModel*> wiki_database = QVector<TreeModel*>(SERVANT_ICON_NUMBER, nullptr);
     TreeModel *user_data = nullptr;
     QVector<QPixmap> *servant_icon_button_image = nullptr;
+    TreeModel *event_item = nullptr;
+    TreeModel *exchange_item = nullptr;
+    QHash<QString, QPixmap> *event_figure = nullptr;
 
 private:
 
