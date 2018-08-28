@@ -43,6 +43,7 @@ void tab_widget_item::main_set_layout()
 
     // sub layout
     filter_set_layout();
+    event_set_layout();
 }
 
 void tab_widget_item::filter_set_layout()
@@ -148,7 +149,43 @@ void tab_widget_item::filter_set_layout()
     filter_widget->setLayout(filter_mainlayout);
 }
 
+void tab_widget_item::event_set_layout()
+{
+    // object initialization
+    event_date_widget = new QDateEdit;
+    event_date_widget->setCalendarPopup(true);
+    event_date_widget->setDate(QDate::currentDate().addDays(-410));
+    event_date_notify = new QLabel;
+    event_date_notify->setText(tr("Only select date after"));
+    event_upper_widget = new QWidget;
+    event_upper_layout = new FlowLayout;
+    event_lower_widget = new QWidget;
+    event_lower_layout = new FlowLayout;
+    event_split = new QSplitter;
+    event_split->setStyleSheet("background-color:white;");
+    event_upper_widget->setStyleSheet("background-color:white;");
+    event_lower_widget->setStyleSheet("background-color:white;");
 
+    // layout
+    auto temp_layout_1 = new QHBoxLayout;
+    temp_layout_1->addStretch();
+    temp_layout_1->addWidget(event_date_notify);
+    temp_layout_1->addWidget(event_date_widget);
+
+    event_upper_widget->setLayout(event_upper_layout);
+    event_lower_widget->setLayout(event_lower_layout);
+
+    event_split->setOrientation(Qt::Vertical);
+    event_split->addWidget(event_upper_widget);
+    event_split->addWidget(event_lower_widget);
+    event_split->setStretchFactor(0, 4);
+    event_split->setStretchFactor(1, 1);
+
+    auto event_main_layout = new QGridLayout;
+    event_main_layout->addLayout(temp_layout_1, 0, 0, Qt::AlignRight);
+    event_main_layout->addWidget(event_split, 1, 0);
+    event_widget->setLayout(event_main_layout);
+}
 
 
 

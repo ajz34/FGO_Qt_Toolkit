@@ -81,6 +81,23 @@ signals:
     // 2. event
 private:
     QWidget *event_widget = nullptr;
+    void event_set_layout();
+    QSplitter *event_split = nullptr;
+    QDateEdit *event_date_widget = nullptr;
+    QLabel *event_date_notify = nullptr;
+    QWidget *event_upper_widget = nullptr;
+    FlowLayout *event_upper_layout = nullptr;
+    QVector<QWidget*> event_upper_vec{};
+    QVector<QPushButton*> event_upper_figure{};
+    QVector<QCheckBox*> event_upper_follow{};
+    QVector<QCheckBox*> event_upper_inf1{};
+    QVector<QCheckBox*> event_upper_inf2{};
+    QWidget *event_lower_widget = nullptr;
+    FlowLayout *event_lower_layout = nullptr;
+    QVector<QGroupBox*> event_lower_group = QVector<QGroupBox*>(5, nullptr); // event, inf1, inf1, inf2, inf2
+    QVector<QVector<QLabel*>> event_lower_item = QVector<QVector<QLabel*>>(5, {});
+    QVector<QVector<QLabel*>> event_lower_aquire = QVector<QVector<QLabel*>>(5, {});
+
 
     // 3. month
     QWidget *month_widget = nullptr;
