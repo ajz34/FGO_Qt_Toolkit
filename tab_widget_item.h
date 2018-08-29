@@ -96,10 +96,8 @@ private:
     QVector<QLabel*> event_upper_inf2{};
     QVector<QSpinBox*> event_upper_inf2_spin{};
     QScrollArea *event_lower_widget = nullptr;
-    FlowLayout *event_lower_layout = nullptr;
+    QVBoxLayout *event_lower_layout = nullptr;
     QVector<QGroupBox*> event_lower_group = QVector<QGroupBox*>(5, nullptr); // event, inf1, inf1, inf2, inf2
-    QVector<QVector<QLabel*>> event_lower_item = QVector<QVector<QLabel*>>(5, {});
-    QVector<QVector<QLabel*>> event_lower_aquire = QVector<QVector<QLabel*>>(5, {});
 private:
         // for the following three hash mappings,
         // program shouldn't use hash.value(val), for some keys may not occurs at these hash mappings
@@ -119,6 +117,7 @@ private:
     void event_set_connection();
     void event_refresh();
     void event_set_after_layout();
+    void event_show_items(QGroupBox *group, const QVector<int> &vec);
 private slots:
     void event_on_follow_clicked();
     void event_on_figure_clicked();
@@ -142,7 +141,7 @@ private:
 
     //--- Central Connection
 signals:
-    void signal_user_data_changed(TreeModel *user_dat);
+    void signal_user_servant_data_changed(TreeModel *user_dat);
 public slots:
     void from_parent_database_changed(
         QVector<QString> path_pack,
@@ -153,6 +152,7 @@ public slots:
         TreeModel *exchange_item_dat,
         QHash<QString, QPixmap> *event_figure_dat);
     void from_parent_user_data_loaded(TreeModel *user_dat);
+    void from_parent_user_servant_data_loaded(TreeModel *user_dat);
 
 public:
     tab_widget_item(QWidget *parent);

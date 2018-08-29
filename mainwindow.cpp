@@ -261,11 +261,13 @@ void MainWindow::set_central_connection()
     connect(this, &MainWindow::signal_database_changed, tab_servant, &tab_widget_servant::from_parent_database_changed);
     connect(this, &MainWindow::signal_database_changed, tab_item, &tab_widget_item::from_parent_database_changed);
 	connect(this, &MainWindow::signal_user_data_loaded, tab_servant, &tab_widget_servant::from_parent_user_data_loaded);
-    connect(this, &MainWindow::signal_user_data_loaded, tab_item, &tab_widget_item::from_parent_user_data_loaded);
+    connect(this, &MainWindow::signal_user_data_loaded, tab_item, &tab_widget_item::from_parent_user_servant_data_loaded);
+    connect(this, &MainWindow::signal_user_servant_data_loaded, tab_servant, &tab_widget_servant::from_parent_user_data_loaded);
+    connect(this, &MainWindow::signal_user_servant_data_loaded, tab_item, &tab_widget_item::from_parent_user_servant_data_loaded);
 
     // input connection
-    connect(tab_servant, &tab_widget_servant::signal_user_data_changed, this, &MainWindow::from_tab_user_data_changed);
-    connect(tab_item, &tab_widget_item::signal_user_data_changed, this, &MainWindow::from_tab_user_data_changed);
+    connect(tab_servant, &tab_widget_servant::signal_user_servant_data_changed, this, &MainWindow::from_tab_user_servant_data_changed);
+    connect(tab_item, &tab_widget_item::signal_user_servant_data_changed, this, &MainWindow::from_tab_user_servant_data_changed);
 }
 
 void MainWindow::initialize_database()
@@ -308,7 +310,7 @@ void MainWindow::initialize_database()
     if (servant_icon_button_image) delete servant_icon_button_image;
     servant_icon_button_image = new QVector<QPixmap>(SERVANT_ICON_NUMBER, QPixmap());
     QProgressDialog progress_servant_icon(tr("Setup table icon image"), "", 0, SERVANT_ICON_NUMBER);
-    progress_servant_icon.setCancelButton(0);
+    progress_servant_icon.setCancelButton(nullptr);
     progress_servant_icon.setWindowModality(Qt::WindowModal);
     progress_servant_icon.show();
     for (int id = 0; id < SERVANT_ICON_NUMBER; ++id)
@@ -371,7 +373,7 @@ void MainWindow::initialize_database()
         QModelIndex index_event_item = event_item->index(0, 0);
         int number_of_events = event_item->rowCount(index_event_item);
         QProgressDialog progress_event_item(tr("Setup event figure"), "", 0, number_of_events);
-        progress_event_item.setCancelButton(0);
+        progress_event_item.setCancelButton(nullptr);
         progress_event_item.setWindowModality(Qt::WindowModal);
         progress_event_item.show();
         for (int row = 0; row < number_of_events; ++row)
@@ -398,10 +400,10 @@ void MainWindow::initialize_database()
         event_figure);
 }
 
-void MainWindow::from_tab_user_data_changed(TreeModel *user_dat)
+void MainWindow::from_tab_user_servant_data_changed(TreeModel *user_dat)
 {
     user_data = user_dat;
-    emit signal_user_data_loaded(user_dat);
+    emit signal_user_servant_data_loaded(user_dat);
 }
 
 //--- P. action on user file

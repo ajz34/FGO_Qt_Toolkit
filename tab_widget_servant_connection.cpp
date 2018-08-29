@@ -398,7 +398,7 @@ void tab_widget_servant::table_pushbutton_click()
 		id_number,
 		user_data);
     consume_widget->exec();
-    emit signal_user_data_changed(user_data);
+    emit signal_user_servant_data_changed(user_data);
     // table_original_table_refresh();
 }
 

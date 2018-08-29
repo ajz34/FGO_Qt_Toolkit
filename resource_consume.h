@@ -1,4 +1,4 @@
-#ifdef WIN32
+﻿#ifdef WIN32
 // character in chinese can't display in visual studio
 // if Qt environment, possibly you can delete this
 // this line may be included in all header files
@@ -142,14 +142,15 @@ class resource_consume : public QDialog
     QVector<int> list_user_ascension_and_lvup_consume{};
     QVector<int> list_user_total_consume{};
 
-    // utility
-    QString consume_int(int val, bool trun_100 = false);
-    void list_minus(QVector<int> &vec_1, const QVector<int> &vec_2);
-    void list_plus(QVector<int> &vec_1, const QVector<int> &vec_2);
-
 	//--- Widget connection
     void set_widget_internal_connection();
     void set_widget_database_connection();
+
+    // utility
+public:
+    static QString consume_int(int val, bool trun_100 = false);
+    static void list_minus(QVector<int> &vec_1, const QVector<int> &vec_2);
+    static void list_plus(QVector<int> &vec_1, const QVector<int> &vec_2);
 
 public slots:
 	void data_transin(

@@ -101,7 +101,7 @@ signals:
 		QVector<QPixmap> *servant_icon,
 		int id,
 		TreeModel* user_dat);
-    void signal_user_data_changed(TreeModel *user_dat);
+    void signal_user_servant_data_changed(TreeModel *user_dat);
 
 private slots:
 	//--- A. servant class labels

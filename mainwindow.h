@@ -1,4 +1,4 @@
-#ifdef WIN32
+﻿#ifdef WIN32
 // character in chinese can't display in visual studio
 // if Qt environment, possibly you can delete this
 // this line may be included in all header files
@@ -120,6 +120,8 @@ signals:
 
 	// file
 	void signal_user_data_loaded(TreeModel *user_dat);
+    void signal_user_servant_data_loaded(TreeModel *user_dat);
+    void signal_user_item_data_loaded(TreeModel *user_dat);
 
 private slots:
 	//--- B. menu
@@ -131,7 +133,7 @@ private slots:
 	void action_traditional_slot();
 	void action_english_slot();
 	void action_database_transin(QVector<QString> path_pack);
-    void from_tab_user_data_changed(TreeModel *user_dat);
+    void from_tab_user_servant_data_changed(TreeModel *user_dat);
 
 };
 

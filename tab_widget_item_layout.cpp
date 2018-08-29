@@ -168,7 +168,7 @@ void tab_widget_item::event_set_layout()
     event_date_notify = new QLabel;
     event_date_notify->setText(tr("Only select date after"));
     event_upper_layout = new FlowLayout;
-    event_lower_layout = new FlowLayout;
+    event_lower_layout = new QVBoxLayout;
     event_upper_widget = new QScrollArea;
     event_lower_widget = new QScrollArea;
     event_upper_widget->setWidgetResizable(true);
@@ -214,7 +214,9 @@ QVector<int> tab_widget_item::util_read_items(TreeModel *tree, const QModelIndex
         QModelIndex item_index = tree->index(row, 0, index);
         QString item_str = tree->data(item_index, Qt::DisplayRole).toString();
         int item_val = tree->data(item_index.siblingAtColumn(1), Qt::DisplayRole).toInt();
-        item_list[GLOB::MAP_ITEM_INDEX.value(item_str)] = item_val;
+        int list_ind = GLOB::MAP_ITEM_INDEX.value(item_str, -1);
+        Q_ASSERT(list_ind >= 0);  // items should in the list!
+        item_list[list_ind] = item_val;
     }
     return item_list;
 }

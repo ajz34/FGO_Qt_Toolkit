@@ -30,6 +30,12 @@ void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
     event_refresh();
 }
 
+void tab_widget_item::from_parent_user_servant_data_loaded(TreeModel *user_dat)
+{
+    user_data = user_dat;
+    filter_reset_data();
+}
+
 void tab_widget_item::main_set_connection()
 {
     filter_set_connection();
@@ -501,7 +507,7 @@ void tab_widget_item::filter_on_button_right_clicked()
         id_number,
         user_data);
     consume_widget->exec();
-    emit signal_user_data_changed(user_data);
+    emit signal_user_servant_data_changed(user_data);
 }
 
 // 2. event
@@ -521,8 +527,27 @@ void tab_widget_item::event_refresh()
     event_seq = QHash<QString, int>{};
     event_sorted_events = QVector<QString>{};
     // we should know that, since all items are reparented to event_upper_vec,
-    // we only need to delete event_upper_vec, the other widgets should also be freed
-    for (auto i : event_upper_vec) if (i) delete i;
+    // we only need to delete items in flowlayout, the other widgets should also be freed
+    {
+        for (auto i : event_upper_vec)
+        {
+            if (i) delete i;
+            i = nullptr;
+        }
+        for (auto i : event_lower_group)
+        {
+            if (i) delete i;
+            i = nullptr;
+        }
+        // take from de-construct function of FlowLayout class
+        QLayoutItem *item;
+        while ((item = event_upper_layout->takeAt(0)))
+            delete item;
+        while ((item = event_lower_layout->takeAt(0)))
+            delete item;
+    }
+    // we need to first initialize event_lower_group, since it is not initialized when data loaded
+    event_lower_group = QVector<QGroupBox*>(5, nullptr);
 
     // 1. read the whole data imported from mainwindow
     // however, if event_item = 0, nothing should happen here
@@ -573,7 +598,7 @@ void tab_widget_item::event_refresh()
                 if ((sub_name_char_minus.size() == 2) && (sub_name_char_minus.at(0) == "infinity"))
                 {
                     int sub_val = sub_name_char_minus.at(1).toInt();
-                    if (sub_val > event_data_type[event_name].at(1))
+                    if (sub_val > event_data_type[event_name].at(2))
                         event_data_type[event_name][2] = sub_val;
                 }
             }
@@ -647,34 +672,187 @@ void tab_widget_item::event_set_after_layout()
     }
 
     // setup widgets
+    for (int i = 0; i < event_sorted_events.size(); ++i)
     {
-        for (int i = 0; i < event_sorted_events.size(); ++i)
+        // initialize
+        event_upper_vec[i] = new QWidget;
+        event_upper_figure[i] = new QPushButton;
+        event_upper_follow[i] = new QCheckBox;
+        event_upper_inf1[i] = new QLabel;
+        event_upper_inf2[i] = new QLabel;
+        event_upper_inf1_spin[i] = new QSpinBox;
+        event_upper_inf2_spin[i] = new QSpinBox;
+        // figure
+        event_upper_figure.at(i)->setIcon(event_figure->value(event_sorted_events.at(i), QPixmap()));
+        event_upper_figure.at(i)->setIconSize(QSize(400, 150));
+        event_upper_figure.at(i)->setFixedSize(QSize(400, 150));
+        // follow
+        event_upper_follow.at(i)->setText(tr("Follow"));
+        // inf
+        event_upper_inf1.at(i)->setText(tr("Lottery 1"));
+        event_upper_inf2.at(i)->setText(tr("Lottery 2"));
+        event_upper_inf1_spin.at(i)->setMinimum(0);
+        event_upper_inf2_spin.at(i)->setMinimum(0);
+        // hide inf if lottery does not exist
+        // assert: all the events have "event" entry
+        // inf1
+        if (event_data_type.value(event_sorted_events.at(i)).at(1) <= 0)
         {
-            // initialize
-            event_upper_figure[i] = new QPushButton;
-            event_upper_vec[i] = new QWidget;
-            // figure
-            event_upper_figure.at(i)->setIcon(event_figure->value(event_sorted_events.at(i), QPixmap()));
-            event_upper_figure.at(i)->setIconSize(QSize(400, 150));
-            event_upper_figure.at(i)->setFixedSize(QSize(400, 150));
-
-            auto layout = new QGridLayout;
-            layout->addWidget(event_upper_figure.at(i));
-            event_upper_vec.at(i)->setLayout(layout);
-
-            event_upper_layout->addWidget(event_upper_vec.at(i));
+            event_upper_inf1.at(i)->setHidden(true);
+            event_upper_inf1_spin.at(i)->setHidden(true);
         }
+        if (event_data_type.value(event_sorted_events.at(i)).at(2) <= 0)
+        {
+            event_upper_inf2.at(i)->setHidden(true);
+            event_upper_inf2_spin.at(i)->setHidden(true);
+        }
+
+        // layout
+        auto layout_1 = new QGridLayout;
+        auto layout_2 = new QHBoxLayout;
+
+        layout_1->addWidget(event_upper_figure.at(i), 0, 0);
+        layout_2->addWidget(event_upper_follow.at(i));
+        layout_2->addStretch();
+        layout_2->addWidget(event_upper_inf1.at(i));
+        layout_2->addWidget(event_upper_inf1_spin.at(i));
+        layout_2->addStretch();
+        layout_2->addWidget(event_upper_inf2.at(i));
+        layout_2->addWidget(event_upper_inf2_spin.at(i));
+        layout_2->addStretch();
+        layout_1->addLayout(layout_2, 1, 0);
+        event_upper_vec.at(i)->setLayout(layout_1);
+
+        event_upper_layout->addWidget(event_upper_vec.at(i));
+
+        // connection
+        connect(event_upper_figure.at(i), &QPushButton::clicked, this, &tab_widget_item::event_on_figure_clicked);
+        connect(event_upper_follow.at(i), &QCheckBox::toggled, this, &tab_widget_item::event_on_follow_clicked);
     }
 }
 
 void tab_widget_item::event_on_follow_clicked()
 {
-
+    // on follow clicked, we gray out figure
+    // 1. get the index of the click
+    QCheckBox *checkbox = qobject_cast<QCheckBox*>(sender());
+    int event_id = event_upper_follow.indexOf(checkbox);
+    Q_ASSERT(event_id == -1);
+    if (checkbox->isChecked())
+    {
+        // image
+        event_upper_figure.at(event_id)->setIcon(event_figure->value(event_sorted_events.at(event_id), QPixmap()));
+        // lottery
+        event_upper_inf1_spin.at(event_id)->setEnabled(true);
+        event_upper_inf2_spin.at(event_id)->setEnabled(true);
+    }
+    else
+    {
+        // image gray scale
+        // we don't want to disable this push button; however, we want to gray scale that
+        // since Qt treats alpha-only figures as black, we need to paint white first,
+        // then draw the event figure on that paint
+        // this may time consuming step; however, figures are not so many
+        // https://stackoverflow.com/questions/1549634/qt-qimage-always-saves-transparent-color-as-black
+        QImage image1(event_figure->value(event_sorted_events.at(event_id)).toImage());
+        QImage image2(image1.size(), QImage::Format_Grayscale8);
+        image2.fill(QColor(Qt::white));
+        QPainter painter(&image2);
+        painter.drawImage(0, 0, image1);
+        event_upper_figure.at(event_id)->setIcon(QPixmap::fromImage(image2));
+        // lottery
+        event_upper_inf1_spin.at(event_id)->setDisabled(true);
+        event_upper_inf1_spin.at(event_id)->setValue(0);
+        event_upper_inf2_spin.at(event_id)->setDisabled(true);
+        event_upper_inf2_spin.at(event_id)->setValue(0);
+    }
 }
 
 void tab_widget_item::event_on_figure_clicked()
 {
+    // 1. delete what group have
+    for (auto i : event_lower_group)
+        if (i) delete i;
+    event_lower_group = QVector<QGroupBox*>(5, nullptr);
 
+    // 2. assign and layout
+    // first, we need to get the event_id
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+    int event_id = event_upper_figure.indexOf(button);
+    Q_ASSERT(event_id != -1);
+    // event
+    if (event_data_type.value(event_sorted_events.at(event_id)).at(0) == 1)
+    {
+        event_lower_group[0] = new QGroupBox;
+        event_lower_group.at(0)->setTitle(tr("Event"));
+        event_show_items(event_lower_group.at(0), event_data_item.value(event_sorted_events.at(event_id)).at(0));
+        event_lower_layout->addWidget(event_lower_group.at(0));
+    }
+    // inf1
+    if (event_data_type.value(event_sorted_events.at(event_id)).at(1) >= 1)
+    {
+        event_lower_group[1] = new QGroupBox;
+        event_lower_group.at(1)->setTitle(tr("Lottery 1"));
+        event_show_items(event_lower_group.at(1), event_data_item.value(event_sorted_events.at(event_id)).at(1));
+        event_lower_layout->addWidget(event_lower_group.at(1));
+        if (event_data_type.value(event_sorted_events.at(event_id)).at(1) > 1)
+        {
+            event_lower_group[2] = new QGroupBox;
+            event_lower_group.at(2)->setTitle(tr("Lottery 1 after ")
+                                              + QVariant(event_data_type.value(event_sorted_events.at(event_id)).at(1)).toString()
+                                              + tr(" times"));
+            event_show_items(event_lower_group.at(2), event_data_item.value(event_sorted_events.at(event_id)).at(2));
+            event_lower_layout->addWidget(event_lower_group.at(2));
+        }
+    }
+    // inf2
+    if (event_data_type.value(event_sorted_events.at(event_id)).at(2) >= 1)
+    {
+        event_lower_group[3] = new QGroupBox;
+        event_lower_group.at(3)->setTitle(tr("Lottery 2"));
+        event_show_items(event_lower_group.at(3), event_data_item.value(event_sorted_events.at(event_id)).at(3));
+        event_lower_layout->addWidget(event_lower_group.at(3));
+        if (event_data_type.value(event_sorted_events.at(event_id)).at(2) > 1)
+        {
+            event_lower_group[4] = new QGroupBox;
+            event_lower_group.at(4)->setTitle(tr("Lottery 2 after ")
+                                              + QVariant(event_data_type.value(event_sorted_events.at(event_id)).at(2)).toString()
+                                              + tr(" times"));
+            event_show_items(event_lower_group.at(4), event_data_item.value(event_sorted_events.at(event_id)).at(4));
+            event_lower_layout->addWidget(event_lower_group.at(4));
+        }
+    }
+}
+
+void tab_widget_item::event_show_items(QGroupBox *group, const QVector<int> &vec)
+{
+    Q_ASSERT(vec.size() == GLOB::LIST_ITEM.size());
+    // prepare items
+    auto group_layout = new FlowLayout;
+    for (int i = 0; i < vec.size(); ++i)
+    {
+        if (vec.at(i) > 0)
+        {
+            auto item = new QLabel;
+            auto aquire = new QLabel;
+            item->setPixmap(GLOB::MAP_ITEM.value(GLOB::LIST_ITEM.at(i)).scaled(46, 50));
+            QFont font;
+            font.setPixelSize(15);
+            font.setFamily("Arial");
+            font.setStyleHint(QFont::SansSerif);
+            font.setBold(true);
+            aquire->setFont(font);
+            aquire->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            aquire->setText(resource_consume::consume_int(vec.at(i)));
+            auto layout = new QGridLayout;
+            auto widget = new QWidget;
+            layout->addWidget(item, 0, 0);
+            layout->addWidget(aquire, 1, 0);
+            widget->setLayout(layout);
+            group_layout->addWidget(widget);
+        }
+    }
+    group->setLayout(group_layout);
 }
 
 void tab_widget_item::event_on_spin_changed()
