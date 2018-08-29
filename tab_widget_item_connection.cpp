@@ -546,9 +546,16 @@ void tab_widget_item::event_reset()
     {
         for (auto i : event_upper_vec)
         {
-            if (i) delete i;
-            i = nullptr;
+            event_upper_layout->removeWidget(i);
+            delete i;
         }
+        event_upper_vec = QVector<QWidget*>{};
+        event_upper_figure = QVector<QPushButton*>{};
+        event_upper_follow = QVector<QCheckBox*>{};
+        event_upper_inf1 = QVector<QLabel*>{};
+        event_upper_inf1_spin = QVector<QSpinBox*>{};
+        event_upper_inf2 = QVector<QLabel*>{};
+        event_upper_inf2_spin = QVector<QSpinBox*>{};
         for (auto i : event_lower_group)
         {
             if (i) delete i;
