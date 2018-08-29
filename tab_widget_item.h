@@ -111,10 +111,12 @@ private:
     QHash<QString, QVector<int>> event_user_type{};
         // the same to event_data_type, however, for the infinity lottary,
         // the value indicates to how much the user want to roll
+    QVector<long long> event_user_expect{};  // may be used in the later sub_tabs
     QVector<QString> event_sorted_events{};
     QHash<QString, int> event_seq{};
 private:
     void event_set_connection();
+    void event_reset();
     void event_refresh();
     void event_set_after_layout();
     void event_show_items(QGroupBox *group, const QVector<int> &vec);
@@ -124,7 +126,7 @@ private slots:
     void event_on_spin_changed();
     void event_on_date_changed();
 signals:
-    void from_event_change_user_data();
+    void signal_user_event_data_changed();
 
     // 3. month
 private:

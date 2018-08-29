@@ -20,7 +20,7 @@ void tab_widget_item::from_parent_database_changed(
     event_figure = event_figure_dat;
 
     filter_reset_data();
-    event_refresh();
+    event_reset();
 }
 
 void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
@@ -71,20 +71,33 @@ void tab_widget_item::filter_reset_data()
     }
 
     // 2. empty what we have
-    filter_map_mask.empty();
-    filter_map_priority.empty();
-    filter_map_exist.empty();
-    filter_map_actual.empty();
-    filter_map_ideal.empty();
-    filter_map_costume.empty();
+    // filter_map_mask = QMap<int, bool>{};
+    filter_map_priority = QMap<int, int>{};
+    filter_map_exist = QMap<int, bool>{};
+    filter_map_actual = QMap<int, QVector<int>>{};
+    filter_map_ideal = QMap<int, QVector<int>>{};
+    filter_map_costume = QMap<int, QVector<int>>{};
     filter_upper_model->clear();
     filter_lower_model->clear();
-    for (QRightClickPushButton *i : filter_widget_button.values())
-        if (i) delete i;
+    // filter_widget_button = QMap<int, QRightClickPushButton*>{};
+    // filter_table_button = QMap<int, QRightClickPushButton*>{};
+    // I don't know where I have deleted those buttons...
+    // maybe? since I assigned these buttons to flowlayout, I need to remove them out the flowlayout
+    // to delete those buttons from memory
+    // so reset filter_map_mask should be the last step?
+    for (int i : filter_map_mask.keys())
+        //     if (i) delete i;
+    {
+        if (filter_map_mask.value(i))
+            filter_upper_layout->removeWidget(filter_widget_button.value(i));
+        else
+            filter_lower_layout->removeWidget(filter_widget_button.value(i));
+        delete filter_widget_button.value(i);
+    }
     filter_widget_button.empty();
-    for (QRightClickPushButton *i : filter_table_button.values())
-        if (i) delete i;
     filter_table_button.empty();
+    filter_map_mask = QMap<int, bool>{};
+
     // table model setting
     QStringList table_widget_model_header;
     table_widget_model_header
@@ -117,7 +130,7 @@ void tab_widget_item::filter_reset_data()
         // follow
         QModelIndex index_follow = user_data->item_find("follow", index_status);
         Q_ASSERT(index_follow.isValid());
-        if (user_data->data(index_follow.siblingAtColumn(1), Qt::DisplayRole).toInt() < 0) continue;
+        if (user_data->data(index_follow.siblingAtColumn(1), Qt::DisplayRole).toInt() <= 0) continue;
         // priority
         QModelIndex index_priority = user_data->item_find("priority", index_status);
         Q_ASSERT(index_priority.isValid());
@@ -517,8 +530,10 @@ void tab_widget_item::event_set_connection()
 
 }
 
-void tab_widget_item::event_refresh()
+void tab_widget_item::event_reset()
 {
+    // this function is to reset this widget
+    // if just refresh on user_data reloaded, use event_refresh.
     // re-initialize variables and widgets
     event_data_item = QHash<QString, QVector<QVector<int>>>{};
     event_data_date = QHash<QString, QVector<QDate>>{};
@@ -729,6 +744,73 @@ void tab_widget_item::event_set_after_layout()
         connect(event_upper_figure.at(i), &QPushButton::clicked, this, &tab_widget_item::event_on_figure_clicked);
         connect(event_upper_follow.at(i), &QCheckBox::toggled, this, &tab_widget_item::event_on_follow_clicked);
     }
+
+    // this is the end of event_reset
+    //-all widgets and connections should be carefully prepared before this line
+    // after then, we read the user_data and check every entry in the database list
+    //-at this time, we don't connect buttons that could change the user_data value,
+    // that's because if connected, then if we toggle some icons or checkboxes,
+    // that will make the whole event view try to recalculate the items expected
+    event_refresh();
+}
+
+void tab_widget_item::event_refresh()
+{
+    // 1. reset memory
+    event_user_type.clear();
+    event_user_expect.clear();
+    for (QString s : event_sorted_events)
+    {
+        event_user_type[s] = QVector<int>{0, 0, 0};
+    }
+    // reset connection
+    // ------
+
+    // 2. read user_data
+    // if no entry "event", create one
+    QModelIndex index_root = user_data->index(0, 0);
+    {
+        QModelIndex index_event = user_data->item_find("event", index_root);
+        if (!index_event.isValid())
+        {
+            int i = user_data->rowCount(index_root);
+            user_data->insertRow(i, index_root);
+            QModelIndex ind = user_data->index(i, 0, index_root);
+            user_data->setData(ind, "event");
+            qDebug() << "should emit!";
+            user_data->setModified(true);
+        }
+    }
+    QModelIndex index_event = user_data->item_find("event", index_root);
+    Q_ASSERT(index_event.isValid());
+
+    // then read the information, by key of event_sorted_events
+    // since values should be updated to
+    for (int row = 0; row < user_data->rowCount(index_event); ++row)
+    {
+        QModelIndex index_cur_event = user_data->index(row, 0, index_event);
+        QString str_cur_event = user_data->data(index_cur_event, Qt::DisplayRole).toString();
+        int event_id = event_seq.value(str_cur_event, -1);
+        if (event_id == -1) continue; // no such event, simply ignore
+        QModelIndex index_cur_eve = user_data->item_find("event", index_cur_event);
+        QModelIndex index_cur_inf1 = user_data->item_find("inf1", index_cur_event);
+        QModelIndex index_cur_inf2 = user_data->item_find("inf2", index_cur_event);
+        Q_ASSERT(index_cur_eve.isValid() && index_cur_inf1.isValid() && index_cur_inf2.isValid());
+        // write to event_user_type
+        event_user_type[str_cur_event][0] = user_data->data(index_cur_eve.siblingAtColumn(1), Qt::DisplayRole).toInt();
+        event_user_type[str_cur_event][1] = user_data->data(index_cur_inf1.siblingAtColumn(1), Qt::DisplayRole).toInt();
+        event_user_type[str_cur_event][2] = user_data->data(index_cur_inf2.siblingAtColumn(1), Qt::DisplayRole).toInt();
+    }
+    // then, assigning values
+    for (int event_id = 0; event_id < event_sorted_events.size(); ++event_id)
+    {
+        // write to object controls
+        event_upper_follow.at(event_id)->setChecked(event_user_type[event_sorted_events.at(event_id)][0] > 0);
+        event_upper_follow.at(event_id)->toggled(event_user_type[event_sorted_events.at(event_id)][0] > 0); // set grayscale of figures
+        event_upper_inf1_spin.at(event_id)->setValue(event_user_type[event_sorted_events.at(event_id)][1]);
+        event_upper_inf2_spin.at(event_id)->setValue(event_user_type[event_sorted_events.at(event_id)][2]);
+    }
+    ;
 }
 
 void tab_widget_item::event_on_follow_clicked()
@@ -737,7 +819,7 @@ void tab_widget_item::event_on_follow_clicked()
     // 1. get the index of the click
     QCheckBox *checkbox = qobject_cast<QCheckBox*>(sender());
     int event_id = event_upper_follow.indexOf(checkbox);
-    Q_ASSERT(event_id == -1);
+    Q_ASSERT(event_id != -1);
     if (checkbox->isChecked())
     {
         // image
