@@ -121,10 +121,13 @@ private:
     void event_set_after_layout();
     void event_show_items(QGroupBox *group, const QVector<int> &vec);
 private slots:
+    void event_on_follow_clicked_grayout_figure();
     void event_on_follow_clicked();
     void event_on_figure_clicked();
     void event_on_spin_changed();
     void event_on_date_changed();
+    void event_on_date_changed(bool init);
+    void event_on_object_responsed();
 signals:
     void signal_user_event_data_changed();
 
@@ -140,6 +143,12 @@ private:
 
     //--- Utility (defined in layout)
     QVector<int> util_read_items(TreeModel *tree, const QModelIndex &index);
+    void util_list_minus(QVector<long long> &vec_1, const QVector<int> &vec_2);
+    void util_list_minus(QVector<long long> &vec_1, const QVector<long long> &vec_2);
+    void util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2);
+    void util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2, const int &fact);
+    void util_list_plus(QVector<long long> &vec_1, const QVector<long long> &vec_2);
+    QString util_consume_int(long long val, bool trun_100);
 
     //--- Central Connection
 signals:

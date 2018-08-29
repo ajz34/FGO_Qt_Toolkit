@@ -261,7 +261,7 @@ void MainWindow::set_central_connection()
     connect(this, &MainWindow::signal_database_changed, tab_servant, &tab_widget_servant::from_parent_database_changed);
     connect(this, &MainWindow::signal_database_changed, tab_item, &tab_widget_item::from_parent_database_changed);
 	connect(this, &MainWindow::signal_user_data_loaded, tab_servant, &tab_widget_servant::from_parent_user_data_loaded);
-    connect(this, &MainWindow::signal_user_data_loaded, tab_item, &tab_widget_item::from_parent_user_servant_data_loaded);
+    connect(this, &MainWindow::signal_user_data_loaded, tab_item, &tab_widget_item::from_parent_user_data_loaded);
     connect(this, &MainWindow::signal_user_servant_data_loaded, tab_servant, &tab_widget_servant::from_parent_user_data_loaded);
     connect(this, &MainWindow::signal_user_servant_data_loaded, tab_item, &tab_widget_item::from_parent_user_servant_data_loaded);
 

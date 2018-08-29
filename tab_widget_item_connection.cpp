@@ -625,6 +625,8 @@ void tab_widget_item::event_reset()
                 }
             }
             // process infinity_
+            // maybe redundant to define the same vector when lottery only has one pattern,
+            // however, it can be convenient to implement calculation in event_on_object_responsed
             if (event_data_type.value(event_name).at(1) > 0)
             {
                 QModelIndex index_inf1_1 = event_item->item_find("infinity_1", index_name);
@@ -749,7 +751,7 @@ void tab_widget_item::event_set_after_layout()
 
         // connection
         connect(event_upper_figure.at(i), &QPushButton::clicked, this, &tab_widget_item::event_on_figure_clicked);
-        connect(event_upper_follow.at(i), &QCheckBox::toggled, this, &tab_widget_item::event_on_follow_clicked);
+        connect(event_upper_follow.at(i), &QCheckBox::toggled, this, &tab_widget_item::event_on_follow_clicked_grayout_figure);
     }
 
     // this is the end of event_reset
@@ -764,18 +766,27 @@ void tab_widget_item::event_set_after_layout()
 void tab_widget_item::event_refresh()
 {
     // 1. reset memory
-    event_user_type.clear();
-    event_user_expect.clear();
+    event_user_type = QHash<QString, QVector<int>>{};
+    event_user_expect = QVector<long long>{};
     for (QString s : event_sorted_events)
     {
         event_user_type[s] = QVector<int>{0, 0, 0};
     }
     // reset connection
-    // ------
+    // this step is essetial, because when we assigning user_data to objects, these connection may well conflict
+    // with each other; when assigning over, connection is restablished, and we need to do a re-calculation of items
+    for (int event_id = 0; event_id < event_sorted_events.size(); ++event_id)
+    {
+        disconnect(event_upper_follow.at(event_id), &QCheckBox::toggled, this, &tab_widget_item::event_on_follow_clicked);
+        disconnect(event_upper_inf1_spin.at(event_id), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::event_on_spin_changed);
+        disconnect(event_upper_inf2_spin.at(event_id), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::event_on_spin_changed);
+        disconnect(event_date_widget, &QDateEdit::dateChanged, this, QOverload<>::of(&tab_widget_item::event_on_date_changed));
+    }
 
     // 2. read user_data
     // if no entry "event", create one
     QModelIndex index_root = user_data->index(0, 0);
+    Q_ASSERT(index_root.isValid());
     {
         QModelIndex index_event = user_data->item_find("event", index_root);
         if (!index_event.isValid())
@@ -784,7 +795,6 @@ void tab_widget_item::event_refresh()
             user_data->insertRow(i, index_root);
             QModelIndex ind = user_data->index(i, 0, index_root);
             user_data->setData(ind, "event");
-            qDebug() << "should emit!";
             user_data->setModified(true);
         }
     }
@@ -792,13 +802,32 @@ void tab_widget_item::event_refresh()
     Q_ASSERT(index_event.isValid());
 
     // then read the information, by key of event_sorted_events
-    // since values should be updated to
     for (int row = 0; row < user_data->rowCount(index_event); ++row)
     {
         QModelIndex index_cur_event = user_data->index(row, 0, index_event);
         QString str_cur_event = user_data->data(index_cur_event, Qt::DisplayRole).toString();
         int event_id = event_seq.value(str_cur_event, -1);
-        if (event_id == -1) continue; // no such event, simply ignore
+        if (event_id == -1)
+        {
+            if (str_cur_event == "date")
+            {
+                // assign date
+                // date is assigned as yy-mm-dd
+                QStringList date_list = user_data->data(index_cur_event.siblingAtColumn(1), Qt::DisplayRole).toString().split("-");
+                if (date_list.size() != 3)
+                {
+                    // if date is not correct, give an initialized one
+                    user_data->setData(index_cur_event.siblingAtColumn(1), event_date_widget->date().toString("yyyy-MM-dd"));
+                    user_data->setModified(true);
+                    continue;
+                }
+                event_date_widget->setDate(QDate(date_list.at(0).toInt(), date_list.at(1).toInt(), date_list.at(2).toInt()));
+                // since this is not an event, we need to ignore the following code in this loop
+                continue;
+            }
+            else
+                continue; // no such event, simply ignore
+        }
         QModelIndex index_cur_eve = user_data->item_find("event", index_cur_event);
         QModelIndex index_cur_inf1 = user_data->item_find("inf1", index_cur_event);
         QModelIndex index_cur_inf2 = user_data->item_find("inf2", index_cur_event);
@@ -808,7 +837,8 @@ void tab_widget_item::event_refresh()
         event_user_type[str_cur_event][1] = user_data->data(index_cur_inf1.siblingAtColumn(1), Qt::DisplayRole).toInt();
         event_user_type[str_cur_event][2] = user_data->data(index_cur_inf2.siblingAtColumn(1), Qt::DisplayRole).toInt();
     }
-    // then, assigning values
+
+    // 3. assigning values
     for (int event_id = 0; event_id < event_sorted_events.size(); ++event_id)
     {
         // write to object controls
@@ -817,12 +847,45 @@ void tab_widget_item::event_refresh()
         event_upper_inf1_spin.at(event_id)->setValue(event_user_type[event_sorted_events.at(event_id)][1]);
         event_upper_inf2_spin.at(event_id)->setValue(event_user_type[event_sorted_events.at(event_id)][2]);
     }
-    ;
+
+    // 4. connect those objects to slots
+    for (int event_id = 0; event_id < event_sorted_events.size(); ++event_id)
+    {
+        connect(event_upper_follow.at(event_id), &QCheckBox::toggled, this, &tab_widget_item::event_on_follow_clicked);
+        connect(event_upper_inf1_spin.at(event_id), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::event_on_spin_changed);
+        connect(event_upper_inf2_spin.at(event_id), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::event_on_spin_changed);
+        connect(event_date_widget, &QDateEdit::dateChanged, this, QOverload<>::of(&tab_widget_item::event_on_date_changed));
+    }
+
+    // 5. date process
+    // in this program, we sort events by initial date, and ignore events by final date
+    // if date is not created, here we create a date
+    {
+        QModelIndex index_event = user_data->item_find("event", index_root);
+        Q_ASSERT(index_event.isValid());
+        QModelIndex index_date = user_data->item_find("date", index_event);
+        if (!index_date.isValid())
+        {
+            // create one here
+            Q_ASSERT(user_data->insertRow(user_data->rowCount(index_event), index_event));
+            user_data->setData(user_data->index(user_data->rowCount(index_event) - 1, 0, index_event), "date");
+            QModelIndex index_date = user_data->item_find("date", index_event);
+            Q_ASSERT(index_date.isValid());
+            user_data->setData(index_date.siblingAtColumn(1), event_date_widget->date().toString("yyyy-MM-dd"));
+            user_data->setModified(true);
+        }
+        // after then, we need to connect to update date widget, to filter the events before this very date
+        event_on_date_changed(true);
+    }
+
+    // 6. re-calculate
+    event_on_object_responsed();
 }
 
-void tab_widget_item::event_on_follow_clicked()
+void tab_widget_item::event_on_follow_clicked_grayout_figure()
 {
     // on follow clicked, we gray out figure
+    // for follow clicked, change the user_data and event_user_expect, go to event_on_follow_clicked()
     // 1. get the index of the click
     QCheckBox *checkbox = qobject_cast<QCheckBox*>(sender());
     int event_id = event_upper_follow.indexOf(checkbox);
@@ -888,7 +951,7 @@ void tab_widget_item::event_on_figure_clicked()
         {
             event_lower_group[2] = new QGroupBox;
             event_lower_group.at(2)->setTitle(tr("Lottery 1 after ")
-                                              + QVariant(event_data_type.value(event_sorted_events.at(event_id)).at(1)).toString()
+                                              + QVariant(event_data_type.value(event_sorted_events.at(event_id)).at(1) - 1).toString()
                                               + tr(" times"));
             event_show_items(event_lower_group.at(2), event_data_item.value(event_sorted_events.at(event_id)).at(2));
             event_lower_layout->addWidget(event_lower_group.at(2));
@@ -905,7 +968,7 @@ void tab_widget_item::event_on_figure_clicked()
         {
             event_lower_group[4] = new QGroupBox;
             event_lower_group.at(4)->setTitle(tr("Lottery 2 after ")
-                                              + QVariant(event_data_type.value(event_sorted_events.at(event_id)).at(2)).toString()
+                                              + QVariant(event_data_type.value(event_sorted_events.at(event_id)).at(2) - 1).toString()
                                               + tr(" times"));
             event_show_items(event_lower_group.at(4), event_data_item.value(event_sorted_events.at(event_id)).at(4));
             event_lower_layout->addWidget(event_lower_group.at(4));
@@ -944,18 +1007,279 @@ void tab_widget_item::event_show_items(QGroupBox *group, const QVector<int> &vec
     group->setLayout(group_layout);
 }
 
+void tab_widget_item::event_on_follow_clicked()
+{
+    // 1. get the index of the click
+    QCheckBox *checkbox = qobject_cast<QCheckBox*>(sender());
+    int event_id = event_upper_follow.indexOf(checkbox);
+    Q_ASSERT(event_id != -1);
+
+    // 2. write to the event_user_type
+    // since value should be changed in spinbox, event_on_spin_changed should have effect when calling setvalue
+    // we may not have to change 1, 2 entry of event_user_type[event_sorted_events.at(event_id)]
+    if (checkbox->isChecked())
+        event_user_type[event_sorted_events.at(event_id)][0] = 1;
+    else
+        event_user_type[event_sorted_events.at(event_id)][0] = 0;
+
+    // 2.9 disable objects before make change to user_data
+    if (!checkbox->isChecked())
+    {
+        event_upper_inf1_spin.at(event_id)->setValue(0);
+        event_upper_inf2_spin.at(event_id)->setValue(0);
+        event_upper_inf1_spin.at(event_id)->setDisabled(true);
+        event_upper_inf2_spin.at(event_id)->setDisabled(true);
+    }
+
+    // 3. make change to user_data
+    if (checkbox->isChecked())
+    {
+        QModelIndex index_event = user_data->item_find("event", user_data->index(0, 0));
+        Q_ASSERT(index_event.isValid());
+        QModelIndex index_cur = user_data->item_find(event_sorted_events.at(event_id), index_event);
+        if (!index_cur.isValid())
+        {
+            int row_to_append = user_data->rowCount(index_event);
+            user_data->insertRow(row_to_append, index_event);
+            user_data->setData(user_data->index(row_to_append, 0, index_event), event_sorted_events.at(event_id));
+            QModelIndex index_cur = user_data->item_find(event_sorted_events.at(event_id), index_event);
+            Q_ASSERT(index_cur.isValid());
+            user_data->insertRows(0, 3, index_cur);
+            user_data->setData(user_data->index(0, 0, index_cur), "event");
+            user_data->setData(user_data->index(1, 0, index_cur), "inf1");
+            user_data->setData(user_data->index(2, 0, index_cur), "inf2");
+            user_data->setData(user_data->index(0, 1, index_cur), 1);
+            user_data->setData(user_data->index(1, 1, index_cur), 0);
+            user_data->setData(user_data->index(2, 1, index_cur), 0);
+            user_data->setModified(true);
+        }
+        else
+        {
+            Q_ASSERT(user_data->rowCount(index_cur));
+            user_data->setData(user_data->index(0, 1, index_cur), 1);
+            user_data->setData(user_data->index(1, 1, index_cur), 0);
+            user_data->setData(user_data->index(2, 1, index_cur), 0);
+            user_data->setModified(true);
+        }
+    }
+    else
+    {
+        QModelIndex index_event = user_data->item_find("event", user_data->index(0, 0));
+        Q_ASSERT(index_event.isValid());
+        QModelIndex index_cur = user_data->item_find(event_sorted_events.at(event_id), index_event);
+        Q_ASSERT(index_cur.isValid());
+        // well, remove a row in user_data may possibly not easy... we need to find the very row number to delete
+        // since the last assert used, I think we can safely remove column by the following code
+        for (int i = 0; i < user_data->rowCount(index_event); ++i)
+        {
+            if (user_data->index(i, 0, index_event) == index_cur)
+            {
+                user_data->removeRow(i, index_event);
+                break;
+            }
+        }
+        user_data->setModified(true);
+    }
+
+    // 3.1. enable objects after user_data entry created
+    if (checkbox->isChecked())
+    {
+        // for safety, set to zero for spinboxes
+        event_upper_inf1_spin.at(event_id)->setValue(0);
+        event_upper_inf2_spin.at(event_id)->setValue(0);
+        event_upper_inf1_spin.at(event_id)->setEnabled(true);
+        event_upper_inf2_spin.at(event_id)->setEnabled(true);
+    }
+
+    // 4. re-calculate event_user_expect
+    event_on_object_responsed();
+}
+
 void tab_widget_item::event_on_spin_changed()
 {
+    // 1. get the index of the click
+    QSpinBox *spinbox = qobject_cast<QSpinBox*>(sender());
+    int inf = 1;
+    int event_id = event_upper_inf1_spin.indexOf(spinbox);
+    if (event_id == -1)
+    {
+        inf = 2;
+        event_id = event_upper_inf2_spin.indexOf(spinbox);
+    }
+    Q_ASSERT(event_id != -1);
 
+    // 2. write into the event_user_type
+    event_user_type[event_sorted_events.at(event_id)][inf] = spinbox->value();
+
+    // 3. make change to user_data
+    // since we can get access to spinbox, we simply assume user_data have provided entry for this current event
+    QModelIndex index_cur_inf = user_data->item_find("inf" + QVariant(inf).toString(),
+                                user_data->item_find(event_sorted_events.at(event_id),
+                                user_data->item_find("event",
+                                user_data->index(0, 0))));
+    Q_ASSERT(index_cur_inf.isValid());
+    user_data->setData(index_cur_inf.siblingAtColumn(1), spinbox->value());
+
+    // 4. re-calculate event_user_expect
+    event_on_object_responsed();
+}
+
+void tab_widget_item::event_on_object_responsed()
+{
+    // re-calculate
+    event_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
+    for (int id = 0; id < event_sorted_events.size(); ++id)
+    {
+        if (event_user_type.value(event_sorted_events.at(id)).at(0) > 0)
+        {
+            util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(0));
+            // it is expected that if event_user_type.value(event_sorted_events.at(id)).at(1, 2) > 0,
+            // so judgement lies here, not outside this code block
+            if (event_user_type.value(event_sorted_events.at(id)).at(1) > 0)
+            {
+                int user_inf = event_user_type.value(event_sorted_events.at(id)).at(1);
+                int split_inf = event_data_type.value(event_sorted_events.at(id)).at(1);
+                if (user_inf < split_inf) // only user condition considered
+                    util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(1), user_inf);
+                else // need to make split consideration
+                {
+                    util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(1), split_inf - 1);
+                    util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(2), user_inf - split_inf + 1);
+                }
+            }
+            if (event_user_type.value(event_sorted_events.at(id)).at(2) > 0)
+            {
+                int user_inf = event_user_type.value(event_sorted_events.at(id)).at(2);
+                int split_inf = event_data_type.value(event_sorted_events.at(id)).at(2);
+                if (user_inf < split_inf) // only user condition considered
+                    util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(3), user_inf);
+                else // need to make split consideration
+                {
+                    util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(3), split_inf - 1);
+                    util_list_plus(event_user_expect, event_data_item.value(event_sorted_events.at(id)).at(4), user_inf - split_inf + 1);
+                }
+            }
+        }
+    }
+    qDebug() << event_user_expect;
 }
 
 void tab_widget_item::event_on_date_changed()
 {
-
+    // simply defined to act as slot
+    event_on_date_changed(false);
 }
 
+void tab_widget_item::event_on_date_changed(bool init)
+{
+    // 0. first test whether "root->event->date" entry exists
+    QModelIndex index_date = user_data->item_find("date",
+                             user_data->item_find("event",
+                             user_data->index(0, 0)));
+    Q_ASSERT(index_date.isValid());
 
+    // 1. read and write date from widget
+    QDate date = event_date_widget->date();
+    if (!user_data->data(index_date, Qt::DisplayRole).isValid() || !init)
+    {
+        Q_ASSERT(user_data->setData(index_date.siblingAtColumn(1), date.toString("yyyy-MM-dd")));
+        user_data->setModified(true);
+    }
 
+    // 2. toggle some events before this very date
+    // judgement: final date of the event
+    for (int id = 0; id < event_sorted_events.size(); ++id)
+    {
+        if (event_data_date.value(event_sorted_events.at(id)).at(1) < date)
+        {
+            if (event_upper_follow.at(id)->isChecked()) event_upper_follow.at(id)->setChecked(false);
+            event_upper_vec.at(id)->setVisible(false);
+        }
+        else
+        {
+            event_upper_vec.at(id)->setVisible(true);
+        }
+    }
+
+    // I think we can stop here, since all calculation works will be done when checkboxes toggled
+}
+
+QString tab_widget_item::util_consume_int(long long val, bool turn_100)
+{
+    Q_ASSERT(val >= 0);
+    // trun_100: if returned value > 100, then the space is not enough for many labels; we need to truncate them.
+    // define headers
+    long long h_k = 1000;
+    long long h_M = 1000 * 1000;
+    long long h_G = 1000 * 1000 * 1000;
+    long long h_T = 1000LL * 1000LL * 1000LL * 1000LL;
+    const QVector<long long> h_vec = { h_k, h_M, h_G, h_T };
+    const QVector<QString> h_str = { "k", "M", "G" , "T"};
+    // actual code
+    if (val == 0)
+        return QString();
+    else if (val < h_k)
+        return QVariant(val).toString();
+    else
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            if (val < 1000 * h_vec.at(i))
+            {
+                const long long &h = h_vec.at(i);
+                const QString &s = h_str.at(i);
+                if (val % h == 0)
+                    return QVariant(val / h).toString() + s;
+                else if (turn_100)
+                    if (val / h > 100)
+                        return QVariant(val / h).toString() + "." + s;
+                return QVariant(val / h).toString() + "."
+                        + QVariant((val % h) / (h / 10)).toString() + s;
+            }
+        }
+        return "overflow";
+    }
+}
+
+void tab_widget_item::util_list_minus(QVector<long long> &vec_1, const QVector<int> &vec_2)
+{
+    // vec_1 = vec_1 - vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] -= vec_2[i];
+}
+
+void tab_widget_item::util_list_minus(QVector<long long> &vec_1, const QVector<long long> &vec_2)
+{
+    // vec_1 = vec_1 - vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] -= vec_2[i];
+}
+
+void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2)
+{
+    // vec_1 = vec_1 + vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i];
+}
+
+void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2, const int &fact)
+{
+    // vec_1 = vec_1 + vec_2 * fact
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i] * fact;
+}
+
+void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<long long> &vec_2)
+{
+    // vec_1 = vec_1 + vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i];
+}
 
 
 

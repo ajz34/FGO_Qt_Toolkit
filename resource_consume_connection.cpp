@@ -661,7 +661,7 @@ void resource_consume::connection_existance_checkbox(bool in_value)
     }
 }
 
-QString resource_consume::consume_int(int val, bool trun_100)
+QString resource_consume::consume_int(int val, bool turn_100)
 {
     Q_ASSERT(val >= 0);
     // possible no need to set value for the largest value, since int should < 999, 999, 999 < 2,147,483,647
@@ -678,9 +678,9 @@ QString resource_consume::consume_int(int val, bool trun_100)
     {
         if (val % 1000 == 0)
             return QVariant(val / 1000).toString() + QString("k");
-        else if (trun_100)
+        else if (turn_100)
             if (val / 1000 > 100)
-                return QVariant(val / 1000).toString() + QString("k");
+                return QVariant(val / 1000).toString() + QString(".k");
         return QVariant(val / 1000).toString() + QString(".")
                 + QVariant((val % 1000) / 100).toString() + QString("k");
     }
@@ -688,9 +688,9 @@ QString resource_consume::consume_int(int val, bool trun_100)
     {
         if (val % (1000 * 1000) == 0)
             return QVariant(val / 1000 / 1000).toString() + QString("M");
-        else if (trun_100)
+        else if (turn_100)
             if (val / 1000 / 1000 > 100)
-                return QVariant(val / 1000 / 1000).toString() + QString("M");
+                return QVariant(val / 1000 / 1000).toString() + QString(".M");
         return QVariant(val / 1000 / 1000).toString() + QString(".")
                 + QVariant((val % (1000 * 1000)) / 100 / 1000).toString() + QString("M");
     }
@@ -698,9 +698,9 @@ QString resource_consume::consume_int(int val, bool trun_100)
     {
         if (val % (1000 * 1000 * 1000) == 0)
             return QVariant(val / 1000 / 1000 / 1000).toString() + QString("G");
-        else if (trun_100)
+        else if (turn_100)
             if (val / 1000 / 1000 / 1000 > 100)
-                return QVariant(val / 1000 / 1000 / 1000).toString() + QString("G");
+                return QVariant(val / 1000 / 1000 / 1000).toString() + QString(".G");
         return QVariant(val / 1000 / 1000 / 1000).toString() + QString(".")
                 + QVariant((val % (1000 * 1000 * 1000)) / 100 / 1000 / 1000).toString() + QString("G");
     }
