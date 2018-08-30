@@ -1183,6 +1183,9 @@ void tab_widget_item::event_on_date_changed(bool init)
 
     // 2. toggle some events before this very date
     // judgement: final date of the event
+    // it is aquired to remove widgets
+    // if not, the hidden widgets will still use some space, causing the first visible widget shift to right
+    /*
     for (int id = 0; id < event_sorted_events.size(); ++id)
     {
         if (event_data_date.value(event_sorted_events.at(id)).at(1) < date)
@@ -1193,6 +1196,24 @@ void tab_widget_item::event_on_date_changed(bool init)
         else
         {
             event_upper_vec.at(id)->setVisible(true);
+        }
+    }
+    */
+    for (auto i : event_upper_vec)
+        event_upper_layout->removeWidget(i);
+    for (int id = 0; id < event_sorted_events.size(); ++id)
+    {
+        if (event_data_date.value(event_sorted_events.at(id)).at(1) < date)
+        {
+            if (event_upper_follow.at(id)->isChecked()) event_upper_follow.at(id)->setChecked(false);
+            event_upper_vec.at(id)->setEnabled(false);
+            event_upper_vec.at(id)->setVisible(false);
+        }
+        else
+        {
+            event_upper_vec.at(id)->setEnabled(true);
+            event_upper_vec.at(id)->setVisible(true);
+            event_upper_layout->addWidget(event_upper_vec.at(id));
         }
     }
 
@@ -1499,7 +1520,8 @@ void tab_widget_item::month_on_date_changed(bool init)
     }
 
     // 2. check if widgets before the current date
-    //
+    // it is aquired to remove widgets
+    // if not, the hidden widgets will still use some space, causing the first visible widget shift to right
     for (auto i : month_widget_group)
         month_widget_layout->removeWidget(i);
     for (int id = 0; id < month_header_date.size(); ++id)
