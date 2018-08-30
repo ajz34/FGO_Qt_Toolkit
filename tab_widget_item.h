@@ -88,13 +88,13 @@ private:
     QLabel *event_date_notify = nullptr;
     QScrollArea *event_upper_widget = nullptr;
     FlowLayout *event_upper_layout = nullptr;
-    QVector<QWidget*> event_upper_vec{};
-    QVector<QPushButton*> event_upper_figure{};
-    QVector<QCheckBox*> event_upper_follow{};
-    QVector<QLabel*> event_upper_inf1{};
-    QVector<QSpinBox*> event_upper_inf1_spin{};
-    QVector<QLabel*> event_upper_inf2{};
-    QVector<QSpinBox*> event_upper_inf2_spin{};
+    QVector<QWidget*> event_upper_vec{}; // n
+    QVector<QPushButton*> event_upper_figure{}; // n
+    QVector<QCheckBox*> event_upper_follow{}; // n
+    QVector<QLabel*> event_upper_inf1{}; // n
+    QVector<QSpinBox*> event_upper_inf1_spin{}; // n
+    QVector<QLabel*> event_upper_inf2{}; // n
+    QVector<QSpinBox*> event_upper_inf2_spin{}; // n
     QScrollArea *event_lower_widget = nullptr;
     QVBoxLayout *event_lower_layout = nullptr;
     QVector<QGroupBox*> event_lower_group = QVector<QGroupBox*>(5, nullptr); // event, inf1, inf1, inf2, inf2
@@ -103,19 +103,18 @@ private:
         // program shouldn't use hash.value(val), for some keys may not occurs at these hash mappings
         // event_data_item: 0: event, 1, 2: infinity_, 3, 4: infinity-
         // event_data_type: 0: event, 1: infinity_1, 2: infinity_2
-    QHash<QString, QVector<QVector<int>>> event_data_item{};
-    QHash<QString, QVector<QDate>> event_data_date{};
-    QHash<QString, QVector<int>> event_data_type{};
+    QHash<QString, QVector<QVector<int>>> event_data_item{}; // 5 * items
+    QHash<QString, QVector<QDate>> event_data_date{}; // 2
+    QHash<QString, QVector<int>> event_data_type{}; // 3
         // if -1, means something never exists (like infinity lottary)
         // for infinity lottary, if n, means after nth lottary, items changed
-    QHash<QString, QVector<int>> event_user_type{};
+    QHash<QString, QVector<int>> event_user_type{}; // 3
         // the same to event_data_type, however, for the infinity lottary,
         // the value indicates to how much the user want to roll
-    QVector<long long> event_user_expect{};  // may be used in the later sub_tabs
+    QVector<long long> event_user_expect{}; // may be used in the later sub_tabs
     QVector<QString> event_sorted_events{};
     QHash<QString, int> event_seq{};
 private:
-    void event_set_connection();
     void event_reset();
     void event_refresh();
     void event_set_after_layout();
@@ -134,14 +133,41 @@ signals:
     // 3. month
 private:
     QWidget *month_widget = nullptr;
+    void month_set_layout();
+    QScrollArea *month_widget_scroll = nullptr;
+    FlowLayout *month_widget_layout = nullptr;
+    QVector<QGroupBox*> month_widget_group{}; // n
+    QVector<QVector<QLabel*>> month_widget_figure{}; // n * 3
+    QVector<QVector<QSpinBox*>> month_widget_spin{}; // n * 3
+    QDateEdit *month_widget_date = nullptr;
+    QLabel *month_widget_date_label = nullptr;
+private:
+    QVector<QString> month_header_str{}; // n
+    QVector<QDate> month_header_date{}; // n
+    QVector<QVector<QString>> month_data_data{}; // n * 3
+    QVector<QVector<int>> month_user_data{}; // n * 3
+    QDate month_user_date{};
+    QVector<long long> month_user_expect{};
+private:
+    void month_reset();
+    void month_refresh();
+    void month_on_object_responsed();
+private slots:
+    void month_on_spin_changed();
+    void month_on_date_changed();
+    void month_on_date_changed(bool init);
+signals:
+    void signal_user_month_data_changed();
 
     // 4. category
     // [0:3] bronze, silver, gold
     // [3:6] gem: shining, magic, secret
     // [6:9] piece, monument, misc
+private:
     QVector<QWidget*> category_widget = QVector<QWidget*>(9, nullptr);
 
     //--- Utility (defined in layout)
+public:
     QVector<int> util_read_items(TreeModel *tree, const QModelIndex &index);
     void util_list_minus(QVector<long long> &vec_1, const QVector<int> &vec_2);
     void util_list_minus(QVector<long long> &vec_1, const QVector<long long> &vec_2);

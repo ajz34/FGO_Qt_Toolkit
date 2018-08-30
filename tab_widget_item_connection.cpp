@@ -21,6 +21,7 @@ void tab_widget_item::from_parent_database_changed(
 
     filter_reset_data();
     event_reset();
+    month_reset();
 }
 
 void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
@@ -28,6 +29,7 @@ void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
     user_data = user_dat;
     filter_reset_data();
     event_refresh();
+    month_refresh();
 }
 
 void tab_widget_item::from_parent_user_servant_data_loaded(TreeModel *user_dat)
@@ -39,7 +41,6 @@ void tab_widget_item::from_parent_user_servant_data_loaded(TreeModel *user_dat)
 void tab_widget_item::main_set_connection()
 {
     filter_set_connection();
-    event_set_connection();
 }
 
 // 1. filter
@@ -524,11 +525,6 @@ void tab_widget_item::filter_on_button_right_clicked()
 }
 
 // 2. event
-
-void tab_widget_item::event_set_connection()
-{
-
-}
 
 void tab_widget_item::event_reset()
 {
@@ -1161,7 +1157,6 @@ void tab_widget_item::event_on_object_responsed()
             }
         }
     }
-    qDebug() << event_user_expect;
 }
 
 void tab_widget_item::event_on_date_changed()
@@ -1204,84 +1199,326 @@ void tab_widget_item::event_on_date_changed(bool init)
     // I think we can stop here, since all calculation works will be done when checkboxes toggled
 }
 
-QString tab_widget_item::util_consume_int(long long val, bool turn_100)
+// 3. month
+
+void tab_widget_item::month_reset()
 {
-    Q_ASSERT(val >= 0);
-    // trun_100: if returned value > 100, then the space is not enough for many labels; we need to truncate them.
-    // define headers
-    long long h_k = 1000;
-    long long h_M = 1000 * 1000;
-    long long h_G = 1000 * 1000 * 1000;
-    long long h_T = 1000LL * 1000LL * 1000LL * 1000LL;
-    const QVector<long long> h_vec = { h_k, h_M, h_G, h_T };
-    const QVector<QString> h_str = { "k", "M", "G" , "T"};
-    // actual code
-    if (val == 0)
-        return QString();
-    else if (val < h_k)
-        return QVariant(val).toString();
-    else
+    // this function occurs when database changed
+
+    // 1. reset data
+    month_header_str = QVector<QString>{};
+    month_header_date = QVector<QDate>{};
+    month_data_data = QVector<QVector<QString>>{};
+
+    // 2. reset widgets
+    for (auto i : month_widget_group)
     {
-        for (int i = 0; i < 4; ++i)
+        month_widget_layout->removeWidget(i);
+        if (i) delete i;
+    }
+    month_widget_group = QVector<QGroupBox*>{};
+    month_widget_figure = QVector<QVector<QLabel*>>{};
+    month_widget_spin = QVector<QVector<QSpinBox*>>{};
+
+    // 3. read data from exchange_item
+    // if exchange_item = 0, nothing should happen here
+    if (exchange_item == nullptr) return;
+    {
+        QModelIndex index_root = exchange_item->index(0, 0);
+        Q_ASSERT(index_root.isValid());
+        if (exchange_item->rowCount(index_root) == 0) return;
+        for (int row = 0; row < exchange_item->rowCount(index_root); ++row)
         {
-            if (val < 1000 * h_vec.at(i))
+            // storage format is
+            // <date-yyyy-MM-dd>
+            //   <item_1>XX
+            //   <item_2>XX
+            //   <item_3>XX
+            // as well, all items should be sorted carefully
+            // so many asserts may occur
+            // month test
+            QModelIndex index_date = exchange_item->index(row, 0, index_root);
+            QString date_str = exchange_item->data(index_date, Qt::DisplayRole).toString();
+            QStringList date_lst = date_str.split("-");
+            Q_ASSERT(date_lst.size() == 4);
+            QDate date(date_lst.at(1).toInt(), date_lst.at(2).toInt(), date_lst.at(3).toInt());
+            Q_ASSERT(date.isValid());
+            if (month_header_date.size() > 0)
+                Q_ASSERT(date > month_header_date.at(month_header_date.size() - 1));
+            // item test
+            QVector<QString> items(3, "");
+            QModelIndex index_item1 = exchange_item->index(0, 0, index_date);
+            QModelIndex index_item2 = exchange_item->index(1, 0, index_date);
+            QModelIndex index_item3 = exchange_item->index(2, 0, index_date);
+            Q_ASSERT(exchange_item->data(index_item1, Qt::DisplayRole).toString() == "item_1" &&
+                     exchange_item->data(index_item2, Qt::DisplayRole).toString() == "item_2" &&
+                     exchange_item->data(index_item3, Qt::DisplayRole).toString() == "item_3");
+            items[0] = exchange_item->data(index_item1.siblingAtColumn(1), Qt::DisplayRole).toString();
+            items[1] = exchange_item->data(index_item2.siblingAtColumn(1), Qt::DisplayRole).toString();
+            items[2] = exchange_item->data(index_item3.siblingAtColumn(1), Qt::DisplayRole).toString();
+            // write to memory
+            month_header_str.push_back(date_str);
+            month_header_date.push_back(date);
+            month_data_data.push_back(items);
+        }
+        qDebug() << month_data_data;
+    }
+
+    // 4. assign widgets
+    for (int id = 0; id < month_header_date.size(); ++id)
+    {
+        // define
+        QVector<QLabel*> figure = QVector<QLabel*>{};
+        QVector<QSpinBox*> spin = QVector<QSpinBox*>{};
+        auto layout = new QGridLayout;
+        for (int i = 0; i < 3; ++i)
+        {
+            figure.push_back(new QLabel);
+            figure.at(i)->setPixmap(GLOB::MAP_ITEM.value(month_data_data.at(id).at(i)).scaled(66, 72));
+            figure.at(i)->setFixedSize(QSize(66, 72));
+            layout->addWidget(figure.at(i), 0, i, Qt::AlignCenter);
+            spin.push_back(new QSpinBox);
+            spin.at(i)->setMinimum(0);
+            spin.at(i)->setMaximum(30);
+            layout->addWidget(spin.at(i), 1, i, Qt::AlignCenter);
+        }
+        QGroupBox *group = new QGroupBox;
+        group->setTitle(month_header_date.at(id).toString("yyyy-MM"));
+        group->setLayout(layout);
+        // append
+        month_widget_group.push_back(group);
+        month_widget_figure.push_back(figure);
+        month_widget_spin.push_back(spin);
+        // display
+        month_widget_layout->addWidget(group);
+    }
+
+    // up to here, all layout should be finished
+    // then, read user data to fill in values
+    month_refresh();
+}
+
+void tab_widget_item::month_refresh()
+{
+    // 1. reset memory
+    month_user_data = QVector<QVector<int>>(month_header_date.size(), {0, 0, 0});
+    month_user_date = QDate(month_widget_date->date());
+
+    // 2. reset connection
+    for (int id = 0; id < month_header_date.size(); ++id)
+        for (int i = 0; i < 3; ++i)
+            disconnect(month_widget_spin.at(id).at(i), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::month_on_spin_changed);
+    disconnect(month_widget_date, &QDateEdit::dateChanged, this, QOverload<>::of(&tab_widget_item::month_on_spin_changed));
+
+    // 3. read user_data
+    // if no entry "month", create one
+    QModelIndex index_root = user_data->index(0, 0);
+    Q_ASSERT(index_root.isValid());
+    {
+        QModelIndex index_month = user_data->item_find("month", index_root);
+        if (!index_month.isValid())
+        {
+            int i = user_data->rowCount(index_root);
+            user_data->insertRow(i, index_root);
+            QModelIndex ind = user_data->index(i, 0, index_root);
+            user_data->setData(ind, "month");
+            user_data->setModified(true);
+        }
+    }
+    QModelIndex index_month = user_data->item_find("month", index_root);
+    Q_ASSERT(index_month.isValid());
+
+    // then try to find if "root->month->date" exists; if no, create one with the current month_widget_date
+    // if yes, assign date to memory month_user_date
+    {
+        QModelIndex index_cur_date = user_data->item_find("date", index_month);
+        if (!index_cur_date.isValid())
+        {
+            user_data->insertRow(0, index_month);
+            user_data->setData(user_data->index(0, 0, index_month), "date");
+            user_data->setData(user_data->index(0, 1, index_month), month_widget_date->date().toString("yyyy-MM-dd"));
+            user_data->setModified(true);
+        }
+        else
+        {
+            QStringList date_str = user_data->data(index_cur_date.siblingAtColumn(1), Qt::DisplayRole).toString().split("-");
+            Q_ASSERT(date_str.size() == 3);
+            month_user_date = QDate(date_str.at(0).toInt(), date_str.at(1).toInt(), date_str.at(2).toInt());
+            Q_ASSERT(month_user_date.isValid());
+        }
+    }
+    QModelIndex index_cur_date = user_data->item_find("date", index_month);
+    Q_ASSERT(index_cur_date.isValid());
+
+    // read the whole data without date information
+    for (int id = 0; id < month_header_date.size(); ++id)
+    {
+        QModelIndex index_date = user_data->item_find(month_header_str.at(id), index_month);
+        if (!index_date.isValid()) continue; // remains {0, 0, 0}
+        // if valid, we assert three items in user_data, and the three items should be the same
+        // to the database
+        Q_ASSERT(user_data->rowCount(index_date) == 3);
+        Q_ASSERT(user_data->data(user_data->index(0, 0, index_date), Qt::DisplayRole).toString() == month_data_data.at(id).at(0));
+        Q_ASSERT(user_data->data(user_data->index(1, 0, index_date), Qt::DisplayRole).toString() == month_data_data.at(id).at(1));
+        Q_ASSERT(user_data->data(user_data->index(2, 0, index_date), Qt::DisplayRole).toString() == month_data_data.at(id).at(2));
+        month_user_data[id] = QVector<int>
+        {
+            user_data->data(user_data->index(0, 1, index_date), Qt::DisplayRole).toInt(),
+            user_data->data(user_data->index(1, 1, index_date), Qt::DisplayRole).toInt(),
+            user_data->data(user_data->index(2, 1, index_date), Qt::DisplayRole).toInt(),
+        };
+    }
+
+    // 4. write to widgets
+    for (int id = 0; id < month_header_date.size(); ++id)
+        for (int i = 0; i < 3; ++i)
+            month_widget_spin.at(id).at(i)->setValue(month_user_data.at(id).at(i));
+
+    // 5. connect those objects to slots
+    for (int id = 0; id < month_header_date.size(); ++id)
+        for (int i = 0; i < 3; ++i) // since we need to double check the sum of three spin values lower than 30, we need to use queued connection
+            connect(month_widget_spin.at(id).at(i), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::month_on_spin_changed, Qt::QueuedConnection);
+    connect(month_widget_date, &QDateEdit::dateChanged, this, QOverload<>::of(&tab_widget_item::month_on_date_changed));
+
+    // 6. date process
+    month_on_date_changed(true);
+
+    // 7. re-calculate
+    month_on_object_responsed();
+}
+
+void tab_widget_item::month_on_object_responsed()
+{
+    // re-calculate
+    month_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
+    for (int id = 0; id < month_header_date.size(); ++id)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            int fact = month_user_data.at(id).at(i);
+            if (fact > 0)
             {
-                const long long &h = h_vec.at(i);
-                const QString &s = h_str.at(i);
-                if (val % h == 0)
-                    return QVariant(val / h).toString() + s;
-                else if (turn_100)
-                    if (val / h > 100)
-                        return QVariant(val / h).toString() + "." + s;
-                return QVariant(val / h).toString() + "."
-                        + QVariant((val % h) / (h / 10)).toString() + s;
+                int ind = GLOB::MAP_ITEM_INDEX.value(month_data_data.at(id).at(i), -1);
+                Q_ASSERT(ind != -1);
+                month_user_expect[ind] += fact;
             }
         }
-        return "overflow";
+    }
+    qDebug() << month_user_expect;
+    emit signal_user_month_data_changed();
+}
+
+void tab_widget_item::month_on_spin_changed()
+{
+    // 1. search which spin it is
+    QSpinBox *spin = qobject_cast<QSpinBox*>(sender());
+    int spin_id = -1; // date-id
+    int spin_item = -1; // which item of the current date-id
+    for (int id = 0; id < month_header_date.size(); ++id)
+    {
+        int item = month_widget_spin.at(id).indexOf(spin);
+        if (item != -1)
+        {
+            spin_id = id;
+            spin_item = item;
+            break;
+        }
+    }
+    Q_ASSERT((spin_id != -1) && (spin_item != -1));
+
+    // 1.5 check if the spin value is valid
+    {
+        QVector<int> spin_items = {0, 1, 2};
+        spin_items.remove(spin_item);
+        Q_ASSERT(spin_items.size() == 2);
+        // first, if these two spins value > 30, check those spins
+        int val1 = month_widget_spin.at(spin_id).at(spin_items.at(0))->value();
+        int val2 = month_widget_spin.at(spin_id).at(spin_items.at(1))->value();
+        int val = spin->value();
+        if (val1 + val2 + val > 30)
+        {
+            if (val1 + val2 > 30)
+                month_widget_spin.at(spin_id).at((spin_item + 1) % 3)->setValue(0);
+            else
+                spin->setValue(30 - val1 - val2);
+        }
+    }
+
+    // 2. set value to memory
+    month_user_data[spin_id][spin_item] = spin->value();
+
+    // 3. set value to user_data
+    // if no entry of the current date, create one
+    QModelIndex index_month = user_data->item_find("month", user_data->index(0, 0));
+    Q_ASSERT(index_month.isValid());
+    qDebug() << month_header_str;
+    QModelIndex index_date = user_data->item_find(month_header_str.at(spin_id), index_month);
+    if (!index_date.isValid())
+    {
+        int i = user_data->rowCount(index_month);
+        Q_ASSERT(user_data->insertRow(i, index_month));
+        QModelIndex index_date = user_data->index(i, 0, index_month);
+        Q_ASSERT(user_data->setData(index_date, month_header_str.at(spin_id)));
+        Q_ASSERT(user_data->insertRows(0, 3, index_date));
+        for (int row = 0; row < 3; row++)
+        {
+            Q_ASSERT(user_data->setData(user_data->index(row, 0, index_date), month_data_data.at(spin_id).at(row)));
+            Q_ASSERT(user_data->setData(user_data->index(row, 1, index_date), month_widget_spin.at(spin_id).at(row)->value()));
+        }
+    }
+    else
+    {
+        QModelIndex index_item = user_data->item_find(month_data_data.at(spin_id).at(spin_item), index_date);
+        Q_ASSERT(index_item.isValid());
+        Q_ASSERT(user_data->setData(index_item.siblingAtColumn(1), spin->value()));
+    }
+    user_data->setModified(true);
+
+    // 4. re-calculate
+    month_on_object_responsed();
+}
+
+void tab_widget_item::month_on_date_changed()
+{
+    month_on_date_changed(false);
+}
+
+void tab_widget_item::month_on_date_changed(bool init)
+{
+    // 1. set value to user_data
+    // if this process is called in user_data initialization, we skip this process
+    // since user_data initialization process should have checked "root->month->date", we can assert here
+    if (!init)
+    {
+        QModelIndex index_cur_date = user_data->item_find("date",
+                                     user_data->item_find("month",
+                                     user_data->index(0, 0)));
+        Q_ASSERT(index_cur_date.isValid());
+        Q_ASSERT(user_data->setData(index_cur_date.siblingAtColumn(1), month_widget_date->date().toString("yyyy-MM-dd")));
+        user_data->setModified(true);
+    }
+
+    // 2. check if widgets before the current date
+    //
+    for (auto i : month_widget_group)
+        month_widget_layout->removeWidget(i);
+    for (int id = 0; id < month_header_date.size(); ++id)
+    {
+        if (month_header_date.at(id) < month_widget_date->date())
+        {
+            month_widget_group.at(id)->setVisible(false);
+            month_widget_group.at(id)->setEnabled(false);
+            for (int i = 0; i < 3; ++i)
+                month_widget_spin.at(id).at(i)->setValue(0);
+        }
+        else
+        {
+            month_widget_group.at(id)->setVisible(true);
+            month_widget_group.at(id)->setEnabled(true);
+            month_widget_layout->addWidget(month_widget_group.at(id));
+        }
     }
 }
-
-void tab_widget_item::util_list_minus(QVector<long long> &vec_1, const QVector<int> &vec_2)
-{
-    // vec_1 = vec_1 - vec_2
-    Q_ASSERT(vec_1.size() == vec_2.size());
-    for (int i = 0; i < vec_1.size(); ++i)
-        vec_1[i] -= vec_2[i];
-}
-
-void tab_widget_item::util_list_minus(QVector<long long> &vec_1, const QVector<long long> &vec_2)
-{
-    // vec_1 = vec_1 - vec_2
-    Q_ASSERT(vec_1.size() == vec_2.size());
-    for (int i = 0; i < vec_1.size(); ++i)
-        vec_1[i] -= vec_2[i];
-}
-
-void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2)
-{
-    // vec_1 = vec_1 + vec_2
-    Q_ASSERT(vec_1.size() == vec_2.size());
-    for (int i = 0; i < vec_1.size(); ++i)
-        vec_1[i] += vec_2[i];
-}
-
-void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2, const int &fact)
-{
-    // vec_1 = vec_1 + vec_2 * fact
-    Q_ASSERT(vec_1.size() == vec_2.size());
-    for (int i = 0; i < vec_1.size(); ++i)
-        vec_1[i] += vec_2[i] * fact;
-}
-
-void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<long long> &vec_2)
-{
-    // vec_1 = vec_1 + vec_2
-    Q_ASSERT(vec_1.size() == vec_2.size());
-    for (int i = 0; i < vec_1.size(); ++i)
-        vec_1[i] += vec_2[i];
-}
-
-
 
 
 

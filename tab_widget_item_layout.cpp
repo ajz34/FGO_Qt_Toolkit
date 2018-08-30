@@ -44,6 +44,7 @@ void tab_widget_item::main_set_layout()
     // sub layout
     filter_set_layout();
     event_set_layout();
+    month_set_layout();
 }
 
 void tab_widget_item::filter_set_layout()
@@ -149,9 +150,21 @@ void tab_widget_item::filter_set_layout()
     filter_lower_widget->setWidget(filter_lower_widget_inter);
     filter_split_widget->addWidget(filter_upper_widget);
     filter_split_widget->addWidget(filter_lower_widget);
-    filter_split_widget->setStyleSheet("background-color:white;");
-    filter_upper_widget->setStyleSheet("background-color:white;");
-    filter_lower_widget->setStyleSheet("background-color:white;");
+
+    // set background color white
+    // https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget
+    // use method 1, QPalette method
+    // method 2 is style sheet method
+    // however, since this method may also change the color style of scroll bar,
+    // I decided not to take method 2
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::white);
+    filter_split_widget->setAutoFillBackground(true);
+    filter_split_widget->setPalette(pal);
+    filter_upper_widget->setAutoFillBackground(true);
+    filter_upper_widget->setPalette(pal);
+    filter_lower_widget->setAutoFillBackground(true);
+    filter_lower_widget->setPalette(pal);
 
     auto filter_mainlayout = new QVBoxLayout;
     filter_mainlayout->addWidget(filter_top_widgets);
@@ -164,7 +177,7 @@ void tab_widget_item::event_set_layout()
     // object initialization
     event_date_widget = new QDateEdit;
     event_date_widget->setCalendarPopup(true);
-    event_date_widget->setDate(QDate::currentDate().addDays(-410));
+    event_date_widget->setDate(QDate::currentDate().addDays(-440));
     event_date_notify = new QLabel;
     event_date_notify->setText(tr("Only select date after"));
     event_upper_layout = new FlowLayout;
@@ -174,9 +187,14 @@ void tab_widget_item::event_set_layout()
     event_upper_widget->setWidgetResizable(true);
     event_lower_widget->setWidgetResizable(true);
     event_split = new QSplitter;
-    event_split->setStyleSheet("background-color:white;");
-    event_upper_widget->setStyleSheet("background-color:white;");
-    event_lower_widget->setStyleSheet("background-color:white;");
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::white);
+    event_split->setAutoFillBackground(true);
+    event_split->setPalette(pal);
+    event_upper_widget->setAutoFillBackground(true);
+    event_upper_widget->setPalette(pal);
+    event_lower_widget->setAutoFillBackground(true);
+    event_lower_widget->setPalette(pal);
 
     // layout
     auto temp_layout_1 = new QHBoxLayout;
@@ -203,6 +221,38 @@ void tab_widget_item::event_set_layout()
     event_widget->setLayout(event_main_layout);
 }
 
+void tab_widget_item::month_set_layout()
+{
+    // object initialization
+    month_widget_scroll = new QScrollArea;
+    QPalette pal = palette();
+    pal.setColor(QPalette::Background, Qt::white);
+    month_widget_scroll->setAutoFillBackground(true);
+    month_widget_scroll->setPalette(pal);
+    month_widget_scroll->setWidgetResizable(true);
+    month_widget_layout = new FlowLayout;
+    month_widget_date = new QDateEdit;
+    month_widget_date->setCalendarPopup(true);
+    month_widget_date->setDate(QDate::currentDate().addDays(-440));
+    month_widget_date_label = new QLabel;
+    month_widget_date_label->setText(tr("Only select date after"));
+
+    // layout
+    auto layout_1 = new QHBoxLayout;
+    layout_1->addStretch();
+    layout_1->addWidget(month_widget_date_label);
+    layout_1->addWidget(month_widget_date);
+
+    auto widget_1 = new QWidget;
+    widget_1->setLayout(month_widget_layout);
+    month_widget_scroll->setWidget(widget_1);
+
+    auto month_main_layout = new QVBoxLayout;
+    month_main_layout->addLayout(layout_1);
+    month_main_layout->addWidget(month_widget_scroll);
+    month_widget->setLayout(month_main_layout);
+}
+
 //--- Utility
 
 QVector<int> tab_widget_item::util_read_items(TreeModel *tree, const QModelIndex &index)
@@ -219,6 +269,83 @@ QVector<int> tab_widget_item::util_read_items(TreeModel *tree, const QModelIndex
         item_list[list_ind] = item_val;
     }
     return item_list;
+}
+
+QString tab_widget_item::util_consume_int(long long val, bool turn_100)
+{
+    Q_ASSERT(val >= 0);
+    // trun_100: if returned value > 100, then the space is not enough for many labels; we need to truncate them.
+    // define headers
+    long long h_k = 1000;
+    long long h_M = 1000 * 1000;
+    long long h_G = 1000 * 1000 * 1000;
+    long long h_T = 1000LL * 1000LL * 1000LL * 1000LL;
+    const QVector<long long> h_vec = { h_k, h_M, h_G, h_T };
+    const QVector<QString> h_str = { "k", "M", "G" , "T"};
+    // actual code
+    if (val == 0)
+        return QString();
+    else if (val < h_k)
+        return QVariant(val).toString();
+    else
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            if (val < 1000 * h_vec.at(i))
+            {
+                const long long &h = h_vec.at(i);
+                const QString &s = h_str.at(i);
+                if (val % h == 0)
+                    return QVariant(val / h).toString() + s;
+                else if (turn_100)
+                    if (val / h > 100)
+                        return QVariant(val / h).toString() + "." + s;
+                return QVariant(val / h).toString() + "."
+                        + QVariant((val % h) / (h / 10)).toString() + s;
+            }
+        }
+        return "overflow";
+    }
+}
+
+void tab_widget_item::util_list_minus(QVector<long long> &vec_1, const QVector<int> &vec_2)
+{
+    // vec_1 = vec_1 - vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] -= vec_2[i];
+}
+
+void tab_widget_item::util_list_minus(QVector<long long> &vec_1, const QVector<long long> &vec_2)
+{
+    // vec_1 = vec_1 - vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] -= vec_2[i];
+}
+
+void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2)
+{
+    // vec_1 = vec_1 + vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i];
+}
+
+void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2, const int &fact)
+{
+    // vec_1 = vec_1 + vec_2 * fact
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i] * fact;
+}
+
+void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<long long> &vec_2)
+{
+    // vec_1 = vec_1 + vec_2
+    Q_ASSERT(vec_1.size() == vec_2.size());
+    for (int i = 0; i < vec_1.size(); ++i)
+        vec_1[i] += vec_2[i];
 }
 
 
