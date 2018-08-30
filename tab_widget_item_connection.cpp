@@ -1185,20 +1185,6 @@ void tab_widget_item::event_on_date_changed(bool init)
     // judgement: final date of the event
     // it is aquired to remove widgets
     // if not, the hidden widgets will still use some space, causing the first visible widget shift to right
-    /*
-    for (int id = 0; id < event_sorted_events.size(); ++id)
-    {
-        if (event_data_date.value(event_sorted_events.at(id)).at(1) < date)
-        {
-            if (event_upper_follow.at(id)->isChecked()) event_upper_follow.at(id)->setChecked(false);
-            event_upper_vec.at(id)->setVisible(false);
-        }
-        else
-        {
-            event_upper_vec.at(id)->setVisible(true);
-        }
-    }
-    */
     for (auto i : event_upper_vec)
         event_upper_layout->removeWidget(i);
     for (int id = 0; id < event_sorted_events.size(); ++id)
@@ -1302,6 +1288,8 @@ void tab_widget_item::month_reset()
             spin.at(i)->setMinimum(0);
             spin.at(i)->setMaximum(30);
             layout->addWidget(spin.at(i), 1, i, Qt::AlignCenter);
+            // we connect month_on_spin_to_zero first, if spin down to zero, the item figure above will be set to gray
+            connect(spin.at(i), QOverload<int>::of(&QSpinBox::valueChanged), this, &tab_widget_item::month_on_spin_to_zero);
         }
         QGroupBox *group = new QGroupBox;
         group->setTitle(month_header_date.at(id).toString("yyyy-MM"));
@@ -1393,7 +1381,10 @@ void tab_widget_item::month_refresh()
     // 4. write to widgets
     for (int id = 0; id < month_header_date.size(); ++id)
         for (int i = 0; i < 3; ++i)
+        {
             month_widget_spin.at(id).at(i)->setValue(month_user_data.at(id).at(i));
+            month_widget_spin.at(id).at(i)->valueChanged(month_user_data.at(id).at(i));
+        }
 
     // 5. connect those objects to slots
     for (int id = 0; id < month_header_date.size(); ++id)
@@ -1427,6 +1418,31 @@ void tab_widget_item::month_on_object_responsed()
     }
     qDebug() << month_user_expect;
     emit signal_user_month_data_changed();
+}
+
+void tab_widget_item::month_on_spin_to_zero()
+{
+    // 1. search which spin it is
+    QSpinBox *spin = qobject_cast<QSpinBox*>(sender());
+    int spin_id = -1; // date-id
+    int spin_item = -1; // which item of the current date-id
+    for (int id = 0; id < month_header_date.size(); ++id)
+    {
+        int item = month_widget_spin.at(id).indexOf(spin);
+        if (item != -1)
+        {
+            spin_id = id;
+            spin_item = item;
+            break;
+        }
+    }
+    Q_ASSERT((spin_id != -1) && (spin_item != -1));
+
+    // 2. if zero, disable the above figure, else enable
+    if (spin->value() == 0)
+        month_widget_figure.at(spin_id).at(spin_item)->setEnabled(false);
+    else
+        month_widget_figure.at(spin_id).at(spin_item)->setEnabled(true);
 }
 
 void tab_widget_item::month_on_spin_changed()

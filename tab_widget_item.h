@@ -153,6 +153,7 @@ private:
     void month_refresh();
     void month_on_object_responsed();
 private slots:
+    void month_on_spin_to_zero();
     void month_on_spin_changed();
     void month_on_date_changed();
     void month_on_date_changed(bool init);
