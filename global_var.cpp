@@ -12,6 +12,7 @@ QVector<QString> GLOB::LIST_ITEM_GOLD;
 QVector<QString> GLOB::LIST_ITEM_EVENT;
 QVector<QString> GLOB::LIST_ITEM_MISC;
 QVector<QString> GLOB::LIST_ITEM;
+QVector<QVector<QString>> GLOB::LIST_CATEGORY;
 QHash<QString, int> GLOB::MAP_ITEM_INDEX;
 QHash<QString, QPixmap> GLOB::MAP_ITEM;
 QHash<QString, QPixmap> GLOB::MAP_CARD;
@@ -267,6 +268,12 @@ void GLOB::MAP_INIT()
 		}
 	}
 	delete it;
+    // LIST_CATEGORY - used by tab_item, event items not included, 9 categories
+    LIST_CATEGORY = QVector<QVector<QString>>{
+        LIST_ITEM_BRONZE, LIST_ITEM_SILVER, LIST_ITEM_GOLD, LIST_ITEM_GEM_SHINING,
+        LIST_ITEM_GEM_MAGIC, LIST_ITEM_GEM_SECRET, LIST_ITEM_PIECE_SILVER,
+        LIST_ITEM_PIECE_GOLD, LIST_ITEM_MISC
+    };
 	// MAP_CLASS
 	MAP_CLASS =
 	{

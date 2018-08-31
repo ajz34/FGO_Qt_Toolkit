@@ -21,7 +21,7 @@ void tab_widget_item::main_set_layout()
     event_widget = new QWidget;
     month_widget = new QWidget;
     for (int i = 0; i < 9; ++i)
-        category_widget[i] = new QWidget;
+        category_tables[i] = new QTableView;
 
     main_tab->tabBar()->setStyle(new CustomTabStyle);
     main_tab->addTab(filter_widget, tr("Filter"));
@@ -34,7 +34,7 @@ void tab_widget_item::main_set_layout()
     };
     for (int i = 0; i < 9; ++i)
     {
-        main_tab->addTab(category_widget.at(i), category_tab_name.at(i));
+        main_tab->addTab(category_tables.at(i), category_tab_name.at(i));
     }
 
     auto main_layout = new QGridLayout;
@@ -45,6 +45,7 @@ void tab_widget_item::main_set_layout()
     filter_set_layout();
     event_set_layout();
     month_set_layout();
+    category_set_layout();
 }
 
 void tab_widget_item::filter_set_layout()
@@ -253,6 +254,68 @@ void tab_widget_item::month_set_layout()
     month_widget->setLayout(month_main_layout);
 }
 
+void tab_widget_item::category_set_layout()
+{
+    // 1. initialize
+    // this part of initialization is not the same as most former ones,
+    // since almost all widgets should be assigned properly
+    // id refers to tab id
+    QStringList category_header{
+        tr("Icon"), tr("Consume"), tr("Obtain"), tr("Surplus"), tr("Event"), tr("Month")
+    };
+    QStringList category_header_no_month{
+        tr("Icon"), tr("Consume"), tr("Obtain"), tr("Surplus"), tr("Event")
+    };
+    for (int id = 0; id < 9; ++id)
+    {
+        category_models[id] = new QStandardItemModel;
+        if (id < 2) category_models.at(id)->setHorizontalHeaderLabels(category_header);
+        else category_models.at(id)->setHorizontalHeaderLabels(category_header_no_month);
+        category_tables.at(id)->setModel(category_models.at(id));
+        category_tables.at(id)->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        category_tables.at(id)->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
+    for (int id = 0; id < 9; ++id)
+    {
+        for (int n_item = 0; n_item < GLOB::LIST_CATEGORY.at(id).size(); ++n_item)
+        {
+            // setup category_map_item
+            int n_item_index = GLOB::MAP_ITEM_INDEX.value(GLOB::LIST_CATEGORY.at(id).at(n_item), -1);
+            Q_ASSERT(n_item_index != -1);
+            category_map_item[n_item_index] = QVector<int>{id, n_item};
+            // set button
+            auto button = new QRightClickPushButton(category_tables.at(id));
+            category_icons[id].push_back(button);
+            button->setIcon(GLOB::MAP_ITEM.value(GLOB::LIST_ITEM.at(n_item_index)));
+            button->setIconSize(QSize(66, 72));
+            button->setFixedSize(QSize(66, 72));
+            // set item
+            // we need to first assign anything to model,
+            // only then button can be assigned to the table
+            {
+                auto *item = new QStandardItem;
+                item->setData("", Qt::DisplayRole);
+                item->setEditable(false);
+                category_models.at(id)->setItem(n_item, 0, item);
+            }
+            // set obtain item
+            {
+                auto *item = new QStandardItem;
+                item->setData(0, Qt::EditRole);
+                item->setEditable(true);
+                category_models.at(id)->setItem(n_item, 2, item);
+            }
+            // assign button to table
+            category_tables.at(id)->setIndexWidget(category_models.at(id)->index(n_item, 0), button);
+        }
+        category_tables.at(id)->resizeColumnsToContents();
+        category_tables.at(id)->resizeRowsToContents();
+        // connect model to surplus process
+        // however, I just recalculate all items on data changed
+        connect(category_models.at(id), &QStandardItemModel::dataChanged, this, &tab_widget_item::category_slot_obtain_data_changed, Qt::QueuedConnection);
+    }
+}
+
 //--- Utility
 
 QVector<int> tab_widget_item::util_read_items(TreeModel *tree, const QModelIndex &index)
@@ -348,7 +411,21 @@ void tab_widget_item::util_list_plus(QVector<long long> &vec_1, const QVector<lo
         vec_1[i] += vec_2[i];
 }
 
-
+QString tab_widget_item::util_consume_splited(const long long &val)
+{
+    QString ret = "";
+    if (val == 0) return ret;
+    long long value = val;
+    while (value >= 1000)
+    {
+        char s[4];
+        sprintf(s, "%03d", int(value % 1000LL));
+        ret = "," + QString(s) + ret;
+        value /= 1000;
+    }
+    ret = QVariant(value).toString() + ret;
+    return ret;
+}
 
 
 

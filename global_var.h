@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifdef WIN32
 // character in chinese can't display in visual studio
 // if Qt environment, possibly you can delete this
@@ -24,6 +24,7 @@ namespace GLOB {
 	extern QVector<QString> LIST_ITEM_EVENT;
 	extern QVector<QString> LIST_ITEM_MISC;
     extern QVector<QString> LIST_ITEM;
+    extern QVector<QVector<QString>> LIST_CATEGORY;
     extern QHash<QString, int> MAP_ITEM_INDEX;
     extern QHash<QString, QPixmap> MAP_ITEM;
 	extern QHash<QString, QPixmap> MAP_CARD;

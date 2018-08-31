@@ -59,6 +59,7 @@ private:
     QStandardItemModel *filter_upper_model = nullptr;
     QStandardItemModel *filter_lower_model = nullptr;
     QSplitter *filter_split_widget = nullptr;
+    QVector<long long> filter_user_expect{}; // used in later subtabs
 private:
     void filter_set_connection();
 private:
@@ -165,7 +166,21 @@ signals:
     // [3:6] gem: shining, magic, secret
     // [6:9] piece, monument, misc
 private:
-    QVector<QWidget*> category_widget = QVector<QWidget*>(9, nullptr);
+    void category_set_layout();
+    QVector<QTableView*> category_tables = QVector<QTableView*>(9, nullptr); // 9
+    QVector<QStandardItemModel*> category_models = QVector<QStandardItemModel*>(9, nullptr); // 9
+    QVector<QVector<QRightClickPushButton*>> category_icons = QVector<QVector<QRightClickPushButton*>>(9, {}); // items <-> 9 * n_item
+    QHash<int, QVector<int>> category_map_item{}; // items <-> 9 * n_item
+private:
+    void category_set_connection();
+private slots:
+    void category_slot_database_changed();
+    void category_slot_servant_data_changed();
+    void category_slot_event_data_changed();
+    void category_slot_month_data_changed();
+    void category_slot_obtain_data_changed(const QModelIndex &topLeft);
+    void category_slot_surplus_process();
+
 
     //--- Utility (defined in layout)
 public:
@@ -176,6 +191,7 @@ public:
     void util_list_plus(QVector<long long> &vec_1, const QVector<int> &vec_2, const int &fact);
     void util_list_plus(QVector<long long> &vec_1, const QVector<long long> &vec_2);
     QString util_consume_int(long long val, bool trun_100);
+    QString util_consume_splited(const long long &val);
 
     //--- Central Connection
 signals:
