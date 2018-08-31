@@ -38,6 +38,14 @@ private:
         "exchange_item",
         "event_figure",
     };
+    const QVector<QString> INI_SETTING_FILE_DEFAULT{
+        "FGO_Qt_Toolkit_Database/servant_info",
+        "FGO_Qt_Toolkit_Database/servant_icon_present",
+        "",
+        "FGO_Qt_Toolkit_Database/item/event_item.xml",
+        "FGO_Qt_Toolkit_Database/item/exchange_item.xml",
+        "FGO_Qt_Toolkit_Database/event_figure",
+    };
 
     //--- frequently used data
     QVector<QString> ini_setting_data{};

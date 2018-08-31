@@ -28,10 +28,16 @@ void tab_widget_item::from_parent_database_changed(
 void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
 {
     user_data = user_dat;
-    category_slot_database_changed();
+    // 1. reinitialize expect vectors in case these are at the right dimension and expected behavior
+    filter_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
+    event_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
+    month_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
+    // additional: filter_map_mask should be initialized first
+    // filter_map_mask = QMap<int, bool>{};
     filter_reset_data();
     event_refresh();
     month_refresh();
+    category_slot_database_changed();
 }
 
 void tab_widget_item::from_parent_user_servant_data_loaded(TreeModel *user_dat)
@@ -333,8 +339,19 @@ void tab_widget_item::filter_refresh_table()
     // 2. apply widgets
     for (int id : filter_map_mask.keys())
     {
-        if (filter_map_mask.value(id)) filter_upper_layout->addWidget(filter_widget_button.value(id));
-        else filter_lower_layout->addWidget(filter_widget_button.value(id));
+        if (filter_map_mask.value(id))
+        {
+            filter_upper_layout->addWidget(filter_widget_button.value(id));
+            filter_widget_button.value(id)->setVisible(true);
+            // make some trival works to apply layout;
+            // or widgets may stacked at (0, 0) location of parent widget,
+            // if you do not change the size of parent widget
+        }
+        else
+        {
+            filter_lower_layout->addWidget(filter_widget_button.value(id));
+            filter_widget_button.value(id)->setVisible(true);
+        }
     }
     // 3. apply model
     QVector<int> upper_rows_to_delete;
@@ -762,7 +779,7 @@ void tab_widget_item::event_refresh()
 {
     // 1. reset memory
     event_user_type = QHash<QString, QVector<int>>{};
-    event_user_expect = QVector<long long>{};
+    event_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
     for (QString s : event_sorted_events)
     {
         event_user_type[s] = QVector<int>{0, 0, 0};
@@ -1570,12 +1587,17 @@ void tab_widget_item::category_set_connection()
 
 void tab_widget_item::category_slot_database_changed()
 {
+    /*
     // 1. reinitialize expect vectors in case these are at the right dimension and expected behavior
     filter_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
     event_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
     month_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
+    // additional: filter_map_mask should be initialized first
+    filter_map_mask = QMap<int, bool>{};
+    */
 
     // 2. check every item in user_data to make sure all items are listed in user_data
+    // if exists, write to table
     {
         QModelIndex index_root = user_data->index(0, 0);
         Q_ASSERT(index_root.isValid());
@@ -1590,19 +1612,35 @@ void tab_widget_item::category_slot_database_changed()
         Q_ASSERT(index_obtain.isValid());
         for (int item_id = 0; item_id < GLOB::LIST_ITEM.size(); ++item_id)
         {
-            if (!user_data->item_find(GLOB::LIST_ITEM.at(item_id), index_obtain).isValid())
+            int id = -1, n_item = -1;
+            if (category_map_item.contains(item_id))
+            {
+                id = category_map_item.value(item_id).at(0);
+                n_item = category_map_item.value(item_id).at(1);
+            }
+            QModelIndex index_item = user_data->item_find(GLOB::LIST_ITEM.at(item_id), index_obtain);
+            qDebug() << index_item;
+            if (!index_item.isValid())
             {
                 int i = user_data->rowCount(index_obtain);
                 Q_ASSERT(user_data->insertRow(i, index_obtain));
                 Q_ASSERT(user_data->setData(user_data->index(i, 0, index_obtain), GLOB::LIST_ITEM.at(item_id)));
                 Q_ASSERT(user_data->setData(user_data->index(i, 1, index_obtain), 0));
                 user_data->setModified(true);
+                // write
+                if (id != -1)
+                    category_models.at(id)->item(n_item, 2)->setData(0, Qt::EditRole);
+            }
+            else if (id != -1)
+            {
+                category_models.at(id)->item(n_item, 2)->setData(
+                    user_data->data(index_item.siblingAtColumn(1), Qt::DisplayRole).toInt(), Qt::EditRole);
             }
         }
     }
 
     // 3. reinitialize table values
-    // category_slot_servant_data_changed();
+    category_slot_servant_data_changed();
     category_slot_event_data_changed();
     category_slot_month_data_changed();
 }
@@ -1749,7 +1787,7 @@ void tab_widget_item::category_slot_surplus_process()
             int item_id = GLOB::MAP_ITEM_INDEX.value(GLOB::LIST_CATEGORY.at(id).at(n_item), -1); // item index
             Q_ASSERT(item_id != -1);
             val_sur -= filter_user_expect.at(item_id); // consume
-            val_sur += category_models.at(id)->item(n_item, 2)->data().toInt(); // obtain
+            val_sur += category_models.at(id)->item(n_item, 2)->data(Qt::EditRole).toInt(); // obtain
             val_sur += event_user_expect.at(item_id); // event
             if (id <= 2) val_sur += month_user_expect.at(item_id); // month
             // assign to table

@@ -72,16 +72,19 @@ void MainWindow::menu_create_action()
 {
 	// new file
 	action_new = new QAction(tr("&New"), this);
+    action_new->setShortcut(QKeySequence::New);
 	action_new->setStatusTip(tr("Create a servant skill level document"));
 	connect(action_new, &QAction::triggered, this, &MainWindow::new_file);
 
     // open file
     action_open = new QAction(tr("&Open"), this);
+    action_open->setShortcut(QKeySequence::Open);
     action_open->setStatusTip(tr("Open your servant skill level document"));
 	connect(action_open, &QAction::triggered, this, &MainWindow::open);
 
 	// save file
 	action_save = new QAction(tr("&Save"), this);
+    action_save->setShortcut(QKeySequence::Save);
 	action_save->setStatusTip(tr("Save your servant skill level document"));
 	connect(action_save, &QAction::triggered, this, &MainWindow::save);
 
@@ -111,6 +114,7 @@ void MainWindow::menu_create_action()
 
     // exit
     action_exit = new QAction(tr("&Exit"), this);
+    action_exit->setShortcut(QKeySequence::Quit);
     action_exit->setStatusTip(tr("Exit program"));
     connect(action_exit, &QAction::triggered, this, &QMainWindow::close);
 
