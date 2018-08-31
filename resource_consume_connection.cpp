@@ -750,7 +750,6 @@ void resource_consume::finalize()
     // if data exists in user_data, we need to delete that first, then append data
     QModelIndex index_user_id = user_data->item_find("servant_" + id_full, user_data->index(0, 0));
     int int_about_to_delete = -1;
-    qDebug() << "check 0";
     if (index_user_id.isValid())
     {
         for (int i = 0; i < user_data->rowCount(user_data->index(0, 0)); ++i)
@@ -763,13 +762,11 @@ void resource_consume::finalize()
         }
         user_data->removeRow(int_about_to_delete, user_data->index(0, 0));
     }
-    qDebug() << "check 1";
     int int_about_to_append = user_data->rowCount(user_data->index(0, 0));
     Q_ASSERT(user_data->insertRow(int_about_to_append, user_data->index(0, 0)));
     QModelIndex index_top = user_data->index(int_about_to_append, 0, user_data->index(0, 0));
     user_data->setData(index_top, QString("servant_" + id_full));
     //   <status>
-    qDebug() << "check 2";
     Q_ASSERT(user_data->insertRow(0, index_top));
     QModelIndex index_status = user_data->index(0, 0, index_top);
     user_data->setData(index_status, QString("status"));
@@ -782,7 +779,6 @@ void resource_consume::finalize()
     user_data->setData(user_data->index(2, 1, index_status), user_existance);
     //   </status>
     //   <actual>
-    qDebug() << "check 3";
     Q_ASSERT(user_data->insertRow(1, index_top));
     QModelIndex index_actual = user_data->index(1, 0, index_top);
     user_data->setData(index_actual, QString("actual"));
@@ -799,7 +795,6 @@ void resource_consume::finalize()
     user_data->setData(user_data->index(4, 1, index_actual), user_actual_skill_3);
     //   </actual>
     //   <ideal>
-    qDebug() << "check 4";
     Q_ASSERT(user_data->insertRow(2, index_top));
     QModelIndex index_ideal = user_data->index(2, 0, index_top);
     user_data->setData(index_ideal, QString("ideal"));
@@ -816,7 +811,6 @@ void resource_consume::finalize()
     user_data->setData(user_data->index(4, 1, index_ideal), user_ideal_skill_3);
     //   </ideal>
     //   <costume>
-    qDebug() << "check 5";
     if (user_costume.size() > 0)
     {
         Q_ASSERT(user_data->insertRow(3, index_top));
@@ -835,33 +829,26 @@ void resource_consume::finalize()
     // 3. calculate total consume
     list_user_total_consume = QVector<int>(GLOB::LIST_ITEM.size());
     if (user_servant_id != 1) list_plus(list_user_total_consume, list_user_ascension_and_lvup_consume);
-    qDebug() << "check 51";
     for (auto vec : list_user_skill_consume)
         list_plus(list_user_total_consume, vec);
-    qDebug() << "check 52";
     for (int i = 0; i < user_costume.size(); ++i)
     {
         if (user_costume.at(i) > 0)
             list_plus(list_user_total_consume, database_costume_consume.at(i));
     }
-    qDebug() << "check 53";
     list_user_total_consume[GLOB::MAP_ITEM_INDEX.value("QP")] += user_lvup_QP;
     list_user_total_consume[GLOB::MAP_ITEM_INDEX.value("Exp")] += user_lvup_Exp;
-    qDebug() << "check 54";
     if (user_costume.size() <= 0)
         Q_ASSERT(user_data->insertRow(3, index_top));
     else
         Q_ASSERT(user_data->insertRow(4, index_top));
-    qDebug() << "check 55";
     QModelIndex index_total = ((user_costume.size() <= 0) ? user_data->index(3, 0, index_top) : user_data->index(4, 0, index_top));
-    qDebug() << "check 56";
     user_data->setData(index_total, QString("total"));
     int cur_total_sub_index = -1;
     for (int i = 0; i < list_user_total_consume.size(); ++i)
     {
         if (list_user_total_consume.at(i) != 0)
         {
-            qDebug() << "check 57";
             cur_total_sub_index += 1;
             Q_ASSERT(user_data->insertRow(cur_total_sub_index, index_total));
             user_data->setData(user_data->index(cur_total_sub_index, 0, index_total), GLOB::LIST_ITEM.at(i));

@@ -111,7 +111,6 @@ void GLOB::MAP_INIT()
             MAP_ITEM[item] = QPixmap(path_root + item + ".jpg");
         }
     }
-    qDebug() << LIST_ITEM;
 	// MAP_ITEM_GEM_MAGIC
     /*
 	it = new QDirIterator(":/item_icon/images/item_icon/gem_magic", QDirIterator::Subdirectories);

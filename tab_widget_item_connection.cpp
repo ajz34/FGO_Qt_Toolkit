@@ -37,7 +37,6 @@ void tab_widget_item::from_parent_user_data_loaded(TreeModel *user_dat)
 void tab_widget_item::from_parent_user_servant_data_loaded(TreeModel *user_dat)
 {
     user_data = user_dat;
-    category_slot_servant_data_changed();
     filter_reset_data();
 }
 
@@ -643,7 +642,6 @@ void tab_widget_item::event_reset()
             }
         }
     }
-    qDebug() << event_data_type;
 
     // 2. sort events by their starting date
     {
@@ -667,12 +665,10 @@ void tab_widget_item::event_reset()
             event_sorted_events.insert(insert_key, it.key());
             ++it;
         }
-        qDebug() << event_sorted_events;
         for (int i = 0; i < event_sorted_events.size(); ++i)
         {
             event_seq[event_sorted_events.at(i)] = i;
         }
-        qDebug() << event_seq;
     }
 
     // 3. prepare connection
@@ -1201,9 +1197,11 @@ void tab_widget_item::event_on_date_changed(bool init)
         }
         else
         {
+            event_upper_layout->addWidget(event_upper_vec.at(id));
+            // we need to first re-parent widget to layout, or widget will be saved in the scroll area
+            // so first set layout, then enable that
             event_upper_vec.at(id)->setEnabled(true);
             event_upper_vec.at(id)->setVisible(true);
-            event_upper_layout->addWidget(event_upper_vec.at(id));
         }
     }
 
@@ -1272,7 +1270,6 @@ void tab_widget_item::month_reset()
             month_header_date.push_back(date);
             month_data_data.push_back(items);
         }
-        qDebug() << month_data_data;
     }
 
     // 4. assign widgets
@@ -1420,7 +1417,6 @@ void tab_widget_item::month_on_object_responsed()
             }
         }
     }
-    qDebug() << month_user_expect;
     emit signal_user_month_data_changed();
 }
 
@@ -1492,7 +1488,6 @@ void tab_widget_item::month_on_spin_changed()
     // if no entry of the current date, create one
     QModelIndex index_month = user_data->item_find("month", user_data->index(0, 0));
     Q_ASSERT(index_month.isValid());
-    qDebug() << month_header_str;
     QModelIndex index_date = user_data->item_find(month_header_str.at(spin_id), index_month);
     if (!index_date.isValid())
     {
@@ -1555,9 +1550,11 @@ void tab_widget_item::month_on_date_changed(bool init)
         }
         else
         {
+            month_widget_layout->addWidget(month_widget_group.at(id));
+            // we need to first re-parent widget to layout, or widget will be saved in the scroll area
+            // so first set layout, then enable that
             month_widget_group.at(id)->setVisible(true);
             month_widget_group.at(id)->setEnabled(true);
-            month_widget_layout->addWidget(month_widget_group.at(id));
         }
     }
 }
@@ -1605,7 +1602,7 @@ void tab_widget_item::category_slot_database_changed()
     }
 
     // 3. reinitialize table values
-    category_slot_servant_data_changed();
+    // category_slot_servant_data_changed();
     category_slot_event_data_changed();
     category_slot_month_data_changed();
 }
@@ -1730,7 +1727,6 @@ void tab_widget_item::category_slot_obtain_data_changed(const QModelIndex &topLe
     {
         for (int n_item = 0; n_item < category_models.at(id)->rowCount(); ++n_item)
         {
-            qDebug() << GLOB::LIST_CATEGORY.at(id).at(n_item);
             QModelIndex index_item = user_data->item_find(GLOB::LIST_CATEGORY.at(id).at(n_item), index_obtain);
             Q_ASSERT(index_item.isValid());
             user_data->setData(index_item.siblingAtColumn(1), category_models.at(id)->item(n_item, 2)->data(Qt::EditRole).toInt());

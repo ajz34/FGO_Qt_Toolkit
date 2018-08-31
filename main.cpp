@@ -1,4 +1,4 @@
-#ifdef WIN32
+﻿#ifdef WIN32
 // character in chinese can't display in visual studio
 // if Qt environment, possibly you can delete this
 // this line may be included in all header files
@@ -17,10 +17,7 @@ int main(int argc, char *argv[])
 	const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");  // settings of database
 	QSettings settings(QSettings::NativeFormat, QSettings::UserScope,
 		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
-	QString lang = settings.value("Language", "").toString();
-
-	qDebug() << lang;
-	qDebug() << (lang == QString("jp"));
+    QString lang = settings.value("Language", "").toString();
 
 	QTranslator translator;
 	if (lang == QString("jp"))
@@ -29,7 +26,6 @@ int main(int argc, char *argv[])
         translator.load("FGO_Qt_Toolkit_zh");
 	else if (lang == QString("zh_tc"))
         translator.load("FGO_Qt_Toolkit_ja");
-    qDebug() << translator.isEmpty();
 	a.installTranslator(&translator);
 
     // set scroll line

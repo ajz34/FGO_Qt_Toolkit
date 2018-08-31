@@ -133,7 +133,6 @@ void resource_consume::set_lower_skill_widget()
     auto left_skill_widget = new QWidget;
     left_skill_widget->setLayout(left_skill_layout_comb);
     left_skill_widget->setFixedSize(left_skill_widget->sizeHint());
-    qDebug() << "left" << left_skill_widget->sizeHint();
 
     left_skill_vector_icon.push_back(left_skill_icon);
     left_skill_vector_dial.push_back(left_skill_dial);
@@ -226,7 +225,6 @@ void resource_consume::set_lower_right_widget()
     auto right_skill_widget = new QWidget;
     right_skill_widget->setLayout(right_skill_layout_comb);
     right_skill_widget->setFixedSize(right_skill_widget->sizeHint());
-    qDebug() << right_skill_widget->sizeHint();
 
     right_skill_vector_icon.push_back(right_skill_icon);
     right_skill_vector_dial.push_back(right_skill_dial);
@@ -362,7 +360,6 @@ void resource_consume::set_middle_left_widget()
     left_ascension_widget = new QWidget;
     left_ascension_widget->setLayout(left_ascension_layout_comb);
     left_ascension_widget->setFixedSize(QSize(444, 172));
-    qDebug() << "left ascension" << left_ascension_widget->size();
 }
 
 void resource_consume::set_middle_right_widget()
@@ -452,7 +449,6 @@ void resource_consume::set_middle_right_widget()
     right_ascension_widget = new QWidget;
     right_ascension_widget->setLayout(right_ascension_layout_comb);
     right_ascension_widget->setFixedSize(QSize(522, 172));
-    qDebug() << "right ascension" << right_ascension_widget->size();
 }
 
 void resource_consume::set_left_information_widget()
@@ -518,7 +514,6 @@ void resource_consume::set_left_information_widget()
     left_info_widget = new QWidget;
     left_info_widget->setLayout(left_info_main_layout);
     left_info_widget->setFixedWidth(444);
-    qDebug() << "left information" << left_info_widget->size();
 }
 
 void resource_consume::set_right_costume_widget()
@@ -583,7 +578,6 @@ void resource_consume::set_right_costume_widget()
     right_costume_widget = new QWidget;
     right_costume_widget->setLayout(right_costume_layout_comb);
     right_costume_widget->setFixedWidth(right_costume_widget->sizeHint().width());
-    qDebug() << "right costume" << right_costume_widget->size();
 }
 
 void resource_consume::set_layout()
