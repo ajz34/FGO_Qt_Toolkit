@@ -191,7 +191,7 @@ void tab_widget_servant::table_original_table_refresh()
 
             // name, 2
 			{
-				QModelIndex item_name = model->item_find("name_en", item_basic);
+				QModelIndex item_name = model->item_find("name_sc", item_basic);
 				if (item_name.isValid())
 				{
 					QString val = model->data(item_name.siblingAtColumn(1), Qt::DisplayRole).toString();

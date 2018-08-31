@@ -1,4 +1,4 @@
-#include "database_dialog.h"
+﻿#include "database_dialog.h"
 
 database_dialog::database_dialog(QWidget *parent)
 	: QDialog(parent)
@@ -6,7 +6,7 @@ database_dialog::database_dialog(QWidget *parent)
 	ini_setting_data = QVector<QString>{};
 
 	wiki_xml_database_label = new QLabel;
-	wiki_xml_database_label->setText(tr("fate.wiki XML Database:"));
+    wiki_xml_database_label->setText(tr("fgo.wiki XML Database:"));
 	wiki_xml_database_textedit = new QLineEdit;
     wiki_xml_database_button = new QPushButton;
     wiki_xml_database_button->setText(tr("Dir"));
@@ -109,7 +109,7 @@ void database_dialog::dir_button_clicked()
     else if (button == servant_icon_present_button)
     {
         guess_string = servant_icon_present_textedit->text();
-        show_string = tr("Servant Icon Path... (show on tab table)");
+        show_string = tr("Servant Icon Path...");
     }
     else if (button == event_figure_button)
     {

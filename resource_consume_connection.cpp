@@ -40,7 +40,7 @@ void resource_consume::init_database_display()
     if (index_basic.isValid())
     {
         // name
-        QModelIndex index_servant_name = model->item_find("name_en", index_basic);
+        QModelIndex index_servant_name = model->item_find("name_sc", index_basic);
         if (index_servant_name.isValid())
             left_info_servant_name->setText(model->data(index_servant_name.siblingAtColumn(1), Qt::DisplayRole).toString());
 
