@@ -29,7 +29,7 @@ private:
 
     //--- HAND MADE PARAMETERS
     const int SERVANT_ICON_NUMBER = 500;
-    const QString INI_SETTING_FILE_PATH = QString("fgo_helper_ajz_0_1");
+    const QString INI_SETTING_FILE_PATH = QString("FGO_Qt_Toolkit");
     const QVector<QString> INI_SETTING_FILE_INDEX{
         "wiki_xml_path",
         "servant_icon_present",
@@ -82,6 +82,7 @@ private:
 	QMenu *menu_about = nullptr;
     void menu_create_action();
     void set_menu();
+    void about();
 
     //--- N. layout
 	QGridLayout *main_layout = nullptr;

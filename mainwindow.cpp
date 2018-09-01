@@ -121,10 +121,23 @@ void MainWindow::menu_create_action()
     // about
     action_about = new QAction(tr("About &Program"), this);
     action_about->setStatusTip(tr("About this program"));
+    connect(action_about, &QAction::triggered, this, &MainWindow::about);
 
     // bibliography
     action_bibliography = new QAction(tr("&Bibliography"), this);
 	action_bibliography->setStatusTip(tr("Bibliography, reference and acknowledge"));
+}
+
+void MainWindow::about()
+{
+    QMessageBox::information(this, "FGO Qt Toolkit",
+        "This program is distributed at GitHub: \n"
+        "https://github.com/ajz34/FGO_Qt_Toolkit \n\n"
+        "The database of program can be founded at \n"
+        "https://github.com/ajz34/FGO_Qt_Toolkit_Database \n\n"
+        "This program is licensed by CC BY-NC-SA 4.0. \n"
+        "Current version: 1.0, Schrodinger.",
+        QMessageBox::Ok);
 }
 
 void MainWindow::action_japanese_slot()
@@ -196,7 +209,7 @@ void MainWindow::ini_setting_read()
 		INI_SETTING_FILE_PATH, INI_SETTING_FILE_PATH);
 	for (int i = 0; i < INI_SETTING_FILE_INDEX.size(); i++)
 	{
-		ini_setting_data.push_back(settings.value(INI_SETTING_FILE_INDEX[i], "").toString());
+		ini_setting_data.push_back(settings.value(INI_SETTING_FILE_INDEX[i], INI_SETTING_FILE_DEFAULT[i]).toString());
 	}
 	// apply setting
     // the reason for the following initialization process is
