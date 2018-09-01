@@ -126,18 +126,37 @@ void MainWindow::menu_create_action()
     // bibliography
     action_bibliography = new QAction(tr("&Bibliography"), this);
 	action_bibliography->setStatusTip(tr("Bibliography, reference and acknowledge"));
+    connect(action_bibliography, &QAction::triggered, this, &MainWindow::bibliography);
 }
 
 void MainWindow::about()
 {
-    QMessageBox::information(this, "FGO Qt Toolkit",
-        "This program is distributed at GitHub: \n"
-        "https://github.com/ajz34/FGO_Qt_Toolkit \n\n"
-        "The database of program can be founded at \n"
-        "https://github.com/ajz34/FGO_Qt_Toolkit_Database \n\n"
-        "This program is licensed by CC BY-NC-SA 4.0. \n"
-        "Current version: 1.0, Schrodinger.",
-        QMessageBox::Ok);
+    // to add hyperlink into messagebox,
+    // https://www.qtcentre.org/threads/17365-Clickable-URL-in-QMessageBox
+    QMessageBox msg(this);
+    msg.setTextFormat(Qt::RichText);
+    msg.setIcon(QMessageBox::Information);
+    msg.setText(
+        "This program is distributed at GitHub: <br/>"
+        "<a href='https://github.com/ajz34/FGO_Qt_Toolkit'>https://github.com/ajz34/FGO_Qt_Toolkit</a> <br/><br/>"
+        "The database of program can be founded at <br/>"
+        "<a href='https://github.com/ajz34/FGO_Qt_Toolkit_Database'>https://github.com/ajz34/FGO_Qt_Toolkit_Database</a> <br/><br/>"
+        "This program is licensed by CC BY-NC-SA 4.0. <br/>"
+        "Current version: 1.0, Schrodinger.");
+    msg.exec();
+}
+
+void MainWindow::bibliography()
+{
+    QMessageBox msg(this);
+    msg.setTextFormat(Qt::RichText);
+    msg.setIcon(QMessageBox::Information);
+    msg.setText(
+        "For program code, refer to: <br/>"
+        "<a href='https://github.com/ajz34/FGO_Qt_Toolkit'>https://github.com/ajz34/FGO_Qt_Toolkit</a> <br/><br/>"
+        "For database source, refer to: <br/>"
+        "<a href='https://github.com/ajz34/FGO_Qt_Toolkit_Database'>https://github.com/ajz34/FGO_Qt_Toolkit_Database</a>");
+    msg.exec();
 }
 
 void MainWindow::action_japanese_slot()

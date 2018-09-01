@@ -83,6 +83,7 @@ private:
     void menu_create_action();
     void set_menu();
     void about();
+    void bibliography();
 
     //--- N. layout
 	QGridLayout *main_layout = nullptr;
