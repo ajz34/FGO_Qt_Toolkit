@@ -403,8 +403,10 @@ void tab_widget_item::filter_refresh_table()
     }
     filter_upper_table->resizeColumnsToContents();
     filter_upper_table->resizeRowsToContents();
+    filter_upper_table->sortByColumn(1, Qt::AscendingOrder); // sort by ID
     filter_lower_table->resizeColumnsToContents();
     filter_lower_table->resizeRowsToContents();
+    filter_lower_table->sortByColumn(1, Qt::AscendingOrder); // sort by ID
 
 }
 
@@ -478,8 +480,10 @@ void tab_widget_item::filter_interchange_table()
     }
     filter_upper_table->resizeColumnsToContents();
     filter_upper_table->resizeRowsToContents();
+    filter_upper_table->sortByColumn(1, Qt::AscendingOrder); // sort by ID
     filter_lower_table->resizeColumnsToContents();
     filter_lower_table->resizeRowsToContents();
+    filter_lower_table->sortByColumn(1, Qt::AscendingOrder); // sort by ID
     // 4. change check box status
     for (auto i : filter_priority_check)
         i->setChecked(false);
