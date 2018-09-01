@@ -152,9 +152,9 @@ void MainWindow::bibliography()
     msg.setTextFormat(Qt::RichText);
     msg.setIcon(QMessageBox::Information);
     msg.setText(
-        "For program code, refer to: <br/>"
+        "For program code, refer to README of: <br/>"
         "<a href='https://github.com/ajz34/FGO_Qt_Toolkit'>https://github.com/ajz34/FGO_Qt_Toolkit</a> <br/><br/>"
-        "For database source, refer to: <br/>"
+        "For database source, refer to README of: <br/>"
         "<a href='https://github.com/ajz34/FGO_Qt_Toolkit_Database'>https://github.com/ajz34/FGO_Qt_Toolkit_Database</a>");
     msg.exec();
 }
