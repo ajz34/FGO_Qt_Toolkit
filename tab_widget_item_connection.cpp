@@ -533,6 +533,7 @@ void tab_widget_item::filter_on_button_right_clicked()
     consume_widget->setAttribute(Qt::WA_DeleteOnClose);
     consume_widget->setFixedWidth(consume_widget->sizeHint().width());
     connect(this, &tab_widget_item::from_filter_change_user_data, consume_widget, &resource_consume::data_transin);
+    connect(consume_widget, &resource_consume::signal_user_servant_data_changed, this, &tab_widget_item::from_consume_user_data_changed);
     emit from_filter_change_user_data(
         ini_setting_data,
         &wiki_database,
@@ -540,7 +541,6 @@ void tab_widget_item::filter_on_button_right_clicked()
         id_number,
         user_data);
     consume_widget->exec();
-    emit signal_user_servant_data_changed(user_data);
 }
 
 // 2. event
@@ -777,6 +777,8 @@ void tab_widget_item::event_set_after_layout()
 
 void tab_widget_item::event_refresh()
 {
+    // RELEASE
+    bool debug_flag = false;
     // 1. reset memory
     event_user_type = QHash<QString, QVector<int>>{};
     event_user_expect = QVector<long long>(GLOB::LIST_ITEM.size(), 0);
@@ -879,7 +881,7 @@ void tab_widget_item::event_refresh()
         if (!index_date.isValid())
         {
             // create one here
-            Q_ASSERT(user_data->insertRow(user_data->rowCount(index_event), index_event));
+            debug_flag = user_data->insertRow(user_data->rowCount(index_event), index_event); Q_ASSERT(debug_flag);
             user_data->setData(user_data->index(user_data->rowCount(index_event) - 1, 0, index_event), "date");
             QModelIndex index_date = user_data->item_find("date", index_event);
             Q_ASSERT(index_date.isValid());
@@ -1067,7 +1069,7 @@ void tab_widget_item::event_on_follow_clicked()
         }
         else
         {
-            Q_ASSERT(user_data->rowCount(index_cur));
+            Q_ASSERT(user_data->rowCount(index_cur) == 3);
             user_data->setData(user_data->index(0, 1, index_cur), 1);
             user_data->setData(user_data->index(1, 1, index_cur), 0);
             user_data->setData(user_data->index(2, 1, index_cur), 0);
@@ -1184,6 +1186,9 @@ void tab_widget_item::event_on_date_changed()
 
 void tab_widget_item::event_on_date_changed(bool init)
 {
+    // RELEASE
+    bool debug_flag = false;
+
     // 0. first test whether "root->event->date" entry exists
     QModelIndex index_date = user_data->item_find("date",
                              user_data->item_find("event",
@@ -1194,7 +1199,7 @@ void tab_widget_item::event_on_date_changed(bool init)
     QDate date = event_date_widget->date();
     if (!user_data->data(index_date, Qt::DisplayRole).isValid() || !init)
     {
-        Q_ASSERT(user_data->setData(index_date.siblingAtColumn(1), date.toString("yyyy-MM-dd")));
+        debug_flag = user_data->setData(index_date.siblingAtColumn(1), date.toString("yyyy-MM-dd")); Q_ASSERT(debug_flag);
         user_data->setModified(true);
     }
 
@@ -1464,6 +1469,9 @@ void tab_widget_item::month_on_spin_to_zero()
 
 void tab_widget_item::month_on_spin_changed()
 {
+    // RELEASE
+    bool debug_flag = false;
+
     // 1. search which spin it is
     QSpinBox *spin = qobject_cast<QSpinBox*>(sender());
     int spin_id = -1; // date-id
@@ -1509,21 +1517,21 @@ void tab_widget_item::month_on_spin_changed()
     if (!index_date.isValid())
     {
         int i = user_data->rowCount(index_month);
-        Q_ASSERT(user_data->insertRow(i, index_month));
+        debug_flag = user_data->insertRow(i, index_month); Q_ASSERT(debug_flag);
         QModelIndex index_date = user_data->index(i, 0, index_month);
-        Q_ASSERT(user_data->setData(index_date, month_header_str.at(spin_id)));
-        Q_ASSERT(user_data->insertRows(0, 3, index_date));
+        debug_flag = user_data->setData(index_date, month_header_str.at(spin_id)); Q_ASSERT(debug_flag);
+        debug_flag = user_data->insertRows(0, 3, index_date); Q_ASSERT(debug_flag);
         for (int row = 0; row < 3; row++)
         {
-            Q_ASSERT(user_data->setData(user_data->index(row, 0, index_date), month_data_data.at(spin_id).at(row)));
-            Q_ASSERT(user_data->setData(user_data->index(row, 1, index_date), month_widget_spin.at(spin_id).at(row)->value()));
+            debug_flag = user_data->setData(user_data->index(row, 0, index_date), month_data_data.at(spin_id).at(row)); Q_ASSERT(debug_flag);
+            debug_flag = user_data->setData(user_data->index(row, 1, index_date), month_widget_spin.at(spin_id).at(row)->value()); Q_ASSERT(debug_flag);
         }
     }
     else
     {
         QModelIndex index_item = user_data->item_find(month_data_data.at(spin_id).at(spin_item), index_date);
         Q_ASSERT(index_item.isValid());
-        Q_ASSERT(user_data->setData(index_item.siblingAtColumn(1), spin->value()));
+        debug_flag = user_data->setData(index_item.siblingAtColumn(1), spin->value()); Q_ASSERT(debug_flag);
     }
     user_data->setModified(true);
 
@@ -1538,6 +1546,9 @@ void tab_widget_item::month_on_date_changed()
 
 void tab_widget_item::month_on_date_changed(bool init)
 {
+    // RELEASE
+    bool debug_flag = false;
+
     // 1. set value to user_data
     // if this process is called in user_data initialization, we skip this process
     // since user_data initialization process should have checked "root->month->date", we can assert here
@@ -1547,7 +1558,7 @@ void tab_widget_item::month_on_date_changed(bool init)
                                      user_data->item_find("month",
                                      user_data->index(0, 0)));
         Q_ASSERT(index_cur_date.isValid());
-        Q_ASSERT(user_data->setData(index_cur_date.siblingAtColumn(1), month_widget_date->date().toString("yyyy-MM-dd")));
+        debug_flag = user_data->setData(index_cur_date.siblingAtColumn(1), month_widget_date->date().toString("yyyy-MM-dd")); Q_ASSERT(debug_flag);
         user_data->setModified(true);
     }
 
@@ -1596,6 +1607,9 @@ void tab_widget_item::category_slot_database_changed()
     filter_map_mask = QMap<int, bool>{};
     */
 
+    // RELEASE
+    bool debug_flag = false;
+
     // 2. check every item in user_data to make sure all items are listed in user_data
     // if exists, write to table
     {
@@ -1604,8 +1618,8 @@ void tab_widget_item::category_slot_database_changed()
         if (!user_data->item_find("obtain", index_root).isValid())
         {
             int i = user_data->rowCount(index_root);
-            Q_ASSERT(user_data->insertRow(i, index_root));
-            Q_ASSERT(user_data->setData(user_data->index(i, 0, index_root), "obtain"));
+            debug_flag = user_data->insertRow(i, index_root); Q_ASSERT(debug_flag);
+            debug_flag = user_data->setData(user_data->index(i, 0, index_root), "obtain"); Q_ASSERT(debug_flag);
             user_data->setModified(true);
         }
         QModelIndex index_obtain = user_data->item_find("obtain", index_root);
@@ -1623,9 +1637,9 @@ void tab_widget_item::category_slot_database_changed()
             if (!index_item.isValid())
             {
                 int i = user_data->rowCount(index_obtain);
-                Q_ASSERT(user_data->insertRow(i, index_obtain));
-                Q_ASSERT(user_data->setData(user_data->index(i, 0, index_obtain), GLOB::LIST_ITEM.at(item_id)));
-                Q_ASSERT(user_data->setData(user_data->index(i, 1, index_obtain), 0));
+                debug_flag = user_data->insertRow(i, index_obtain); Q_ASSERT(debug_flag);
+                debug_flag = user_data->setData(user_data->index(i, 0, index_obtain), GLOB::LIST_ITEM.at(item_id)); Q_ASSERT(debug_flag);
+                debug_flag = user_data->setData(user_data->index(i, 1, index_obtain), 0); Q_ASSERT(debug_flag);
                 user_data->setModified(true);
                 // write
                 if (id != -1)

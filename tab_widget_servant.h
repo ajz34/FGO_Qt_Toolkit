@@ -129,4 +129,8 @@ public slots:
 		TreeModel* user_dat,
         QVector<QPixmap> *serv_img);
 	void from_parent_user_data_loaded(TreeModel *user_dat);
+    inline void from_consume_user_data_changed(TreeModel *user_dat)
+    {
+        emit signal_user_servant_data_changed(user_dat);
+    }
 };

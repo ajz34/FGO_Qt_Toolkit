@@ -391,6 +391,7 @@ void tab_widget_servant::table_pushbutton_click()
 	consume_widget->setAttribute(Qt::WA_DeleteOnClose);
 	consume_widget->setFixedWidth(consume_widget->sizeHint().width());
     connect(this, &tab_widget_servant::table_pushbutton_transout, consume_widget, &resource_consume::data_transin);
+    connect(consume_widget, &resource_consume::signal_user_servant_data_changed, this, &tab_widget_servant::from_consume_user_data_changed);
 	emit table_pushbutton_transout(
 		ini_setting_data,
 		&wiki_database,
@@ -398,8 +399,6 @@ void tab_widget_servant::table_pushbutton_click()
 		id_number,
 		user_data);
     consume_widget->exec();
-    emit signal_user_servant_data_changed(user_data);
-    // table_original_table_refresh();
 }
 
 void tab_widget_servant::from_parent_user_data_loaded(TreeModel * user_dat)

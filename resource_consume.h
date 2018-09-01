@@ -160,6 +160,9 @@ public slots:
 		int id,
 		TreeModel *user_dat);
 
+signals:
+    void signal_user_servant_data_changed(TreeModel *user_dat);
+
 private slots:
     //--- Layout
 	void check_dial_left_to_right(int in_value);

@@ -71,6 +71,10 @@ private slots:
     void filter_on_trival_check_clicked();
     void filter_on_other_check_clicked();
     void filter_on_button_right_clicked();
+    inline void from_consume_user_data_changed(TreeModel *user_dat)
+    {
+        emit signal_user_servant_data_changed(user_dat);
+    }
 signals:
     void from_filter_mask_changed();
     void from_filter_change_user_data(
